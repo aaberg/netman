@@ -1,14 +1,15 @@
-import { redirect, type RequestEvent } from '@sveltejs/kit'
+import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit'
 import { env } from "$env/dynamic/public"
 
 const hankoApiUrl = env.PUBLIC_HANKO_API_URL
 
-export async function handle({ event, resolve }) {
-    const verified = await authenticatedUser(event)
+export const handle: Handle = async ({ event, resolve }) => {
+    const session = await authenticatedUser(event)
     const path = event.url.pathname
-    if ((path.startsWith("/dashboard") || path.startsWith("/profile")) && !verified) {
+    if ((path.startsWith("/dashboard") || path.startsWith("/profile")) && !session.is_verified) {
         throw redirect(303, "/auth/login")
     }
+    
 
     return await resolve(event)
 }
@@ -30,9 +31,9 @@ const authenticatedUser = async (event: RequestEvent) => {
             throw new Error('Hanko session validation failed, response ' + await response.text())
         }
 
-        const verifiedResponse = await response.json();
-        console.log(verifiedResponse)
-        return verifiedResponse.is_valid
+        const session = await response.json();
+        console.log(session)
+        return session
     } catch (error) {
         console.log(error)
         return false

@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { validateSession } from "$lib/security";
+  import { logout, validateSession } from "$lib/security"
 
-    validateSession()
+  validateSession()
 </script>
+
 <h1>Dashboard</h1>
+<button class="btn btn-primary" on:click={() => logout()}> Logout</button>

@@ -2,5 +2,8 @@
   import HankoAuth from "../../../components/HankoAuth.svelte"
 </script>
 
-<h1>Login</h1>
-<HankoAuth />
+<div class="hero text-center min-h-screen">
+    <div class="hero-content text-center">
+        <HankoAuth />
+    </div>
+</div>

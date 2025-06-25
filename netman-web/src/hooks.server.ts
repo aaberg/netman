@@ -10,7 +10,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     throw redirect(303, "/auth/login")
   }
 
-  return await resolve(event)
+  return resolve(event);
 }
 
 const authenticatedUser = async (event: RequestEvent) => {

@@ -6,7 +6,7 @@ const hankoApiUrl = env.PUBLIC_HANKO_API_URL
 export const handle: Handle = async ({ event, resolve }) => {
   const session = await authenticatedUser(event)
   const path = event.url.pathname
-  if ((path.startsWith("/dashboard") || path.startsWith("/profile")) && !session.is_valid) {
+  if (path.startsWith("/app") && !session.is_valid) {
     throw redirect(303, "/auth/login")
   }
 

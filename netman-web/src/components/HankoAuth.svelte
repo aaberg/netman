@@ -7,7 +7,7 @@
   const hankoApiUrl = env.PUBLIC_HANKO_API_URL || ""
 
   const redirectAfterLogin = () => {
-    goto("/dashboard")
+    goto("/app/dashboard")
   }
 
   onMount(async () => {

@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: netman
+      POSTGRES_PASSWORD: netman123
+      POSTGRES_DB: netman
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: pg_isready -U netman -d netman
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - default
+
+networks:
+  default:
+    name: netman-network

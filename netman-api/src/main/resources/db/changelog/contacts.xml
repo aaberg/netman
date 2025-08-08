@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="2025-08-06.1" author="Lars Aaberg">
+        <createTable tableName="contact">
+            <column name="id" type="int8" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="contactPK" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

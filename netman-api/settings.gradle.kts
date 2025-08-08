@@ -1,0 +1,4 @@
+
+
+rootProject.name="netman-api"
+

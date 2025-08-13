@@ -4,14 +4,11 @@ import io.micronaut.data.annotation.GeneratedValue
 import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.MappedEntity
 
-/**
- * Data Transfer Object for Contact information
- */
-@MappedEntity("contact")
-data class ContactDTO(
+@MappedEntity("tenant")
+data class TenantDTO(
     @field:Id
-    @field:GeneratedValue(GeneratedValue.Type.AUTO)
+    @field:GeneratedValue
     val id: Long? = null,
-    val tenantId: Long,
-    val name: String
+    val name: String,
+    val type: String,
 )

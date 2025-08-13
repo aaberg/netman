@@ -3,7 +3,8 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet id="2025-08-08.Tenant.1" author="Lars Aaberg">
+
+    <changeSet id="2025-08-12.1" author="Lars Aaberg">
         <createTable tableName="tenant">
             <column name="id" type="int8" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tenant" />
@@ -15,6 +16,9 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="2025-08-12.Tenant.2" author="Lars Aaberg">
+
 
         <createTable tableName="tenant_member">
             <column name="user_id" type="varchar(50)">
@@ -32,5 +36,24 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
+
+        <createTable tableName="contact">
+            <column name="id" type="int8" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="contactPK" />
+            </column>
+            <column name="tenant_id" type="int8">
+                <constraints nullable="false"
+                             referencedTableName="tenant"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_contact_tenant"
+                />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex tableName="contact" indexName="idx_contact_tenant">
+            <column name="tenant_id" />
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

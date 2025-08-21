@@ -1,50 +1,17 @@
 package netman.api.access.repository
 
-import io.micronaut.core.annotation.NonNull
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertNotNull
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 
-@MicronautTest
-@Testcontainers
+@MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TenantRepositoryTest : TestPropertyProvider {
-
-    companion object {
-        @Container
-        @JvmStatic
-        private val postgres: PostgreSQLContainer<*> =
-            PostgreSQLContainer("postgres:17-alpine")
-                .withDatabaseName("netman")
-                .withUsername("test")
-                .withPassword("test")
-    }
-
-    override fun getProperties(): @NonNull Map<String?, String?>? {
-        if (!postgres.isRunning) {
-            postgres.start()
-        }
-
-        return mutableMapOf(
-            "datasources.default.url" to postgres.jdbcUrl,
-            "datasources.default.username" to postgres.username,
-            "datasources.default.password" to postgres.password,
-            "datasources.default.driverClassName" to "org.postgresql.Driver",
-            "datasources.default.db-type" to "postgres",
-            "datasources.default.dialect" to "POSTGRES",
-            // Liquibase
-            "liquibase.datasources.default.change-log" to "classpath:db/liquibase-changelog.xml",
-            "liquibase.datasources.default.enabled" to "true"
-        )
-    }
+class TenantRepositoryTest : RepositoryTestBase() {
 
     @Inject
     lateinit var tenantRepository: TenantRepository
@@ -57,12 +24,11 @@ class TenantRepositoryTest : TestPropertyProvider {
         ))
         assertNotNull(saved.id)
 
-        val found = tenantRepository.getById(saved.id!!)
-        assertTrue(found.isPresent)
+        val tenant = tenantRepository.getById(saved.id!!)
+        assertTrue(tenant != null)
 
-        val tenant = found.get()
-        assertEquals("Acme Corp", tenant.name)
-        assertEquals("Organization", tenant.type)
+        assertEquals("Acme Corp", tenant?.name)
+        assertEquals("Organization", tenant?.type)
     }
 
     @Test
@@ -78,8 +44,25 @@ class TenantRepositoryTest : TestPropertyProvider {
 
         // Assert
         val found = tenantRepository.getById(tenant.id!!)
-        assertTrue(found.isPresent)
-        assertEquals("Acme Inc", found.get().name)
+        assertTrue(found != null)
+        assertEquals("Acme Inc", found?.name)
+    }
+
+    @Test
+    fun `associate multiple tenants with member and fetch them`() {
+        // Arrange
+        val userId = "user-id-123"
+        val tenant1 = tenantRepository.save(TenantDTO(name = "Acme Corp", type = "Organization"))
+        val tenant2 = tenantRepository.save(TenantDTO(name = "Acme Inc", type = "Organization"))
+        tenantRepository.addMemberToTenant(userId, tenant1.id!!, "Member")
+        tenantRepository.addMemberToTenant(userId, tenant2.id!!, "Member")
+
+        // Act
+        val userTenants = tenantRepository.findAllByUserId(userId)
+
+        // Assert
+        assertThat(userTenants).hasSize(2)
+        assertThat(userTenants).containsExactlyInAnyOrder(tenant1, tenant2)
     }
 
 

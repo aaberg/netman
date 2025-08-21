@@ -4,9 +4,12 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import jakarta.inject.Inject
+import netman.api.access.repository.RepositoryTestBase
+import org.junit.jupiter.api.TestInstance
 
 @MicronautTest
-class NetmanApiTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class NetmanApiTest : RepositoryTestBase() {
 
     @Inject
     lateinit var application: EmbeddedApplication<*>

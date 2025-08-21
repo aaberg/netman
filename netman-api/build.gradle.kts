@@ -39,6 +39,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation("org.assertj:assertj-core:4.0.0-M1")
 }
 
 

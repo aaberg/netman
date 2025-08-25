@@ -17,6 +17,52 @@ services:
     networks:
       - default
 
+  postgres_hanko:
+    image: postgres:17-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=hanko
+      - POSTGRES_PASSWORD=hanko
+      - POSTGRES_DB=hanko
+    healthcheck:
+      test: pg_isready -U hanko -d hanko
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - default
+
+  hanko-migrate:
+    image: ghcr.io/teamhanko/hanko:latest
+    depends_on:
+      postgres_hanko:
+        condition: service_healthy
+    volumes:
+      - ./hanko-config.yaml:/etc/hanko/config.yaml
+    command: --config /etc/hanko/config.yaml migrate up
+
+  hanko:
+    image: ghcr.io/teamhanko/hanko:latest
+    depends_on:
+      hanko-migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"  # Public API
+      - "8001:8001"  # Admin API
+    volumes:
+      - ./hanko-config.yaml:/etc/hanko/config.yaml
+    command: serve --config /etc/hanko/config.yaml all
+
+  mailslurper:
+    image: marcopas/docker-mailslurper:latest
+    ports:
+      - '8080:8080' # web UI
+      - '8085:8085'
+    networks:
+      - default
+
 networks:
   default:
     name: netman-network

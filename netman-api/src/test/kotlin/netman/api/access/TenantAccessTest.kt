@@ -4,6 +4,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.api.access.repository.RepositoryTestBase
 import netman.api.models.MemberTenant
+import netman.api.models.Tenant
 import netman.api.models.TenantRole
 import netman.api.models.TenantType
 import org.assertj.core.api.Assertions.assertThat
@@ -55,5 +56,28 @@ class TenantAccessTest : RepositoryTestBase() {
         assertThat(user1Tenants).containsExactlyInAnyOrder(
             MemberTenant(tenant1, user1, TenantRole.Owner),
             MemberTenant(tenant2, user1, TenantRole.Member))
+    }
+
+    @Test
+    fun `get tenant contacts`() {
+        // Arrange
+        val user1 = "user-id-1234"
+        val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
+
+        val contact1 = tenantAccess.createContact(tenant.id, "Ola Normann")
+        val contact2 = tenantAccess.createContact(tenant.id, "Kari Normann")
+
+        assertThat(contact1).isNotNull
+            .hasNoNullFieldsOrProperties()
+            .hasFieldOrPropertyWithValue("name", "Ola Normann")
+        assertThat(contact2).isNotNull
+            .hasNoNullFieldsOrProperties()
+            .hasFieldOrPropertyWithValue("name", "Kari Normann")
+
+        // Act
+        val fetchedContact = tenantAccess.getContacts(tenant.id)
+
+        // Assert
+        assertThat(fetchedContact).containsExactlyInAnyOrder(contact1, contact2)
     }
 }

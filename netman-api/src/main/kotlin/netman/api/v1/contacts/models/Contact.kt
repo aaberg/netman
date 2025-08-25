@@ -4,6 +4,6 @@ import io.micronaut.serde.annotation.Serdeable
 
 @Serdeable.Serializable
 data class Contact(
-    val id: Int,
+    val id: Long,
     val name: String
 )

@@ -28,6 +28,7 @@ dependencies {
     implementation("io.micronaut.data:micronaut-data-jdbc")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.validation:micronaut-validation")
     implementation("org.slf4j:jul-to-slf4j")
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
@@ -40,6 +41,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
+    testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
+    testImplementation("org.wiremock:wiremock-standalone:3.13.1")
 }
 
 

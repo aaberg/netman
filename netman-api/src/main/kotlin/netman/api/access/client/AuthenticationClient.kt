@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.Produces
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.serde.annotation.Serdeable
 import io.micronaut.serde.config.naming.SnakeCaseStrategy
+import reactor.core.publisher.Mono
 import java.time.Instant
 
 @Client("\${hanko.base-url:`http://localhost:8000`}")
@@ -16,7 +17,7 @@ interface AuthenticationClient {
     @Post("/sessions/validate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun validateSession(@Body request: SessionValidationRequest) : SessionValidationResponse
+    fun validateSession(@Body request: SessionValidationRequest) : Mono<SessionValidationResponse>
 }
 
 @Serdeable

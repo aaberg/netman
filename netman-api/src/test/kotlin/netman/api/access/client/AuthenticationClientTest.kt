@@ -52,4 +52,43 @@ class AuthenticationClientTest {
 
         assertThat(response.isValid).isFalse()
     }
+
+    @Test
+    fun `test the authentication client a valid token`(wmRuntimeInfo: WireMockRuntimeInfo) {
+        val wm = wmRuntimeInfo.wireMock
+
+        wm.post {
+            url equalTo "/sessions/validate"
+        } returnsJson {
+            statusCode = 200
+            body = """
+                    {
+                      "is_valid": true,
+                      "claims": {
+                        "audience": [
+                          "localhost"
+                        ],
+                        "email": {
+                          "address": "lars@aaberg.cc",
+                          "is_primary": true,
+                          "is_verified": true
+                        },
+                        "expiration": "2025-08-29T17:11:51Z",
+                        "issued_at": "2025-08-29T05:11:51Z",
+                        "session_id": "a9babead-12aa-4556-927b-0bf86b3e3ea6",
+                        "subject": "062a7851-88e2-41aa-aeb4-dcad0c3bcf34"
+                      },
+                      "expiration_time": "2025-08-29T17:11:51Z",
+                      "user_id": "062a7851-88e2-41aa-aeb4-dcad0c3bcf34"
+                    }
+                """.trimIndent()
+        }
+
+        val result = authenticationClient.validateSession(SessionValidationRequest("dummy"))
+
+        assertThat(result.isValid).isTrue
+        assertThat(result.userId).isEqualTo("062a7851-88e2-41aa-aeb4-dcad0c3bcf34")
+        assertThat(result.claims).isNotNull
+        assertThat(result.claims?.email?.address).isEqualTo("lars@aaberg.cc")
+    }
 }

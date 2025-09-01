@@ -17,6 +17,10 @@ const authenticatedUser = async (event: RequestEvent) => {
   const { cookies } = event
   const cookieToken = cookies.get("hanko")
 
+  if (!cookieToken) {
+    return {is_valid: false}
+  }
+
   const validationOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },

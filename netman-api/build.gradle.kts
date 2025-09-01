@@ -29,6 +29,8 @@ dependencies {
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("org.slf4j:jul-to-slf4j")
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")

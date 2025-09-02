@@ -6,6 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="/db/changelog/tenant.xml" />
-
+    <include file="/db/changelog/profile.xml" />
 
 </databaseChangeLog>

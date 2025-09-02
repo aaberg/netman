@@ -18,8 +18,6 @@
         </createTable>
     </changeSet>
     <changeSet id="2025-08-12.Tenant.2" author="Lars Aaberg">
-
-
         <createTable tableName="tenant_member">
             <column name="user_id" type="varchar(50)">
                 <constraints nullable="false" />

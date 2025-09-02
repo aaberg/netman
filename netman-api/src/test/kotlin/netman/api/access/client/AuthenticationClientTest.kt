@@ -48,9 +48,10 @@ class AuthenticationClientTest {
         }
 
         val token = "dummy"
-        val response = authenticationClient.validateSession(SessionValidationRequest(token))
+        val response = authenticationClient.validateSession(SessionValidationRequest(token)).block()
 
-        assertThat(response.isValid).isFalse()
+
+        assertThat(response?.isValid).isFalse()
     }
 
     @Test
@@ -84,11 +85,11 @@ class AuthenticationClientTest {
                 """.trimIndent()
         }
 
-        val result = authenticationClient.validateSession(SessionValidationRequest("dummy"))
+        val result = authenticationClient.validateSession(SessionValidationRequest("dummy")).block()
 
-        assertThat(result.isValid).isTrue
-        assertThat(result.userId).isEqualTo("062a7851-88e2-41aa-aeb4-dcad0c3bcf34")
-        assertThat(result.claims).isNotNull
-        assertThat(result.claims?.email?.address).isEqualTo("lars@aaberg.cc")
+        assertThat(result?.isValid).isTrue
+        assertThat(result?.userId).isEqualTo("062a7851-88e2-41aa-aeb4-dcad0c3bcf34")
+        assertThat(result?.claims).isNotNull
+        assertThat(result?.claims?.email?.address).isEqualTo("lars@aaberg.cc")
     }
 }

@@ -14,4 +14,11 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="2025-09-04:1" author="Lars Aaberg">
+        <addColumn tableName="profile">
+            <column name="initials" type="varchar(10)" defaultValue="NA">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -1,12 +1,20 @@
 <script lang="ts">
     import "../../app.css"
-    import { logout, validateSession } from "$lib/security"
+    import {fetchUserData, logout, validateSession} from "$lib/security"
     import {onMount} from "svelte";
+    import {getProfile, type UserProfile} from "$lib/getProfile";
 
     let { children } = $props()
-    onMount(() => {
+    let name = $state("")
+    let initials = $state("")
+    onMount(async () => {
         validateSession()
+
+        const profile = await getProfile()
+        name = profile.name
+        initials = profile.initials
     })
+
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
@@ -37,15 +45,15 @@
             <div class="pl-4">
                 <div class="avatar avatar-placeholder">
                     <div class="bg-neutral text-neutral-content w-8 rounded-full">
-                        <span class="text-xs">LA</span>
+                        <span class="text-xs">{initials}</span>
                     </div>
                 </div>
-                Lars Aaberg
+                {name}
             </div>
 
             <ul class="menu menu-horizontal text-base-content">
                 <li><a href="/app/profile">Profile</a></li>
-                <li><a on:click={() => logout()}>Logout</a></li>
+                <li><button onclick={() => logout()}>Logout</button></li>
             </ul>
         </div>
     </div>

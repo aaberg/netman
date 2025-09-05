@@ -24,6 +24,11 @@ export async function fetchUserData(): Promise<User> {
   return hanko.getUser()
 }
 
+export function getBearerToken() : String {
+    const hanko = new Hanko(hankoApiPath)
+    return hanko.getSessionToken()
+}
+
 export async function logout() {
   const hanko = new Hanko(hankoApiPath)
   await hanko.logout()

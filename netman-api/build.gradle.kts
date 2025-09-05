@@ -1,16 +1,18 @@
+
+
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.25"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.25"
-    id("com.google.devtools.ksp") version "1.9.25-1.0.20"
+    id("org.jetbrains.kotlin.jvm") version "2.2.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.2.10"
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
     id("io.micronaut.application") version "4.5.4"
-    id("com.gradleup.shadow") version "8.3.7"
+    id("com.gradleup.shadow") version "8.3.9"
     id("io.micronaut.aot") version "4.5.4"
 }
 
 version = "0.1"
 group = "netman.api"
+val kotlinVersion= project.properties["kotlinVersion"]
 
-val kotlinVersion=project.properties.get("kotlinVersion")
 repositories {
     mavenCentral()
 }
@@ -32,7 +34,7 @@ dependencies {
     implementation("io.micronaut.security:micronaut-security")
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("org.slf4j:jul-to-slf4j")
-    compileOnly("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("org.postgresql:postgresql")
@@ -42,6 +44,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
     testImplementation("org.wiremock:wiremock-standalone:3.13.1")
@@ -52,7 +55,11 @@ application {
     mainClass = "netman.api.ApplicationKt"
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("21")
+    sourceCompatibility = JavaVersion.toVersion("24")
+    targetCompatibility = JavaVersion.toVersion("24")
+}
+kotlin {
+    jvmToolchain(24)
 }
 
 
@@ -81,7 +88,7 @@ micronaut {
 
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-    jdkVersion = "21"
+    jdkVersion = "24"
 }
 
 

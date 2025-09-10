@@ -10,15 +10,15 @@ class MembershipApiController(val membershipManager: MembershipManager) : Member
 
     override fun registerProfile(
         userId: String,
-        profile: Profile
+        profile: ProfileResource
     ): Mono<HttpStatus> {
         membershipManager.registerUserWithPrivateTenant(userId, profile.name)
         return Mono.just(HttpStatus.OK)
     }
 
-    override fun getProfile(userId: String): Mono<Profile?> {
+    override fun getProfile(userId: String): Mono<ProfileResource?> {
         val profile = membershipManager.getProfile(userId);
-        return if (profile != null) Mono.just(Profile(profile.name, profile.initials)) else Mono.empty()
+        return if (profile != null) Mono.just(ProfileResource(profile.name, profile.initials)) else Mono.empty()
     }
 
 }

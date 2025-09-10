@@ -2,24 +2,28 @@ package netman.businesslogic
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
+import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.RepositoryTestBase
 import netman.models.Tenant
 import netman.models.TenantType
-import netman.api.contacts.models.Contact
+import netman.api.contacts.models.ContactResource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(startApplication = false)
 class NetworkManagerTest : RepositoryTestBase() {
+
+    @Inject
+    private lateinit var contactAccess: ContactAccess
 
     @Inject
     private lateinit var tenantAccess: TenantAccess
     @Inject
     private lateinit var networkManager: NetworkManager
-
-    private val userId = "testuser_id"
 
     @Test
     fun `when user with no access tries to fetch contacts it throws`() {
@@ -48,10 +52,10 @@ class NetworkManagerTest : RepositoryTestBase() {
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {
         val tenant = tenantAccess.registerNewTenant("test", TenantType.PERSONAL, userId)
-        val contact1 = tenantAccess.createContact(tenant.id, "Ola Normann")
-        val contact2 = tenantAccess.createContact(tenant.id, "Kari Normann")
+        val contact1 = contactAccess.createContact(tenant.id, "Ola Normann")
+        val contact2 = contactAccess.createContact(tenant.id, "Kari Normann")
 
         return TenantContactTuple(listOf(contact1, contact2), tenant)
     }
-    data class TenantContactTuple(val contacts: List<Contact>, val tenant: Tenant)
+    data class TenantContactTuple(val contacts: List<ContactResource>, val tenant: Tenant)
 }

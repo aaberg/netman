@@ -56,27 +56,4 @@ class TenantAccessTest : RepositoryTestBase() {
             MemberTenant(tenant1, user1, TenantRole.Owner),
             MemberTenant(tenant2, user1, TenantRole.Member))
     }
-
-    @Test
-    fun `get tenant contacts`() {
-        // Arrange
-        val user1 = "user-id-1234"
-        val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
-
-        val contact1 = tenantAccess.createContact(tenant.id, "Ola Normann")
-        val contact2 = tenantAccess.createContact(tenant.id, "Kari Normann")
-
-        assertThat(contact1).isNotNull
-            .hasNoNullFieldsOrProperties()
-            .hasFieldOrPropertyWithValue("name", "Ola Normann")
-        assertThat(contact2).isNotNull
-            .hasNoNullFieldsOrProperties()
-            .hasFieldOrPropertyWithValue("name", "Kari Normann")
-
-        // Act
-        val fetchedContact = tenantAccess.getContacts(tenant.id)
-
-        // Assert
-        assertThat(fetchedContact).containsExactlyInAnyOrder(contact1, contact2)
-    }
 }

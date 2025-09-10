@@ -38,7 +38,7 @@ interface MembershipApi {
         ApiResponse(responseCode = "404", description = "User not found")
     )
     @Put("profile/{userId}", produces = ["application/json"])
-    fun registerProfile(userId: String, @Body profile: Profile) : Mono<HttpStatus>
+    fun registerProfile(userId: String, @Body profile: ProfileResource) : Mono<HttpStatus>
 
     @Operation(
         method = "GET",
@@ -57,7 +57,7 @@ interface MembershipApi {
         ApiResponse(responseCode = "404", description = "Profile not found")
     )
     @Get("profile/{userId}", produces = ["application/json"])
-    fun getProfile(userId: String) : Mono<Profile?>
+    fun getProfile(userId: String) : Mono<ProfileResource?>
 }
 
 /**
@@ -67,7 +67,7 @@ interface MembershipApi {
  */
 @Serdeable.Deserializable
 @Serdeable.Serializable
-data class Profile(
+data class ProfileResource(
     /** The display name of the user */
     val name: String,
     val initials: String

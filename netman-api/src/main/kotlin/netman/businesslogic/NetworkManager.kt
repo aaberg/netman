@@ -1,18 +1,18 @@
 package netman.businesslogic
 
 import jakarta.inject.Singleton
-import netman.access.TenantAccess
-import netman.api.contacts.models.Contact
+import netman.access.ContactAccess
+import netman.api.contacts.models.ContactResource
 
 @Singleton
 class NetworkManager(
-    private val tenantAccess: TenantAccess,
+    private val contactAccess: ContactAccess,
     private val authorizationEngine: AuthorizationEngine
 ) {
 
-    fun getMyContacts(userId: String, tenantId: Long) : List<Contact> {
+    fun getMyContacts(userId: String, tenantId: Long) : List<ContactResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
-        return tenantAccess.getContacts(tenantId)
+        return contactAccess.getContacts(tenantId)
     }
 }

@@ -13,5 +13,5 @@ data class ContactDTO(
     @field:GeneratedValue(GeneratedValue.Type.AUTO)
     val id: Long? = null,
     val tenantId: Long,
-    val name: String
+    val name: String,
 )

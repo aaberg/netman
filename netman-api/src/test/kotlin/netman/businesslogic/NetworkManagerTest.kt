@@ -5,9 +5,9 @@ import jakarta.inject.Inject
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.RepositoryTestBase
+import netman.models.Contact
 import netman.models.Tenant
 import netman.models.TenantType
-import netman.api.contacts.models.ContactResource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -57,5 +57,5 @@ class NetworkManagerTest : RepositoryTestBase() {
 
         return TenantContactTuple(listOf(contact1, contact2), tenant)
     }
-    data class TenantContactTuple(val contacts: List<ContactResource>, val tenant: Tenant)
+    data class TenantContactTuple(val contacts: List<Contact>, val tenant: Tenant)
 }

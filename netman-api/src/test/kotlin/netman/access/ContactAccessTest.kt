@@ -3,6 +3,10 @@ package netman.access
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.RepositoryTestBase
+import netman.models.Contact
+import netman.models.ContactDetail
+import netman.models.Email
+import netman.models.Notes
 import netman.models.TenantType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -40,4 +44,57 @@ class ContactAccessTest : RepositoryTestBase() {
         // Assert
         assertThat(fetchedContact).containsExactlyInAnyOrder(contact1, contact2)
     }
+
+    @Test
+    fun `save and get some contact details`() {
+        // Arrange
+        val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, "user-id-1234")
+        val contact = contactAccess.createContact(tenant.id, "Ola Normann")
+
+        // Act
+        val contactDetails = listOf(
+            ContactDetail(detail = Email("test@user.com", true, "Private email")),
+            ContactDetail(detail = Email("test@work.com", false, "Work email")),
+            ContactDetail(detail = Notes("test notes"))
+        )
+        val saveResult = contactAccess.saveDetails(contactId = contact.id, contactDetails)
+
+        val fetchResult = contactAccess.getContactDetails(contact.id);
+
+        // Assert
+        assertThat(saveResult).hasSize(3)
+        assertThat(fetchResult).hasSize(3)
+        assertThat(fetchResult).hasSameElementsAs(saveResult)
+    }
+
+    @Test
+    fun `save and update some contact details`() {
+        // Arrange
+        val contact = prepareContact()
+
+        // Act
+        val emailDetail = contactAccess.saveDetails(
+            contact.id,
+            listOf(ContactDetail(detail =Email("test@domain.com", true, "Private email"))))
+            .single()
+
+        val updateEmailDetail = emailDetail.copy(detail = (emailDetail.detail as Email).copy(isPrimary = false))
+        contactAccess.saveDetails(contact.id, listOf(updateEmailDetail))
+        val fetchedEmailDetail = contactAccess.getContactDetails(contact.id)
+
+        // Assert
+        assertThat(fetchedEmailDetail).hasSize(1)
+        assertThat(emailDetail.detail.isPrimary).isTrue
+        assertThat(emailDetail.detail).isInstanceOf(Email::class.java)
+        val fetchedEmail = fetchedEmailDetail.single().detail as Email
+        assertThat(fetchedEmail.isPrimary).isFalse
+
+
+    }
+
+    private fun prepareContact() : Contact {
+        val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, "user-id-1234")
+        return contactAccess.createContact(tenant.id, "Ola Normann")
+    }
+
 }

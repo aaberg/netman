@@ -3,6 +3,7 @@ package netman.access.repository
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.TestInstance
 class ContactDetailRepositoryTest() : RepositoryTestBase() {
 
     @Inject
-    private lateinit var contactDetailRepository: ContactDetailRepository;
+    private lateinit var contactDetailRepository:ContactDetailRepository;
     @Inject
     private lateinit var contactRepository: ContactRepository
     @Inject
@@ -28,7 +29,7 @@ class ContactDetailRepositoryTest() : RepositoryTestBase() {
         val contactDetail = contactDetailRepository.save(
             ContactDetailDTO(contactId = contact.id!!, type = type, detail = jsonContent))
 
-        val fetchedContactDetail = contactDetailRepository.getByContactId(contact.id)
+        val fetchedContactDetail = contactDetailRepository.findByContactId(contact.id)
 
         // Assert
         assertThat(fetchedContactDetail).hasSize(1)
@@ -52,7 +53,7 @@ class ContactDetailRepositoryTest() : RepositoryTestBase() {
         val contactDetail2 = contactDetailRepository.save(
             ContactDetailDTO(contactId = contact.id, type = type2, detail = jsonContent2))
 
-        val fetchedContactDetails = contactDetailRepository.getByContactId(contact.id)
+        val fetchedContactDetails = contactDetailRepository.findByContactId(contact.id)
 
         // Assert
         assertThat(fetchedContactDetails).hasSize(2)
@@ -64,17 +65,32 @@ class ContactDetailRepositoryTest() : RepositoryTestBase() {
         // Arrange
         val contact = prepareContact()
         val jsonContent1 = """{"test": "test"}"""
-        val jsonContect2 = """{"test2": "test2"}"""
+        val jsonContent2 = """{"test2": "test2"}"""
         val type = "type"
 
         // Act
         val contactDetail = contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, type = type, detail = jsonContent1))
-        val contactDetail2 = contactDetailRepository.update(contactDetail.copy(detail = jsonContect2))
-        val fetchedContactDetail = contactDetailRepository.getByContactId(contact.id)
+        val contactDetail2 = contactDetailRepository.update(contactDetail.copy(detail = jsonContent2))
+        val fetchedContactDetail = contactDetailRepository.findByContactId(contact.id)
 
         // Assert
         assertThat(fetchedContactDetail).hasSize(1)
-        throw Exception("Test not done implementing ")
+        assertThat(contactDetail2.detail).isEqualTo(jsonContent2)
+    }
+
+    @Test
+    fun `add contact with invalid json detail exppect throw`() {
+        // Arrange
+        val contact = prepareContact()
+        val jsonContent = "invalid json"
+
+        // Act
+        val e = catchThrowable{
+            contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, detail = jsonContent, type = "type")) }
+
+        // Assert
+        assertThat(e).hasMessageContaining("invalid input syntax for type json")
+
     }
 
     private fun prepareContact() : ContactDTO {

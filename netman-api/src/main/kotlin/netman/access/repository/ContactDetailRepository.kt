@@ -9,5 +9,5 @@ interface ContactDetailRepository : GenericRepository<ContactDetailDTO, Long> {
 
     fun save(contactDetail: ContactDetailDTO) : ContactDetailDTO
     fun update(contactDetail: ContactDetailDTO) : ContactDetailDTO
-    fun getByContactId(contactId: Long): List<ContactDetailDTO>
+    fun findByContactId(contactId: Long): List<ContactDetailDTO>
 }

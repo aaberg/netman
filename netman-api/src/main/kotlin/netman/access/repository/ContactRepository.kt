@@ -11,4 +11,5 @@ interface ContactRepository : GenericRepository<ContactDTO, Long> {
     fun update(contact: ContactDTO) : ContactDTO
     fun getById(id: Long): ContactDTO?
     fun findByTenantId(tenantId: Long): List<ContactDTO>
+
 }

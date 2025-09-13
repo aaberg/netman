@@ -2,14 +2,18 @@ package netman.models
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import io.micronaut.core.annotation.Introspected
 import io.micronaut.serde.annotation.Serdeable
+import netman.businesslogic.helper.InitialsGenerator
 
 data class Contact(
-    val id: Long,
+    val id: Long? = null,
     val name: String,
     val initials: String
 )
+
+inline fun newContact(name: String) : Contact {
+    return Contact(name = name, initials = InitialsGenerator.generateInitials(name))
+}
 
 @Serdeable
 @JsonTypeInfo(

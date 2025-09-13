@@ -18,7 +18,7 @@ class WebProxyFilter(
     private val embeddedServer: EmbeddedServer
 ) : HttpFilter {
 
-    val localPaths = setOf("api", "swagger-ui", "scalar")
+    val localPaths = setOf("api", "swagger-ui", "swagger", "scalar")
 
     override fun doFilter(
         request: HttpRequest<*>,

@@ -8,6 +8,7 @@ import netman.models.ContactDetail
 import netman.models.Email
 import netman.models.Notes
 import netman.models.TenantType
+import netman.models.newContact
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -28,8 +29,8 @@ class ContactAccessTest : RepositoryTestBase() {
         val user1 = "user-id-1234"
         val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
 
-        val contact1 = contactAccess.createContact(tenant.id, "Ola Normann")
-        val contact2 = contactAccess.createContact(tenant.id, "Kari Normann")
+        val contact1 = contactAccess.saveContact(tenant.id, newContact("Ola Normann"))
+        val contact2 = contactAccess.saveContact(tenant.id, newContact("Kari Normann"))
 
         assertThat(contact1).isNotNull
             .hasNoNullFieldsOrProperties()
@@ -49,7 +50,7 @@ class ContactAccessTest : RepositoryTestBase() {
     fun `save and get some contact details`() {
         // Arrange
         val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, "user-id-1234")
-        val contact = contactAccess.createContact(tenant.id, "Ola Normann")
+        val contact = contactAccess.saveContact(tenant.id, newContact("Ola Normann"))
 
         // Act
         val contactDetails = listOf(
@@ -57,7 +58,7 @@ class ContactAccessTest : RepositoryTestBase() {
             ContactDetail(detail = Email("test@work.com", false, "Work email")),
             ContactDetail(detail = Notes("test notes"))
         )
-        val saveResult = contactAccess.saveDetails(contactId = contact.id, contactDetails)
+        val saveResult = contactAccess.saveDetails(contactId = contact.id!!, contactDetails)
 
         val fetchResult = contactAccess.getContactDetails(contact.id);
 
@@ -74,7 +75,7 @@ class ContactAccessTest : RepositoryTestBase() {
 
         // Act
         val emailDetail = contactAccess.saveDetails(
-            contact.id,
+            contact.id!!,
             listOf(ContactDetail(detail =Email("test@domain.com", true, "Private email"))))
             .single()
 
@@ -94,7 +95,7 @@ class ContactAccessTest : RepositoryTestBase() {
 
     private fun prepareContact() : Contact {
         val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, "user-id-1234")
-        return contactAccess.createContact(tenant.id, "Ola Normann")
+        return contactAccess.saveContact(tenant.id, newContact("Ola Normann"))
     }
 
 }

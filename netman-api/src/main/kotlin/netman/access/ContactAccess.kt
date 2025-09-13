@@ -18,8 +18,8 @@ open class ContactAccess(
     private val contactDetailRepository: ContactDetailRepository,
     private val objectMapper: ObjectMapper
 ) {
-    fun createContact(tenantId: Long, name: String) : Contact {
-        val contactDto = contactRepository.save(ContactDTO(tenantId = tenantId, name = name))
+    fun saveContact(tenantId: Long, contact: Contact) : Contact {
+        val contactDto = contactRepository.save(ContactDTO(id = contact.id, tenantId = tenantId, name = contact.name))
         return Contact(contactDto.id!!, contactDto.name, InitialsGenerator.generateInitials(contactDto.name))
     }
 
@@ -28,6 +28,11 @@ open class ContactAccess(
         return contactDtos.map { dto ->
             Contact(dto.id!!, dto.name, InitialsGenerator.generateInitials(dto.name))
         }
+    }
+
+    fun getContact(contactId: Long) : Contact? {
+        return contactRepository.getById(contactId)?.let {
+            Contact(it.id!!, it.name, InitialsGenerator.generateInitials(it.name)) }
     }
 
     fun getContactDetails(contactId: Long) : List<ContactDetail<CDetail>> {

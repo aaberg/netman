@@ -5,6 +5,7 @@ import jakarta.inject.Singleton
 import netman.access.ProfileAccess
 import netman.access.TenantAccess
 import netman.businesslogic.helper.InitialsGenerator
+import netman.models.MemberTenant
 import netman.models.Tenant
 import netman.models.TenantType
 import netman.models.UserProfile
@@ -20,6 +21,10 @@ open class MembershipManager(
         profileAccess.storeProfile(userId, UserProfile(userFullName, InitialsGenerator.generateInitials(userFullName)))
 
         return tenant
+    }
+
+    fun getMemberTenants(userId: String) : List<MemberTenant> {
+        return tenantAccess.getMemberTenants(userId)
     }
 
     fun getProfile(userId: String) : UserProfile? = profileAccess.getProfile(userId)

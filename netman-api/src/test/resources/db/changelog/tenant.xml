@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2025-08-12.1" author="Lars Aaberg">
+        <createTable tableName="tenant">
+            <column name="id" type="int8" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tenant" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2025-08-12.Tenant.2" author="Lars Aaberg">
+        <createTable tableName="tenant_member">
+            <column name="user_id" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="tenant_id" type="int8">
+                <constraints
+                        referencedTableName="tenant"
+                        referencedColumnNames="id"
+                        foreignKeyName="fk_tenant"
+                        nullable="false"
+                />
+            </column>
+            <column name="role" type="varchar(20)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <createTable tableName="contact">
+            <column name="id" type="int8" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="contactPK" />
+            </column>
+            <column name="tenant_id" type="int8">
+                <constraints nullable="false"
+                             referencedTableName="tenant"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_contact_tenant"
+                />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex tableName="contact" indexName="idx_contact_tenant">
+            <column name="tenant_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="2025-09-08.1" author="Lars Aaberg">
+        <createTable tableName="contact_detail">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_contact_type" />
+            </column>
+            <column name="contact_id" type="bigint">
+                <constraints referencedTableName="contact" referencedColumnNames="id" foreignKeyName="fk_contact_detail_contact" nullable="false" />
+            </column>
+            <column name="type" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="detail" type="jsonb">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex tableName="contact_detail" indexName="idx_contact_detail_contact_id">
+            <column name="contact_id" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

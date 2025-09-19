@@ -4,7 +4,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.ContactAccess
 import netman.access.TenantAccess
-import netman.access.repository.RepositoryTestBase
+import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.models.ContactWithDetails
 import netman.models.Contact
 import netman.models.ContactDetail
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.assertThrows
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(startApplication = false)
-class NetworkManagerTest : RepositoryTestBase() {
+class NetworkManagerTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var contactAccess: ContactAccess

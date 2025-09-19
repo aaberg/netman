@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertNotNull
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TenantRepositoryTest : RepositoryTestBase() {
+class TenantRepositoryTest : DefaultTestProperties() {
 
     @Inject
     lateinit var tenantRepository: TenantRepository

@@ -2,7 +2,7 @@ package netman.access
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import netman.access.repository.RepositoryTestBase
+import netman.access.repository.DefaultTestProperties
 import netman.models.Contact
 import netman.models.ContactDetail
 import netman.models.Email
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestInstance
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ContactAccessTest : RepositoryTestBase() {
+class ContactAccessTest : DefaultTestProperties() {
 
     @Inject
     lateinit var contactAccess: ContactAccess

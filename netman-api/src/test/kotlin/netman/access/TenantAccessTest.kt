@@ -2,7 +2,7 @@ package netman.access
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import netman.access.repository.RepositoryTestBase
+import netman.access.repository.DefaultTestProperties
 import netman.models.MemberTenant
 import netman.models.TenantRole
 import netman.models.TenantType
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.TestInstance
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TenantAccessTest : RepositoryTestBase() {
+class TenantAccessTest : DefaultTestProperties() {
 
     @Inject
     lateinit var tenantAccess: TenantAccess

@@ -17,6 +17,22 @@ services:
     networks:
       - default
 
+  liquibase:
+    image: liquibase/liquibase:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://db:5432/netman
+      LIQUIBASE_COMMAND_USERNAME: netman
+      LIQUIBASE_COMMAND_PASSWORD: netman123
+      LIQUIBASE_SEARCH_PATH: /liquibase/changelog
+    volumes:
+      - ./netman-api/src/main/resources/db:/liquibase/changelog
+    command: --changelog-file=liquibase-changelog.xml update
+    networks:
+      - default
+
   postgres_hanko:
     image: postgres:17-alpine
     ports:

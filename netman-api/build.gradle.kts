@@ -1,10 +1,9 @@
-
-
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.2.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.2.10"
     id("com.google.devtools.ksp") version "2.2.10-2.0.2"
     id("io.micronaut.application") version "4.5.4"
+//    id("io.micronaut.test-resources") version "4.5.4"
     id("com.gradleup.shadow") version "8.3.9"
     id("io.micronaut.aot") version "4.5.4"
 }
@@ -28,7 +27,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     implementation("io.micronaut.openapi:micronaut-openapi-annotations")
     implementation("io.micronaut.data:micronaut-data-jdbc")
-    implementation("io.micronaut.liquibase:micronaut-liquibase")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut.security:micronaut-security")
@@ -40,14 +38,17 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("io.micronaut:micronaut-http-client")
 
-    testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.3"))
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:junit-jupiter")
+//    testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.3"))
+//    testImplementation("org.testcontainers:postgresql")
+//    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
     testImplementation("org.wiremock:wiremock-standalone:3.13.1")
+    testImplementation("commons-codec:commons-codec:1.19.0")
+
 }
 
 

@@ -2,7 +2,7 @@ package netman.businesslogic
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import netman.access.repository.RepositoryTestBase
+import netman.access.repository.DefaultTestProperties
 import netman.models.UserProfile
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ import java.util.UUID
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MembershipManagerTest : RepositoryTestBase() {
+class MembershipManagerTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var membershipManager: MembershipManager

@@ -17,8 +17,7 @@ import reactor.core.publisher.Mono
  * API for managing user membership profiles.
  * Provides endpoints for registering and retrieving user profiles.
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
-@io.swagger.v3.oas.annotations.tags.Tag(name = "Membership", description = "API for managing user membership profiles")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "cdMembership", description = "API for managing user membership profiles")
 interface MembershipApi {
 
     @Operation(

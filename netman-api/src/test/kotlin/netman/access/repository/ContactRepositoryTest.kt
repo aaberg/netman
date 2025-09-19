@@ -2,14 +2,13 @@ package netman.access.repository
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ContactRepositoryTest : RepositoryTestBase() {
+class ContactRepositoryTest : DefaultTestProperties() {
 
     @Inject
     lateinit var contactRepository: ContactRepository
@@ -27,7 +26,7 @@ class ContactRepositoryTest : RepositoryTestBase() {
         val fetched = contactRepository.getById(contact.id!!)
 
         // Assert
-        assertThat(fetched, equalTo(contact))
-        assertThat(fetched!!.name, equalTo("John Doe"))
+        assertThat(fetched).isEqualTo(contact)
+        assertThat(fetched!!.name).isEqualTo("John Doe")
     }
 }

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ContactDetailRepositoryTest() : RepositoryTestBase() {
+class ContactDetailRepositoryTest() : DefaultTestProperties() {
 
     @Inject
     private lateinit var contactDetailRepository:ContactDetailRepository;

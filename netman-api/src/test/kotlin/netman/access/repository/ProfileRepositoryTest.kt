@@ -9,7 +9,7 @@ import java.util.UUID
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ProfileRepositoryTest : RepositoryTestBase() {
+class ProfileRepositoryTest : DefaultTestProperties() {
 
     @Inject
     lateinit var profileRepository: ProfileRepository

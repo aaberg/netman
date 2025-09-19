@@ -1,11 +1,16 @@
 package netman.api.membership
 
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
+import io.micronaut.security.annotation.Secured
+import io.micronaut.security.rules.SecurityRule
 import netman.businesslogic.MembershipManager
 import reactor.core.publisher.Mono
 
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/api/membership")
+@Consumes("application/json")
 class MembershipApiController(val membershipManager: MembershipManager) : MembershipApi {
 
     override fun registerProfile(

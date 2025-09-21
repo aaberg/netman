@@ -1,7 +1,9 @@
 package netman.api.tenant
 
 import io.micronaut.http.annotation.Controller
+import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
+import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.api.tenant.models.ContactResource
 import netman.api.tenant.models.MemberTenantResource
@@ -12,6 +14,7 @@ import netman.businesslogic.models.ContactWithDetails
 
 
 @Controller("/api/tenants", produces = ["application/json"])
+@Secured(SecurityRule.IS_AUTHENTICATED)
 class TenantApiController(
     private val membershipManager: MembershipManager,
     private val tenantResourceMapper: TenantResourceMapper,

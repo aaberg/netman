@@ -7,7 +7,6 @@ import io.restassured.specification.RequestSpecification
 import netman.access.client.setupAuthenticationClientForSuccessfullAuthentication
 import netman.access.repository.DefaultTestProperties
 import org.hamcrest.CoreMatchers.`is`
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -15,11 +14,6 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest
 class MembershipApiTest : DefaultTestProperties() {
-
-    @BeforeEach
-    fun setup() {
-
-    }
 
     @Test
     fun `test register and get profile`(

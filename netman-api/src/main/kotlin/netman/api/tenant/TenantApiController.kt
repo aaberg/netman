@@ -28,7 +28,7 @@ class TenantApiController(
     override fun getTenant(authentication: Authentication, tenantId: Long) : MemberTenantResource {
         val user = getUserId(authentication)
 
-        val tenant = membershipManager.getMemberTenants(user).single { it.tenant.id == 1L }
+        val tenant = membershipManager.getMemberTenants(user).single { it.tenant.id == tenantId }
         return tenantResourceMapper.map(tenant)
     }
 }

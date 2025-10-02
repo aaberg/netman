@@ -18,7 +18,7 @@ services:
       - default
 
   liquibase:
-    image: liquibase/liquibase:latest
+    image: liquibase/liquibase:4.31.1
     depends_on:
       db:
         condition: service_healthy
@@ -27,6 +27,7 @@ services:
       LIQUIBASE_COMMAND_USERNAME: netman
       LIQUIBASE_COMMAND_PASSWORD: netman123
       LIQUIBASE_SEARCH_PATH: /liquibase/changelog
+      INSTALL_MYSQL: false
     volumes:
       - ./netman-api/src/main/resources/db:/liquibase/changelog
     command: --changelog-file=liquibase-changelog.xml update

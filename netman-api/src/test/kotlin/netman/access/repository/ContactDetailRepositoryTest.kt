@@ -23,18 +23,16 @@ class ContactDetailRepositoryTest() : DefaultTestProperties() {
         // Arrange
         val contact = prepareContact()
         val jsonContent = """{"test": "test"}"""
-        val type = "testtype"
 
         // Act
         val contactDetail = contactDetailRepository.save(
-            ContactDetailDTO(contactId = contact.id!!, type = type, detail = jsonContent))
+            ContactDetailDTO(contactId = contact.id!!, detail = jsonContent))
 
         val fetchedContactDetail = contactDetailRepository.findByContactId(contact.id)
 
         // Assert
         assertThat(fetchedContactDetail).hasSize(1)
         assertThat(fetchedContactDetail.single()).isEqualTo(contactDetail)
-        assertThat(fetchedContactDetail.single().type).isEqualTo(type)
         assertThat(fetchedContactDetail.single().detail).isEqualTo(jsonContent)
     }
 
@@ -44,14 +42,12 @@ class ContactDetailRepositoryTest() : DefaultTestProperties() {
         val contact = prepareContact()
         val jsonContent1 = """{"test": "test"}"""
         val jsonContent2 = """{"test2": "test2"}"""
-        val type1 = "testtype1"
-        val type2 = "testtype2"
 
         // Act
         val contactDetail1 = contactDetailRepository.save(
-            ContactDetailDTO(contactId = contact.id!!, type = type1, detail = jsonContent1))
+            ContactDetailDTO(contactId = contact.id!!, detail = jsonContent1))
         val contactDetail2 = contactDetailRepository.save(
-            ContactDetailDTO(contactId = contact.id, type = type2, detail = jsonContent2))
+            ContactDetailDTO(contactId = contact.id, detail = jsonContent2))
 
         val fetchedContactDetails = contactDetailRepository.findByContactId(contact.id)
 
@@ -66,10 +62,9 @@ class ContactDetailRepositoryTest() : DefaultTestProperties() {
         val contact = prepareContact()
         val jsonContent1 = """{"test": "test"}"""
         val jsonContent2 = """{"test2": "test2"}"""
-        val type = "type"
 
         // Act
-        val contactDetail = contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, type = type, detail = jsonContent1))
+        val contactDetail = contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, detail = jsonContent1))
         val contactDetail2 = contactDetailRepository.update(contactDetail.copy(detail = jsonContent2))
         val fetchedContactDetail = contactDetailRepository.findByContactId(contact.id)
 
@@ -86,7 +81,7 @@ class ContactDetailRepositoryTest() : DefaultTestProperties() {
 
         // Act
         val e = catchThrowable{
-            contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, detail = jsonContent, type = "type")) }
+            contactDetailRepository.save(ContactDetailDTO(contactId = contact.id!!, detail = jsonContent)) }
 
         // Assert
         assertThat(e).hasMessageContaining("invalid input syntax for type json")

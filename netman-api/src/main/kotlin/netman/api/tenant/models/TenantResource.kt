@@ -2,7 +2,6 @@ package netman.api.tenant.models
 
 import io.micronaut.context.annotation.Mapper
 import io.micronaut.serde.annotation.Serdeable
-import netman.models.Contact
 import netman.models.MemberTenant
 import netman.models.Tenant
 
@@ -29,6 +28,4 @@ interface TenantResourceMapper {
             tenant = mapTenant(memberTenant.tenant),
             role = memberTenant.role.toString()
         )
-
-    fun map(contact: Contact) : ContactResource
 }

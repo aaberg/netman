@@ -2,8 +2,8 @@ package netman.businesslogic
 
 import jakarta.inject.Singleton
 import netman.access.ContactAccess
-import netman.businesslogic.models.ContactWithDetails
 import netman.models.Contact
+import netman.models.ContactWithDetails
 
 @Singleton
 class NetworkManager(

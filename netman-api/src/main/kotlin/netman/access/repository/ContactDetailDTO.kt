@@ -12,7 +12,6 @@ data class ContactDetailDTO(
     @field:GeneratedValue
     val id: Long? = null,
     val contactId: Long,
-    val type: String,
     @field:TypeDef(type = DataType.JSON)
     val detail: String
 )

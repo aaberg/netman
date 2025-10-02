@@ -41,10 +41,10 @@ class TenantApiTest() : DefaultTestProperties() {
             .then()
                 .log().all()
                 .statusCode(200)
-            .body("size()", `is`(1))
-            .body("[0].tenant.name", `is`(tenant.name))
-            .body("[0].tenant.tenantType", `is`(tenant.tenantType.toString()))
-            .body("[0].role", `is`("Owner"))
+                .body("size()", `is`(1))
+                .body("[0].tenant.name", `is`(tenant.name))
+                .body("[0].tenant.tenantType", `is`(tenant.tenantType.toString()))
+                .body("[0].role", `is`("Owner"))
     }
 
 }

@@ -54,6 +54,7 @@ abstract class DefaultTestProperties : TestPropertyProvider {
             "micronaut.security.authentication" to "bearer",
             "logging.level.io.micronaut.security" to "DEBUG",
 
+
         )
     }
 }

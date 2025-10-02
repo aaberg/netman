@@ -19,7 +19,12 @@ open class ContactAccess(
     private val objectMapper: ObjectMapper
 ) {
     fun saveContact(tenantId: Long, contact: Contact) : Contact {
-        val contactDto = contactRepository.save(ContactDTO(id = contact.id, tenantId = tenantId, name = contact.name))
+        val contactDto = if (contact.id == null) {
+            contactRepository.save(ContactDTO(tenantId = tenantId, name = contact.name))
+        } else {
+            contactRepository.update(ContactDTO(id = contact.id, tenantId = tenantId, name = contact.name))
+        }
+
         return Contact(contactDto.id!!, contactDto.name, InitialsGenerator.generateInitials(contactDto.name))
     }
 
@@ -44,7 +49,7 @@ open class ContactAccess(
     open fun saveDetails(contactId: Long, details: List<ContactDetail<CDetail>>) : List<ContactDetail<CDetail>> {
         return details.map { detail ->
             val serializedDetail = objectMapper.writeValueAsString(detail.detail)
-            val contactDetailDto = ContactDetailDTO(id = detail.id, contactId = contactId, type = detail.detail.type, detail = serializedDetail)
+            val contactDetailDto = ContactDetailDTO(id = detail.id, contactId = contactId, detail = serializedDetail)
             val returnVal: ContactDetailDTO;
             if (contactDetailDto.id == null) {
                 returnVal = contactDetailRepository.save(contactDetailDto)

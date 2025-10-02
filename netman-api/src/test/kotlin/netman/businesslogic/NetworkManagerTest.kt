@@ -5,9 +5,9 @@ import jakarta.inject.Inject
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
-import netman.businesslogic.models.ContactWithDetails
 import netman.models.Contact
 import netman.models.ContactDetail
+import netman.models.ContactWithDetails
 import netman.models.Email
 import netman.models.Phone
 import netman.models.Tenant
@@ -71,6 +71,26 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Assert
         assertThat(fetchedContact).isEqualTo(savedContact)
+    }
+
+    @Test
+    fun `save and update contact`() {
+        // Arrange
+        val userId = "testuser_id"
+        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
+
+        // Act
+        val contactWDetail = networkManager.saveContactWithDetails(tenant.id,
+            ContactWithDetails(newContact("Ola Normann"), listOf()))
+
+        val updatedContactWDetail = networkManager.saveContactWithDetails(tenant.id,
+            contactWDetail.copy(contact =  contactWDetail.contact.copy(name = "new name")))
+
+        val myContacts = networkManager.getMyContacts(userId, tenant.id)
+
+        // Assert
+        assertThat(updatedContactWDetail.contact.name).isEqualTo("new name")
+        assertThat(myContacts).hasSize(1)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

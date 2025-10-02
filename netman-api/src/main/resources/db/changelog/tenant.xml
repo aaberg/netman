@@ -62,9 +62,9 @@
             <column name="contact_id" type="bigint">
                 <constraints referencedTableName="contact" referencedColumnNames="id" foreignKeyName="fk_contact_detail_contact" nullable="false" />
             </column>
-            <column name="type" type="text">
-                <constraints nullable="false" />
-            </column>
+<!--            <column name="type" type="text">-->
+<!--                <constraints nullable="false" />-->
+<!--            </column>-->
             <column name="detail" type="jsonb">
                 <constraints nullable="false" />
             </column>

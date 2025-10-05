@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Contact} from "$lib/contact";
+    import type {Contact, ContactDetail, Email} from "$lib/contact";
 
     let contact: Contact = $state({
         id: null,
@@ -7,12 +7,18 @@
         initials: "",
         details: []
     })
+    
+    let emails = $derived(
+        contact.details.filter(
+            (detail): detail is ContactDetail<Email> => detail.type === "email"
+        )
+    )
 
     function addEmail() {
         contact.details.push({
             id: null,
+            type: "email",
             detail: {
-                type: "email",
                 address: "",
                 label: "",
                 isPrimary: false
@@ -48,10 +54,33 @@
 <div class="divider text-xs opacity-60"></div>
 
 <ul class="list bg-base-200 border-base-300 rounded-box w-full max-w-lg p-4 border">
-    <li class="list-item">
-        <div class="flex justify-between">
-            <div class="inline-block">Emails</div>
-            <button class="btn btn-outline btn-sm w-28" onclick={addEmail}>+ Add email</button>
-        </div>
+    <li class="list-row flex justify-between">
+        <div class="inline-block">Emails</div>
+        <button class="btn btn-outline btn-sm w-28" onclick={addEmail}>+ Add email</button>
     </li>
+    {#each emails as email}
+        <li class="list-row flex flex-col gap-4">
+            <div class="flex flex-row">
+                <label class="floating-label grow pr-4">
+                    <input type="email" placeholder="Email address" bind:value={email.detail.address}
+                           class="input w-full input-sm" required autocomplete="off"/>
+                    <span>Email address</span>
+                </label>
+                <label class="floating-label w-28">
+                    <input type="text" placeholder="Label" bind:value={email.detail.label}
+                           class="input w-full input-sm" autocomplete="off"/>
+                    <span>Label</span>
+                </label>
+            </div>
+
+            <div class="flex flex-row justify-between">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Primary email</span>
+                    <input type="checkbox" class="checkbox" bind:checked={email.detail.isPrimary}/>
+                </label>
+                <button class="btn btn-link btn-warning btn-sm w-16">Delete</button>
+            </div>
+
+        </li>
+    {/each}
 </ul>

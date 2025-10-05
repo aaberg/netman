@@ -3,27 +3,26 @@ export interface Contact {
     id: String | null,
     name: String,
     initials: String,
-    details: ContactDetail[]
+    details: ContactDetail<Email | Phone | Notes>[]
 }
 
-export interface ContactDetail {
+export interface ContactDetail<T> {
     id: BigInt | null,
-    detail: Email | Phone | Notes
+    type: string,
+    detail: T
 }
 
 export interface Email {
-    address: String,
-    label: String,
-    isPrimary: Boolean,
-    type: String,
+    address: string,
+    label: string,
+    isPrimary: boolean,
 }
 
 export interface Phone {
-    number: String,
-    label: String,
-    type: String,
+    number: string,
+    label: string,
 }
 
 export interface Notes {
-    note: String,
+    note: string,
 }

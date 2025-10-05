@@ -25,7 +25,7 @@ class WebProxyFilter(
 
     private val logger = LoggerFactory.getLogger(WebProxyFilter::class.java)
 
-    val localPaths = setOf("api", "swagger-ui", "swagger", "scalar")
+    val localPaths = setOf("api", "swagger-ui", "swagger", "scalar", "flow")
 
     override fun doFilter(
         request: HttpRequest<*>,
@@ -40,19 +40,19 @@ class WebProxyFilter(
         if (localPaths.contains(rootPath)) {
             return chain?.proceed(request)
                 ?: Publishers.just(HttpResponse.notFound<Any>())
-        } else {
-            logger.info("the uri is {}", request.uri)
-            return Flux.from (client.proxy(
-                request.mutate()
-                    .uri { b: UriBuilder ->
-                        b.apply {
-                            scheme("http")
-                            host("127.0.0.1")
-                            port(5173)
-                        }
-                    }
-                )
-            )
         }
+
+        return Flux.from (client.proxy(
+            request.mutate()
+                .uri { b: UriBuilder ->
+                    b.apply {
+                        scheme("http")
+                        host("127.0.0.1")
+                        port(5173)
+                    }
+                }
+            )
+        )
+
     }
 }

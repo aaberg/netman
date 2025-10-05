@@ -1,1 +1,0 @@
-<h1 class="text-2xl">Contact list</h1>

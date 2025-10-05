@@ -1,7 +1,7 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.2.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.2.10"
-    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+    id("org.jetbrains.kotlin.jvm") version "2.2.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.2.20"
+    id("com.google.devtools.ksp") version "2.2.20-2.0.3"
     id("io.micronaut.application") version "4.5.4"
 //    id("io.micronaut.test-resources") version "4.5.4"
     id("com.gradleup.shadow") version "8.3.9"
@@ -38,7 +38,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("io.micronaut:micronaut-http-client")
 
-//    testImplementation(platform("org.testcontainers:testcontainers-bom:1.21.3"))
+//    testImplementation(platform("org.testcontainers:testcontaivernelandners-bom:1.21.3"))
 //    testImplementation("org.testcontainers:postgresql")
 //    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
@@ -53,7 +53,7 @@ dependencies {
 
 
 application {
-    mainClass = "netman.api.ApplicationKt"
+    mainClass = "netman.ApplicationKt"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("24")
@@ -89,7 +89,7 @@ micronaut {
 
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-    jdkVersion = "24"
+    jdkVersion = "25"
 }
 
 

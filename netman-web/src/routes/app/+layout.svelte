@@ -1,8 +1,8 @@
 <script lang="ts">
     import "../../app.css"
-    import {fetchUserData, logout, validateSession} from "$lib/security"
+    import {logout, validateSession} from "$lib/security"
     import {onMount} from "svelte";
-    import {getProfile, type UserProfile} from "$lib/getProfile";
+    import {getProfile} from "$lib/profile";
 
     let { children } = $props()
     let name = $state("")
@@ -38,7 +38,7 @@
         <div class="min-h-full w-80 p-4 bg-base-200" >
             <ul class="menu text-base-content">
                 <li><a href="/app/dashboard">Dashboard</a></li>
-                <li><a href="/app/contactlist">Contact list</a></li>
+                <li><a href="/app/contacts">Contact list</a></li>
                 <li><a href="/app/settings">Settings</a></li>
             </ul>
             <div class="divider"></div>

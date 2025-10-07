@@ -3,7 +3,7 @@ export interface Contact {
     id: String | null,
     name: String,
     initials: String,
-    details: ContactDetail<Email | Phone | Notes>[]
+    details: ContactDetail<Email | Phone | Note>[]
 }
 
 export interface ContactDetail<T> {
@@ -23,6 +23,6 @@ export interface Phone {
     label: string,
 }
 
-export interface Notes {
+export interface Note {
     note: string,
 }

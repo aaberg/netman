@@ -11,6 +11,9 @@ let search = $state("");
 
     <div class="flex gap-2">
         <SearchInput bind:value={search} />
-        <a class="btn btn-neutral btn-sm" href="contacts/new">+ New contact</a>
+        <a class="btn btn-neutral btn-sm" href="contacts/new">
+            <span>+</span>
+            <span class="sr-only sm:not-sr-only">New contact</span>
+        </a>
     </div>
 </div>

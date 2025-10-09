@@ -1,6 +1,5 @@
 import { Hanko, type User } from "@teamhanko/hanko-elements"
 import { env } from "$env/dynamic/public"
-import { redirect } from "@sveltejs/kit"
 import { goto } from "$app/navigation"
 
 const hankoApiPath = env.PUBLIC_HANKO_API_URL
@@ -24,13 +23,8 @@ export async function fetchUserData(): Promise<User> {
   return hanko.getUser()
 }
 
-export function getBearerToken() : String {
-    const hanko = new Hanko(hankoApiPath)
-    return hanko.getSessionToken()
-}
-
 export async function logout() {
   const hanko = new Hanko(hankoApiPath)
   await hanko.logout()
-  goto("/")
+  await goto("/")
 }

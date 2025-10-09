@@ -30,7 +30,7 @@ data class ContactWithDetails(val contact: Contact, val details: List<ContactDet
 @JsonSubTypes(
     JsonSubTypes.Type(value = Email::class, name = "email"),
     JsonSubTypes.Type(value = Phone::class, name = "phone"),
-    JsonSubTypes.Type(value = Notes::class, name = "notes"),
+    JsonSubTypes.Type(value = Notes::class, name = "note"),
     JsonSubTypes.Type(value = WorkInfo::class, name = "work")
 )
 abstract class CDetail()
@@ -51,7 +51,8 @@ data class Email(
 @Serdeable
 data class Phone(
     val number: String,
-    val label: String
+    val label: String,
+    val isPrimary: Boolean = false
 ) : CDetail()
 
 @Serdeable

@@ -16,5 +16,5 @@
             <path d="m21 21-4.3-4.3"></path>
         </g>
     </svg>
-    <input type="search" bind:value={value} required placeholder="Search"/>
+    <input type="search" class="w-15 sm:w-30" bind:value={value} required placeholder="Search"/>
 </label>

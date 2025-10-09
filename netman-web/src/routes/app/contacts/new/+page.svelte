@@ -1,37 +1,38 @@
 <script lang="ts">
-    import type {Contact, ContactDetail, Email, Note, Phone} from "$lib/contact";
+    import type {Contact, ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contact";
 
-    let contact: Contact = $state({
-        id: null,
-        name: "",
-        initials: "",
-        details: [],
-        note: ""
+    let contact: ContactWithDetails = $state({
+        contact: {
+            id: null,
+            name: "",
+            initials: "",
+        },
+        details: []
     })
     
     let emails = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Email> => detail.type === "email"
+            (detail): detail is ContactDetail<Email> => detail.detail.type === "email"
         )
     )
 
     let phones = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Phone> => detail.type === "phone"
+            (detail): detail is ContactDetail<Phone> => detail.detail.type === "phone"
         )
     )
 
     let notes = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Note> => detail.type === "note"
+            (detail): detail is ContactDetail<Note> => detail.detail.type === "note"
         )
     )
 
     function addEmail() {
         contact.details.push({
             id: null,
-            type: "email",
             detail: {
+                type: "email",
                 address: "",
                 label: "",
                 isPrimary: false
@@ -49,8 +50,8 @@
     function addPhone() {
         contact.details.push({
             id: null,
-            type: "phone",
             detail: {
+                type: "phone",
                 number: "",
                 label: "",
                 isPrimary: false
@@ -68,8 +69,8 @@
     function addNote() {
         contact.details.push({
             id: null,
-            type: "note",
             detail: {
+                type: "note",
                 note: ""
             }
         })
@@ -79,13 +80,17 @@
         const index = contact.details.indexOf(note)
         contact.details.splice(index, 1)
     }
+
+    function save() {
+        console.log( JSON.stringify(contact))
+    }
 </script>
 
 <h1 class="text-3xl">New contact</h1>
 
 <div class="m-4 w-full max-w-lg">
     <label class="floating-label">
-        <input type="text" placeholder="Name of contact" bind:value={contact.name}
+        <input type="text" placeholder="Name of contact" bind:value={contact.contact.name}
                class="input w-full input-lg" required autofocus autocomplete="off"/>
         <span>Name of contact</span>
     </label>
@@ -174,8 +179,8 @@
     {/each}
 </ul>
 
-<div class="flex mt-4 w-lg gap-2">
-    <div class="grow"><button class="btn btn-primary w-full">Save</button></div>
+<div class="flex mt-4 w-full max-w-lg gap-2">
+    <div class="grow"><button class="btn btn-primary w-full" onclick={save}>Save</button></div>
     <div class="grow"><button class="btn btn-neutral w-full">Cancel</button></div>
 
 </div>

@@ -61,7 +61,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         val userId = "testuser_id"
         val tenant = tenantAccess.registerNewTenant("test", TenantType.PERSONAL, userId)
         val email = ContactDetail(detail = Email("test@test.com", false, "dummy"))
-        val phone = ContactDetail(detail = Phone("11111111", "phone"))
+        val phone = ContactDetail(detail = Phone("11111111", "phone" ))
 
         // Act
         val savedContact = networkManager.saveContactWithDetails(tenant.id,

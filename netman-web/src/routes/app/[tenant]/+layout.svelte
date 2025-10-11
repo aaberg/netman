@@ -1,19 +1,10 @@
 <script lang="ts">
-    import "../../app.css"
-    import {logout, validateSession} from "$lib/security"
-    import {onMount} from "svelte";
-    import {getProfile} from "$lib/profile";
+    import "../../../app.css"
+    import {logout} from "$lib/security"
+    import type { LayoutProps } from "./$types";
 
-    let { children } = $props()
-    let name = $state("")
-    let initials = $state("")
-    onMount(async () => {
-        validateSession()
+    let { children, data }: LayoutProps = $props()
 
-        const profile = await getProfile()
-        name = profile.name
-        initials = profile.initials
-    })
 
 </script>
 
@@ -37,22 +28,22 @@
         <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
         <div class="min-h-full w-80 p-4 bg-base-200" >
             <ul class="menu text-base-content">
-                <li><a href="/app/dashboard">Dashboard</a></li>
-                <li><a href="/app/contacts">Contact list</a></li>
-                <li><a href="/app/settings">Settings</a></li>
+                <li><a href="/app/{data.tenant}/dashboard">Dashboard</a></li>
+                <li><a href="/app/{data.tenant}/contacts">Contact list</a></li>
+                <li><a href="/app/{data.tenant}/settings">Settings</a></li>
             </ul>
             <div class="divider"></div>
             <div class="pl-4">
                 <div class="avatar avatar-placeholder">
                     <div class="bg-neutral text-neutral-content w-8 rounded-full">
-                        <span class="text-xs">{initials}</span>
+                        <span class="text-xs">{data.profile.initials}</span>
                     </div>
                 </div>
-                {name}
+                {data.profile.name}
             </div>
 
             <ul class="menu menu-horizontal text-base-content">
-                <li><a href="/app/profile">Profile</a></li>
+                <li><a href="/app/{data.tenant}/profile">Profile</a></li>
                 <li><button onclick={() => logout()}>Logout</button></li>
             </ul>
         </div>

@@ -1,12 +1,9 @@
 <script lang="ts">
-  import HankoProfile from "../../../components/HankoProfile.svelte"
-  import {onMount} from "svelte";
+  import HankoProfile from "../../../../components/HankoProfile.svelte"
+  import type {PageProps} from "./$types";
 
-  let token = $state("")
-  // Todo: test code, remove or secure before release
-  onMount(() =>
-      fetch("/api/testing/session-token").then(res => res.text().then(text => token = text))
-  )
+  let { data } : PageProps = $props()
+
 </script>
 
 <h1 class="text-2xl">Profile</h1>
@@ -15,7 +12,7 @@
 </div>
 
 <div class="mt-8">
-    <button class="btn btn-outline" onclick={() => navigator.clipboard.writeText(token)}>
+    <button class="btn btn-outline" onclick={() => navigator.clipboard.writeText(data.accessToken)}>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
              stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

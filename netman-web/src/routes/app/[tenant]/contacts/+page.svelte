@@ -1,5 +1,5 @@
 <script>
-import SearchInput from "../../../components/SearchInput.svelte";
+import SearchInput from "../../../../components/SearchInput.svelte";
 
 let search = $state("");
 </script>

@@ -10,23 +10,6 @@ export interface ApiError {
     message: string;
 }
 
-export async function getProfile(): Promise<UserProfile> {
-
-    const user = await fetchUserData()
-
-    const response = await fetch(`/api/membership/profile/${user.user_id}`);
-
-    if (!response.ok) {
-        // const error:ApiError = {
-        //     status: response.status,
-        //     message: response.statusText
-        // }
-        throw new Error("er")
-    }
-
-    return await response.json() as UserProfile;
-}
-
 export async function createProfile(name: string, initials: string) {
     const user = await fetchUserData()
 

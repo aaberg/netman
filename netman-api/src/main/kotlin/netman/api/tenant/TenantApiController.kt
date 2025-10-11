@@ -31,4 +31,12 @@ class TenantApiController(
         val tenant = membershipManager.getMemberTenants(user).single { it.tenant.id == tenantId }
         return tenantResourceMapper.map(tenant)
     }
+
+    override fun getDefaultTenant(authentication: Authentication): MemberTenantResource {
+        val user = getUserId(authentication)
+        val tenant = membershipManager.getMemberDefaultTenant(user)
+        return tenantResourceMapper.map(tenant)
+    }
+
+
 }

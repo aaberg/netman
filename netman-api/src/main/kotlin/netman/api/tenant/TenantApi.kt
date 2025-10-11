@@ -27,4 +27,7 @@ interface TenantApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant to retrieve") tenantId: Long
     ): MemberTenantResource
+
+    @Get("/default")
+    fun getDefaultTenant(authentication: Authentication) : MemberTenantResource
 }

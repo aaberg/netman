@@ -73,4 +73,11 @@
             <column name="contact_id" />
         </createIndex>
     </changeSet>
+    <changeSet id="2025-10-10-1" author="Lars Aaberg">
+        <addColumn tableName="tenant">
+            <column name="created" type="timestamp with time zone" defaultValueComputed="current_timestamp">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

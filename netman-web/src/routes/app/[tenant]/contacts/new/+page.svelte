@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {Contact, ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contact";
+    import type {Contact, ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contactModel";
 
     let contact: ContactWithDetails = $state({
         contact: {

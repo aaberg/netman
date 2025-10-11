@@ -7,7 +7,7 @@
   const hankoApiUrl = env.PUBLIC_HANKO_API_URL || ""
 
   const redirectAfterLogin = () => {
-    goto("/flow/authorization/continue")
+    goto("/flow/authentication/continue")
   }
 
   onMount(async () => {

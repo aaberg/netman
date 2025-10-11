@@ -27,5 +27,10 @@ open class MembershipManager(
         return tenantAccess.getMemberTenants(userId)
     }
 
+    fun getMemberDefaultTenant(userId: String) : MemberTenant {
+        val tenants = tenantAccess.getMemberTenants(userId)
+        return tenants.single{tenant -> tenant.tenant.tenantType == TenantType.PERSONAL}
+    }
+
     fun getProfile(userId: String) : UserProfile? = profileAccess.getProfile(userId)
 }

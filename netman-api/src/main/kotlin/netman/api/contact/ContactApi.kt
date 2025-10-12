@@ -58,6 +58,6 @@ interface ContactApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long,
         @Parameter(description = "ID of the contact") contactId: Long,
-        @Parameter(description = "Updated contact information") contactWithDetails: ContactWithDetailsResource
+        @Parameter(description = "Updated contact information") @Body contactWithDetails: ContactWithDetailsResource
     )
 }

@@ -41,7 +41,9 @@ class ContactApiController(
         tenantId: Long,
         contactId: Long
     ): ContactWithDetailsResource {
-        TODO("Not yet implemented")
+        val user = getUserId(authentication)
+        val contactWithDetails = networkManager.getContactWithDetails(user, tenantId, contactId)
+        return contactResourceMapper.map(contactWithDetails)
     }
 
     override fun updateContactWithDetails(
@@ -50,6 +52,13 @@ class ContactApiController(
         contactId: Long,
         contactWithDetails: ContactWithDetailsResource
     ) {
-        TODO("Not yet implemented")
+        val user = getUserId(authentication)
+        // Ensure the contact ID from the path is used if not present in payload
+        val normalizedPayload = if (contactWithDetails.contact.id == null || contactWithDetails.contact.id != contactId) {
+            contactWithDetails.copy(contact = contactWithDetails.contact.copy(id = contactId))
+        } else contactWithDetails
+
+        val domain = contactResourceMapper.map(normalizedPayload)
+        networkManager.saveContactWithDetails(tenantId, domain)
     }
 }

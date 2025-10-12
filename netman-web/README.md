@@ -1,38 +1,20 @@
-# sv
+# NetMan Web (Svelte/SvelteKit)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+This folder contains the Svelte/SvelteKit frontend for NetMan.
 
-## Creating a project
+Looking for setup and project-wide instructions? See the repository root README:
+- ../README.md
+- Or view it on your hosting platform (GitHub/GitLab/etc.) at the repo root.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Quick commands
 
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+```powershell
+npm install
+npm run dev        # start dev server (usually http://localhost:5173)
+npm run build      # production build
+npm run preview    # preview prod build locally
+npm run test       # unit/component tests (Vitest)
+npm run test:e2e   # end-to-end tests (Playwright)
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Note: When running the web app against a locally running API, ensure the API base URL is configured (e.g., PUBLIC_API_BASE_URL). See the root README for details on configuration, Docker Compose, and environment variables.

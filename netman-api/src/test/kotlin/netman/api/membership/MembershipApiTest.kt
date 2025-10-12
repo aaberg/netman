@@ -47,7 +47,7 @@ class MembershipApiTest : DefaultTestProperties() {
         spec.`when`()
         .log().all()
             .auth().oauth2("dummy")
-            .get("/api/membership/profile/${userId}")
+            .get("/api/membership/profile")
             .then()
         .log().all()
             .statusCode(200)

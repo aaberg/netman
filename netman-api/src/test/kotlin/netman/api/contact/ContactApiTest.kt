@@ -104,4 +104,133 @@ class ContactApiTest() : DefaultTestProperties() {
             .body("details[1].detail.type", equalTo("phone"))
             .body("details[1].detail.number", equalTo("+1234567890"))
     }
+
+    @Test
+    fun `get contact details after creation`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create contact with details first
+        val contactId: Long = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contact": {
+                        "name": "Alice Wonderland",
+                        "initials": "AW"
+                      },
+                      "details": [
+                        {
+                          "detail": {
+                            "type": "email",
+                            "address": "alice@example.com",
+                            "isPrimary": true,
+                            "label": "Personal"
+                          }
+                        }
+                      ]
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getLong("contact.id")
+
+        // Get the contact details by id
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tenants/${tenant.id}/contacts/${contactId}")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("contact.id", equalTo(contactId.toInt()))
+            .body("contact.name", equalTo("Alice Wonderland"))
+            .body("details.size()", equalTo(1))
+            .body("details[0].detail.type", equalTo("email"))
+            .body("details[0].detail.address", equalTo("alice@example.com"))
+    }
+
+    @Test
+    fun `update contact details and name`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact without details
+        val contactId: Long = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contact": {
+                        "name": "Bob Builder",
+                        "initials": "BB"
+                      },
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getLong("contact.id")
+
+        // Update the contact - change name and add details; also intentionally omit id in payload to test controller normalization
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contact": {
+                        "name": "Robert Builder",
+                        "initials": "RB"
+                      },
+                      "details": [
+                        {
+                          "detail": {
+                            "type": "phone",
+                            "number": "+4711111111",
+                            "label": "Mobile"
+                          }
+                        }
+                      ]
+                    }
+                """.trimIndent()
+            )
+            .put("/api/tenants/${tenant.id}/contacts/${contactId}")
+            .then()
+            .log().all()
+            .statusCode(200)
+
+        // Fetch and verify the update
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tenants/${tenant.id}/contacts/${contactId}")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("contact.id", equalTo(contactId.toInt()))
+            .body("contact.name", equalTo("Robert Builder"))
+            .body("contact.initials", equalTo("RB"))
+            .body("details.size()", equalTo(1))
+            .body("details[0].detail.type", equalTo("phone"))
+            .body("details[0].detail.number", equalTo("+4711111111"))
+    }
 }

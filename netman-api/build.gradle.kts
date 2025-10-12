@@ -60,7 +60,7 @@ java {
     targetCompatibility = JavaVersion.toVersion("24")
 }
 kotlin {
-    jvmToolchain(24)
+    jvmToolchain(25)
 }
 
 

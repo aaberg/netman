@@ -17,7 +17,7 @@ class MembershipApiController(val membershipManager: MembershipManager) : Member
 
     override fun registerProfile(
         authentication: Authentication,
-        profile: ProfileResource
+        profile: CreateProfileRequest
     ): Mono<HttpStatus> {
         val userId = getUserId(authentication)
         membershipManager.registerUserWithPrivateTenant(userId, profile.name)

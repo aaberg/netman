@@ -38,7 +38,7 @@ class MembershipApiTest : DefaultTestProperties() {
                   "initials": "${initials}"
                 }
             """.trimIndent())
-            .put("/api/membership/profile/${userId}")
+            .put("/api/membership/profile")
         .then()
             .log().all()
             .statusCode(200)

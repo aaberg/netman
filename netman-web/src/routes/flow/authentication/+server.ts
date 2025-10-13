@@ -7,5 +7,5 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         return redirect(303, "/auth/login")
     }
 
-    return redirect(303, "continue")
+    return redirect(303, "/flow/authentication/continue")
 }

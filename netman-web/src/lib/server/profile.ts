@@ -1,4 +1,4 @@
-import type {UserProfile} from "$lib/profile";
+import type {CreateProfileRequest, UserProfile} from "$lib/profile";
 import {basePath} from "./common";
 
 export const getProfile = async (accessToken : String) : Promise<UserProfile | null> => {
@@ -19,7 +19,7 @@ export const getProfile = async (accessToken : String) : Promise<UserProfile | n
     return await response.json() as UserProfile;
 }
 
-export const createProfile = async (accessToken : String, profile : UserProfile) : Promise<void> => {
+export const createProfile = async (accessToken : String, profile : CreateProfileRequest) : Promise<void> => {
     const response = await fetch(`${basePath()}/api/membership/profile`, {
         method: "PUT",
         headers: {

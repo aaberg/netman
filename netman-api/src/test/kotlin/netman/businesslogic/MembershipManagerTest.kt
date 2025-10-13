@@ -28,4 +28,23 @@ class MembershipManagerTest : DefaultTestProperties() {
         // Assert
         assertThat(profile).isEqualTo(UserProfile("Jane Doe", "JD"))
     }
+
+    @Test
+    fun `registering same user twice updates profile and does not create new tenant`() {
+        // Arrange
+        val userId = UUID.randomUUID().toString()
+
+        // Act
+        val firstTenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        // sanity check: initial profile saved
+        assertThat(membershipManager.getProfile(userId)).isEqualTo(UserProfile("Jane Doe", "JD"))
+
+        val secondTenant = membershipManager.registerUserWithPrivateTenant(userId, "Janet Dee")
+        val tenants = membershipManager.getMemberTenants(userId)
+
+        // Assert
+        assertThat(tenants).hasSize(1)
+        assertThat(secondTenant.id).isEqualTo(firstTenant.id)
+        assertThat(membershipManager.getProfile(userId)).isEqualTo(UserProfile("Janet Dee", "JD"))
+    }
 }

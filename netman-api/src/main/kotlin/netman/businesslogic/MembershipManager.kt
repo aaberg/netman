@@ -17,9 +17,11 @@ open class MembershipManager(
 
     @Transactional
     open fun registerUserWithPrivateTenant(userId: String, userFullName: String) : Tenant {
-        val tenant = tenantAccess.registerNewTenant("Personal tenant", TenantType.PERSONAL, userId)
+        val existing = tenantAccess.getMemberTenants(userId)
+            .firstOrNull { it.tenant.tenantType == TenantType.PERSONAL }
+            ?.tenant
+        val tenant = existing ?: tenantAccess.registerNewTenant("Personal tenant", TenantType.PERSONAL, userId)
         profileAccess.storeProfile(userId, UserProfile(userFullName, InitialsGenerator.generateInitials(userFullName)))
-
         return tenant
     }
 

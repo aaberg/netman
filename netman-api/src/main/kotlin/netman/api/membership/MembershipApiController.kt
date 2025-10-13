@@ -16,16 +16,17 @@ import reactor.core.publisher.Mono
 class MembershipApiController(val membershipManager: MembershipManager) : MembershipApi {
 
     override fun registerProfile(
-        userId: String,
+        authentication: Authentication,
         profile: ProfileResource
     ): Mono<HttpStatus> {
+        val userId = getUserId(authentication)
         membershipManager.registerUserWithPrivateTenant(userId, profile.name)
         return Mono.just(HttpStatus.OK)
     }
 
     override fun getProfile(authentication: Authentication): Mono<ProfileResource?> {
         val userId = getUserId(authentication)
-        val profile = membershipManager.getProfile(userId);
+        val profile = membershipManager.getProfile(userId)
         return if (profile != null) Mono.just(ProfileResource(profile.name, profile.initials)) else Mono.empty()
     }
 

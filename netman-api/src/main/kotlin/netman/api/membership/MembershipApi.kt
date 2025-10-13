@@ -4,9 +4,7 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Put
-import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
-import io.micronaut.security.rules.SecurityRule
 import io.micronaut.serde.annotation.Serdeable
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameters
@@ -37,8 +35,8 @@ interface MembershipApi {
         ApiResponse(responseCode = "401", description = "Unauthorized"),
         ApiResponse(responseCode = "404", description = "User not found")
     )
-    @Put("profile/{userId}", produces = ["application/json"])
-    fun registerProfile(userId: String, @Body profile: ProfileResource) : Mono<HttpStatus>
+    @Put("profile", produces = ["application/json"])
+    fun registerProfile(authentication: Authentication, @Body profile: ProfileResource) : Mono<HttpStatus>
 
     @Operation(
         method = "GET",

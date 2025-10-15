@@ -1,5 +1,7 @@
 <script lang="ts">
-    import type {Contact, ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contactModel";
+    import type {ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contactModel";
+    import {applyAction, deserialize} from "$app/forms";
+    import type {ActionResult} from "@sveltejs/kit";
 
     let contact: ContactWithDetails = $state({
         contact: {
@@ -9,6 +11,8 @@
         },
         details: []
     })
+
+    let serializedContact = $derived(JSON.stringify(contact))
     
     let emails = $derived(
         contact.details.filter(
@@ -81,8 +85,19 @@
         contact.details.splice(index, 1)
     }
 
-    function save() {
-        console.log( JSON.stringify(contact))
+    async function handleSubmit(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
+        event.preventDefault()
+        const payload = JSON.stringify(contact)
+
+        const response = await fetch(event.currentTarget.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: payload
+        })
+        const result: ActionResult = deserialize(await response.text())
+        await applyAction(result)
     }
 </script>
 
@@ -179,10 +194,10 @@
     {/each}
 </ul>
 
-<div class="flex mt-4 w-full max-w-lg gap-2">
-    <div class="grow"><button class="btn btn-primary w-full" onclick={save}>Save</button></div>
+<form class="flex mt-4 w-full max-w-lg gap-2" method="post" use:enhance>
+    <input type="hidden" name="contact" value={serializedContact} />
+    <div class="grow"><button class="btn btn-primary w-full" type="submit" >Save</button></div>
     <div class="grow"><button class="btn btn-neutral w-full">Cancel</button></div>
-
-</div>
+</form>
 
 

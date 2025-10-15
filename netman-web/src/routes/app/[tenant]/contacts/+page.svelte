@@ -8,7 +8,7 @@
 
     const filtered = $derived(
         data.contacts.filter((c) =>
-            c.name.toLowerCase().includes(search.toLowerCase())
+            c?.name?.toLowerCase().includes(search.toLowerCase())
         )
     );
 </script>

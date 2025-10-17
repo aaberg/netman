@@ -22,7 +22,7 @@ export const saveContactOnTenant = async (
     const responseJson = await response.json();
 
     return responseJson as ContactWithDetails;
-};
+}
 
 export const getContactsForTenant = async (
     accessToken: string,
@@ -42,4 +42,17 @@ export const getContactsForTenant = async (
     }
 
     return (await response.json()) as Contact[];
-};
+}
+
+export async function getContactsById(accessToken: string, tenantId: string, contactId: string)
+    : Promise<ContactWithDetails> {
+
+    const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts/${contactId}`)
+
+    if (!response.ok) {
+        throw new Error(
+            `Error fetching contact with id ${contactId} from tenant with id ${tenantId}.`
+        )
+    }
+    return (await response.json()) as ContactWithDetails
+}

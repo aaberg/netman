@@ -2,6 +2,7 @@ package netman.businesslogic
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
+import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
@@ -36,7 +37,9 @@ class NetworkManagerTest : DefaultTestProperties() {
         val (_, tenant) = createTenantWithContacts()
 
         // Act
-        val ex = assertThrows<ForbiddenException> { -> networkManager.getMyContacts("otherUser", tenant.id) }
+        val ex = assertThrows<ForbiddenException> {
+            networkManager.getMyContacts("otherUser", tenant.id)
+        }
 
         // Assert
         assertThat(ex.message).isEqualTo("User otherUser does not have access to tenant ${tenant.id}")
@@ -91,6 +94,20 @@ class NetworkManagerTest : DefaultTestProperties() {
         // Assert
         assertThat(updatedContactWDetail.contact.name).isEqualTo("new name")
         assertThat(myContacts).hasSize(1)
+    }
+
+    @Test
+    fun `save a contact with empty name is expected to throw`() {
+        // Arrange
+        val userId = "testuser_id"
+        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
+
+        // Act & Assert
+        val validationException = assertThrows<ValidationException> {
+            networkManager.saveContactWithDetails(tenant.id, ContactWithDetails(newContact(""), listOf()))
+        }
+
+        println(validationException.message)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

@@ -12,7 +12,7 @@ import netman.models.ContactWithDetails
 data class ContactResource(
     val id: Long? = null,
     val name: String,
-    val initials: String
+    val initials: String? = null
 )
 
 @Serdeable
@@ -27,9 +27,7 @@ data class ContactDetailResource(
     val detail: CDetail
 )
 
-@Mapper
 abstract class ContactResourceMapper(
-    private val objectMapper: ObjectMapper
 ) {
     @Mapper
     abstract fun map(contact: Contact) : ContactResource

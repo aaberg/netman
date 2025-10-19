@@ -6,7 +6,7 @@ import netman.access.repository.DefaultTestProperties
 import netman.models.Contact
 import netman.models.ContactDetail
 import netman.models.Email
-import netman.models.Notes
+import netman.models.Note
 import netman.models.TenantType
 import netman.models.newContact
 import org.assertj.core.api.Assertions.assertThat
@@ -56,11 +56,11 @@ class ContactAccessTest : DefaultTestProperties() {
         val contactDetails = listOf(
             ContactDetail(detail = Email("test@user.com", true, "Private email")),
             ContactDetail(detail = Email("test@work.com", false, "Work email")),
-            ContactDetail(detail = Notes("test notes"))
+            ContactDetail(detail = Note("test notes"))
         )
         val saveResult = contactAccess.saveDetails(contactId = contact.id!!, contactDetails)
 
-        val fetchResult = contactAccess.getContactDetails(contact.id);
+        val fetchResult = contactAccess.getContactDetails(contact.id)
 
         // Assert
         assertThat(saveResult).hasSize(3)

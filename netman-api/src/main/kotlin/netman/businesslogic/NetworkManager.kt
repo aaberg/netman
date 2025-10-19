@@ -1,6 +1,8 @@
 package netman.businesslogic
 
+import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
+import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.models.Contact
 import netman.models.ContactWithDetails
@@ -9,6 +11,7 @@ import netman.models.ContactWithDetails
 class NetworkManager(
     private val contactAccess: ContactAccess,
     private val authorizationEngine: AuthorizationEngine,
+    private val validator: Validator
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long) : List<Contact> {
@@ -25,6 +28,12 @@ class NetworkManager(
     }
 
     fun saveContactWithDetails(tenantId: Long, contactWithDetails: ContactWithDetails) : ContactWithDetails {
+        val violations = validator.validate(contactWithDetails )
+
+        if (violations.isNotEmpty()){
+            throw ValidationException(violations.toString())
+        }
+
         val contact = contactAccess.saveContact(tenantId, contactWithDetails.contact)
         if (contact.id == null) {
             throw IllegalArgumentException("Contact could not be saved. Returned contact has no id")

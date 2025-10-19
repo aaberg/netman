@@ -1,8 +1,9 @@
 <script lang="ts">
     import SearchInput from "../../../../components/SearchInput.svelte";
-    import type {PageProps} from "./$types";
+    import type { PageProps } from "./$types";
 
     let { data } : PageProps = $props()
+    let { tenant } = data
 
     let search = $state("");
 
@@ -58,7 +59,7 @@
                         <div>email not visible yet</div>
                     </td>
                     <td>
-                        <a href="#" class="link">Edit</a>
+                        <a href="/app/{tenant}/contacts/{c.id}" class="link">Details</a>
                     </td>
                 </tr>
             {/each}

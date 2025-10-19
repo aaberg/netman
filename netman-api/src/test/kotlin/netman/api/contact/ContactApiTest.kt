@@ -8,7 +8,6 @@ import jakarta.inject.Inject
 import netman.access.client.setupAuthenticationClientForSuccessfullAuthentication
 import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.MembershipManager
-import netman.businesslogic.NetworkManager
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.notNullValue
 import org.junit.jupiter.api.Test
@@ -22,9 +21,6 @@ class ContactApiTest() : DefaultTestProperties() {
 
     @Inject
     private lateinit var membershipManager: MembershipManager
-
-    @Inject
-    private lateinit var networkManager: NetworkManager
 
     @Test
     fun `create a new contact with empty details`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
@@ -120,8 +116,7 @@ class ContactApiTest() : DefaultTestProperties() {
                 """
                     {
                       "contact": {
-                        "name": "Alice Wonderland",
-                        "initials": "AW"
+                        "name": "Alice Wonderland"
                       },
                       "details": [
                         {
@@ -154,6 +149,7 @@ class ContactApiTest() : DefaultTestProperties() {
             .statusCode(200)
             .body("contact.id", equalTo(contactId.toInt()))
             .body("contact.name", equalTo("Alice Wonderland"))
+            .body("contact.initials", equalTo("AW"))
             .body("details.size()", equalTo(1))
             .body("details[0].detail.type", equalTo("email"))
             .body("details[0].detail.address", equalTo("alice@example.com"))

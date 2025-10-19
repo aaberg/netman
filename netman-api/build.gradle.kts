@@ -1,7 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.2.20"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.2.20"
-    id("com.google.devtools.ksp") version "2.2.20-2.0.3"
+    id("com.google.devtools.ksp") version "2.2.20-2.0.4"
     id("io.micronaut.application") version "4.5.4"
 //    id("io.micronaut.test-resources") version "4.5.4"
     id("com.gradleup.shadow") version "8.3.9"
@@ -71,7 +71,7 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("netman.api.*")
+        annotations("netman.api.*", "netman.api.*")
     }
     aot {
         // Please review carefully the optimizations enabled below

@@ -1,27 +1,27 @@
 <script lang="ts">
-  import type { PageProps } from "./$types";
-  import type { ContactDetail, Email, Note, Phone } from "$lib/contactModel";
-  import { page } from "$app/stores";
+  import type { PageProps } from "./$types"
+  import type { ContactDetail, Email, Note, Phone } from "$lib/contactModel"
 
-  const { data }: PageProps = $props();
-  const { contact, details } = data.contactWDetails;
+  const { data }: PageProps = $props()
+  const { tenant, contactWDetails } = data
+  const { contact, details } = contactWDetails
 
   // Type guards for discriminated rendering
   const isEmail = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Email> =>
-    (d as ContactDetail<Email>).detail && (d as ContactDetail<Email>).detail.address !== undefined;
+    (d as ContactDetail<Email>).detail && (d as ContactDetail<Email>).detail.address !== undefined
 
   const isPhone = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Phone> =>
-    (d as ContactDetail<Phone>).detail && (d as ContactDetail<Phone>).detail.number !== undefined;
+    (d as ContactDetail<Phone>).detail && (d as ContactDetail<Phone>).detail.number !== undefined
 
   const isNote = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Note> =>
-    (d as ContactDetail<Note>).detail && (d as ContactDetail<Note>).detail.note !== undefined;
+    (d as ContactDetail<Note>).detail && (d as ContactDetail<Note>).detail.note !== undefined
 </script>
 
 <!-- Page container -->
 <div class="container mx-auto max-w-4xl p-4 md:p-6">
   <!-- Back button -->
   <div class="mb-4">
-    <a href={`/app/${$page.params.tenant}/contacts`} class="btn btn-ghost gap-2" aria-label="Back to contacts">
+    <a href={`/app/${tenant}/contacts`} class="btn btn-ghost gap-2" aria-label="Back to contacts">
       <!-- left arrow icon -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
         <path d="M10.5 19.5 3 12l7.5-7.5 1.06 1.06L5.62 11H21v1.5H5.62l5.94 5.94-1.06 1.06Z" />
@@ -47,14 +47,14 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <button class="btn btn-primary btn-outline" aria-label="Edit contact" title="Edit contact" type="button">
+          <a class="btn btn-primary btn-outline" aria-label="Edit contact" title="Edit contact" href="/app/{tenant}/contacts/{contact.id}/edit">
             <!-- simple pencil icon -->
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
               <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712z" />
               <path d="M3 17.25V21h3.75L19.061 8.689l-3.712-3.712L3 17.25z" />
             </svg>
             <span class="hidden sm:inline">Edit</span>
-          </button>
+          </a>
         </div>
       </div>
     </div>

@@ -14,10 +14,18 @@
         },
         details: []
     })
+
+    let serializedContact = $derived(JSON.stringify(contact))
 </script>
 
 <h1 class="text-3xl">New contact</h1>
 
-<EditContact {tenant} {contact} />
+<EditContact {contact} />
+
+<form class="flex mt-4 w-full max-w-lg gap-2" method="post" use:enhance>
+    <input type="hidden" name="contact" value={serializedContact} />
+    <div class="grow"><button class="btn btn-primary w-full" type="submit" >Save</button></div>
+    <div class="grow"><a class="btn btn-neutral w-full" href="/app/{tenant}/contacts">Cancel</a></div>
+</form>
 
 

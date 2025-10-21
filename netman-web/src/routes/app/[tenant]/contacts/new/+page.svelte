@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import type {ContactWithDetails} from "$lib/contactModel";
     import type {PageProps} from "./$types";
     import EditContact from "../../../../../components/contact/EditContact.svelte";

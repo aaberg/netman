@@ -1,5 +1,6 @@
 package netman.api.contact
 
+import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Mapper
 import io.micronaut.serde.ObjectMapper
 import io.micronaut.serde.annotation.Serdeable
@@ -27,6 +28,7 @@ data class ContactDetailResource(
     val detail: CDetail
 )
 
+@Bean
 abstract class ContactResourceMapper(
 ) {
     @Mapper

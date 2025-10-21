@@ -27,7 +27,8 @@ class NetworkManager(
         return ContactWithDetails(contact, details)
     }
 
-    fun saveContactWithDetails(tenantId: Long, contactWithDetails: ContactWithDetails) : ContactWithDetails {
+    fun saveContactWithDetails(userId: String, tenantId: Long, contactWithDetails: ContactWithDetails) : ContactWithDetails {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val violations = validator.validate(contactWithDetails )
 
         if (violations.isNotEmpty()){

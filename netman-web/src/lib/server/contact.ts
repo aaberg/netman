@@ -1,7 +1,7 @@
 import type { Contact, ContactWithDetails } from "$lib/contactModel";
 import { basePath } from "$lib/server/common";
 
-export const saveContactOnTenant = async (
+export const saveContact = async (
     accessToken: string,
     tenantId: string,
     contact: ContactWithDetails

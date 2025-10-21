@@ -23,15 +23,15 @@ class ContactApiController(
         return contactResources
     }
 
-    override fun createContactWithDetails(
+    override fun saveContactWithDetails(
         authentication: Authentication,
         tenantId: Long,
         contactWithDetailsRequest: ContactWithDetailsResource
     ) : ContactWithDetailsResource {
-        val user = getUserId(authentication)
+        val userId = getUserId(authentication)
 
         val contactWDetail = contactResourceMapper.map(contactWithDetailsRequest)
-        val savedContactWDetail = networkManager.saveContactWithDetails(tenantId, contactWDetail)
+        val savedContactWDetail = networkManager.saveContactWithDetails(userId, tenantId, contactWDetail)
 
         return contactResourceMapper.map(savedContactWDetail)
     }
@@ -44,21 +44,5 @@ class ContactApiController(
         val user = getUserId(authentication)
         val contactWithDetails = networkManager.getContactWithDetails(user, tenantId, contactId)
         return contactResourceMapper.map(contactWithDetails)
-    }
-
-    override fun updateContactWithDetails(
-        authentication: Authentication,
-        tenantId: Long,
-        contactId: Long,
-        contactWithDetails: ContactWithDetailsResource
-    ) {
-        val user = getUserId(authentication)
-        // Ensure the contact ID from the path is used if not present in payload
-        val normalizedPayload = if (contactWithDetails.contact.id == null || contactWithDetails.contact.id != contactId) {
-            contactWithDetails.copy(contact = contactWithDetails.contact.copy(id = contactId))
-        } else contactWithDetails
-
-        val domain = contactResourceMapper.map(normalizedPayload)
-        networkManager.saveContactWithDetails(tenantId, domain)
     }
 }

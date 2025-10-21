@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { enhance } from '$app/forms';
     import type {PageProps} from "./$types";
     import EditContact from "../../../../../../components/contact/EditContact.svelte";
 
@@ -16,5 +17,5 @@
 <form class="flex mt-4 w-full max-w-lg gap-2" method="post" use:enhance>
     <input type="hidden" name="contact" value={serializedContact} />
     <div class="grow"><button class="btn btn-primary w-full" type="submit" >Save</button></div>
-    <div class="grow"><a class="btn btn-neutral w-full" href="/app/{tenant}/contacts">Cancel</a></div>
+    <div class="grow"><a class="btn btn-neutral w-full" href="/app/{tenant}/contacts/{contactWDetails.contact.id}">Cancel</a></div>
 </form>

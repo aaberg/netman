@@ -177,7 +177,7 @@ class ContactApiTest() : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tenants/${tenant.id}/contacts")
+            .post("/api/tenants/${tenant.id}/contacts/")
             .then()
             .log().all()
             .statusCode(201)
@@ -194,6 +194,7 @@ class ContactApiTest() : DefaultTestProperties() {
                 """
                     {
                       "contact": {
+                        "id": $contactId,
                         "name": "Robert Builder",
                         "initials": "RB"
                       },
@@ -209,10 +210,10 @@ class ContactApiTest() : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .put("/api/tenants/${tenant.id}/contacts/${contactId}")
+            .post("/api/tenants/${tenant.id}/contacts")
             .then()
             .log().all()
-            .statusCode(200)
+            .statusCode(201)
 
         // Fetch and verify the update
         spec.`when`()

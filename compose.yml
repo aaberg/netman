@@ -29,7 +29,7 @@ services:
       LIQUIBASE_SEARCH_PATH: /liquibase/changelog
       INSTALL_MYSQL: false
     volumes:
-      - ./netman-api/src/main/resources/db:/liquibase/changelog
+      - ./liquibase:/liquibase/changelog
     command: --changelog-file=liquibase-changelog.xml update
     networks:
       - default

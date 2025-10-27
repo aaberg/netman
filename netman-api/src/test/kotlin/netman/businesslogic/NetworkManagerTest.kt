@@ -67,7 +67,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         val phone = ContactDetail(detail = Phone("11111111", "phone" ))
 
         // Act
-        val savedContact = networkManager.saveContactWithDetails(tenant.id,
+        val savedContact = networkManager.saveContactWithDetails(userId, tenant.id,
             ContactWithDetails(newContact("Ola Normann"), listOf(email, phone)))
 
         val fetchedContact = networkManager.getContactWithDetails(userId, tenant.id, savedContact.contact.id!!)
@@ -83,10 +83,10 @@ class NetworkManagerTest : DefaultTestProperties() {
         val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
 
         // Act
-        val contactWDetail = networkManager.saveContactWithDetails(tenant.id,
+        val contactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
             ContactWithDetails(newContact("Ola Normann"), listOf()))
 
-        val updatedContactWDetail = networkManager.saveContactWithDetails(tenant.id,
+        val updatedContactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
             contactWDetail.copy(contact =  contactWDetail.contact.copy(name = "new name")))
 
         val myContacts = networkManager.getMyContacts(userId, tenant.id)
@@ -104,7 +104,7 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Act & Assert
         val validationException = assertThrows<ValidationException> {
-            networkManager.saveContactWithDetails(tenant.id, ContactWithDetails(newContact(""), listOf()))
+            networkManager.saveContactWithDetails(userId, tenant.id, ContactWithDetails(newContact(""), listOf()))
         }
 
         println(validationException.message)

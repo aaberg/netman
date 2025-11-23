@@ -4,10 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="2015-10-22" author="Lars Aaberg">
-        <createTable tableName="view-contact-list">
-            <column name="id" type="bigint">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk-view-contact-list" />
+    <changeSet id="2025-10-22" author="Lars Aaberg">
+        <createTable tableName="view_contact_list">
+            <column name="contact_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_view_contact_list" />
             </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
@@ -15,9 +15,13 @@
             <column name="tenant_id" type="bigint">
                 <constraints nullable="false" />
             </column>
-            <column name="contact-info" type="varchar(255)" />
+            <column name="contact_info" type="varchar(255)" />
+            <column name="contact_info_icon" type="varchar(15)" />
             <column name="labels" type="varchar(255)" />
             <column name="has_updates" type="boolean" />
         </createTable>
+        <createIndex tableName="view_contact_list" indexName="idx_view_contact_list_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

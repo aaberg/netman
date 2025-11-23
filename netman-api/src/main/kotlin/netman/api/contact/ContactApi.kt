@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import netman.models.Contact2
+import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contact resources")
 interface ContactApi {
@@ -22,7 +24,7 @@ interface ContactApi {
     fun getContactList(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long
-    ) : List<ContactResource>
+    ) : List<ContactListItemResource>
 
     @Operation(
         summary = "Create a new contact with details",
@@ -33,8 +35,8 @@ interface ContactApi {
     fun saveContactWithDetails(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
-        @Parameter(description = "Contact information with details") @Body contactWithDetailsRequest: ContactWithDetailsResource
-    ) : ContactWithDetailsResource
+        @Parameter(description = "Contact information with details") @Body contactWithDetailsRequest: ContactResource
+    ) : ContactResource
 
     @Operation(
         summary = "Get contact details by ID",
@@ -44,6 +46,6 @@ interface ContactApi {
     fun getContactDetails(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long,
-        @Parameter(description = "ID of the contact") contactId: Long
-    ) : ContactWithDetailsResource
+        @Parameter(description = "ID of the contact") contactId: UUID
+    ) : ContactResource
 }

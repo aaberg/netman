@@ -4,8 +4,9 @@ import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
-import netman.models.Contact
-import netman.models.ContactWithDetails
+import netman.models.Contact2
+import netman.models.Contact2ListItem
+import java.util.UUID
 
 @Singleton
 class NetworkManager(
@@ -14,33 +15,28 @@ class NetworkManager(
     private val validator: Validator
 ) {
 
-    fun getMyContacts(userId: String, tenantId: Long) : List<Contact> {
+    fun getMyContacts(userId: String, tenantId: Long) : List<Contact2ListItem> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
-        return contactAccess.getContacts(tenantId)
+        return contactAccess.listContacts(tenantId)
     }
 
-    fun getContactWithDetails(userId: String, tenantId: Long, contactId: Long) : ContactWithDetails {
+    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID) : Contact2 {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        val contact = contactAccess.getContact(contactId) ?: throw IllegalArgumentException("Contact with id $contactId not found")
-        val details = contactAccess.getContactDetails(contactId)
-        return ContactWithDetails(contact, details)
+        return contactAccess.getContact(tenantId, contactId)
     }
 
-    fun saveContactWithDetails(userId: String, tenantId: Long, contactWithDetails: ContactWithDetails) : ContactWithDetails {
+    fun saveContactWithDetails(userId: String, tenantId: Long, contact: Contact2) : Contact2 {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        val violations = validator.validate(contactWithDetails )
+        val violations = validator.validate(contact )
 
         if (violations.isNotEmpty()){
             throw ValidationException(violations.toString())
         }
 
-        val contact = contactAccess.saveContact(tenantId, contactWithDetails.contact)
-        if (contact.id == null) {
-            throw IllegalArgumentException("Contact could not be saved. Returned contact has no id")
-        }
-        val contactDetails = contactAccess.saveDetails(contact.id, contactWithDetails.details)
+        val savedContact = contactAccess.saveContact(tenantId, contact)
+        requireNotNull(savedContact.id)
 
-        return ContactWithDetails(contact, contactDetails)
+        return savedContact
     }
 }

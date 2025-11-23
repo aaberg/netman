@@ -6,14 +6,7 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
-import netman.models.Contact
-import netman.models.ContactDetail
-import netman.models.ContactWithDetails
-import netman.models.Email
-import netman.models.Phone
-import netman.models.Tenant
-import netman.models.TenantType
-import netman.models.newContact
+import netman.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -55,7 +48,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         val fetchedContacts =  networkManager.getMyContacts(userId, tenant.id)
 
         // Assert
-        assertThat(fetchedContacts).hasSameElementsAs(createdContacts)
+        assertThat(fetchedContacts).allSatisfy { c -> createdContacts.any { it.id == c.contactId } }
     }
 
     @Test
@@ -63,14 +56,15 @@ class NetworkManagerTest : DefaultTestProperties() {
         // Arrange
         val userId = "testuser_id"
         val tenant = tenantAccess.registerNewTenant("test", TenantType.PERSONAL, userId)
-        val email = ContactDetail(detail = Email("test@test.com", false, "dummy"))
-        val phone = ContactDetail(detail = Phone("11111111", "phone" ))
+        val email = Email("test@test.com", false, "dummy")
+        val phone = Phone("11111111", "phone")
+
 
         // Act
         val savedContact = networkManager.saveContactWithDetails(userId, tenant.id,
-            ContactWithDetails(newContact("Ola Normann"), listOf(email, phone)))
+            newContact("Ola Normann", listOf(email, phone)))
 
-        val fetchedContact = networkManager.getContactWithDetails(userId, tenant.id, savedContact.contact.id!!)
+        val fetchedContact = networkManager.getContactWithDetails(userId, tenant.id, savedContact.id!!)
 
         // Assert
         assertThat(fetchedContact).isEqualTo(savedContact)
@@ -84,16 +78,17 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Act
         val contactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
-            ContactWithDetails(newContact("Ola Normann"), listOf()))
+            newContact("Ola Normann", listOf()))
 
         val updatedContactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
-            contactWDetail.copy(contact =  contactWDetail.contact.copy(name = "new name")))
+            contactWDetail.copy(name = "new name"))
 
         val myContacts = networkManager.getMyContacts(userId, tenant.id)
 
         // Assert
-        assertThat(updatedContactWDetail.contact.name).isEqualTo("new name")
+        assertThat(updatedContactWDetail.name).isEqualTo("new name")
         assertThat(myContacts).hasSize(1)
+        assertThat(myContacts.first().name).isEqualTo("new name")
     }
 
     @Test
@@ -104,7 +99,7 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Act & Assert
         val validationException = assertThrows<ValidationException> {
-            networkManager.saveContactWithDetails(userId, tenant.id, ContactWithDetails(newContact(""), listOf()))
+            networkManager.saveContactWithDetails(userId, tenant.id, newContact("", listOf()))
         }
 
         println(validationException.message)
@@ -117,5 +112,5 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         return TenantContactTuple(listOf(contact1, contact2), tenant)
     }
-    data class TenantContactTuple(val contacts: List<Contact>, val tenant: Tenant)
+    data class TenantContactTuple(val contacts: List<Contact2>, val tenant: Tenant)
 }

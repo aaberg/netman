@@ -80,4 +80,16 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="2025-11-09-1" author="Lars Aaberg">
+        <createTable tableName="contact2">
+            <column name="id" type="uuid"><constraints nullable="false" primaryKey="true" primaryKeyName="pk_contact2"/></column>
+            <column name="tenant_id" type="int8">
+                <constraints referencedTableName="tenant" referencedColumnNames="id"
+                             foreignKeyName="fk_contact_with_details_tenant"/>
+            </column>
+            <column name="last_updated" type="timestamp"><constraints nullable="false"/></column>
+            <column name="data" type="jsonb"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

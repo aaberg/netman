@@ -35,10 +35,7 @@ class ContactApiTest() : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contact": {
-                        "name": "someone", 
-                        "initials": "S"
-                      },
+                      "name": "someone",
                       "details": []
                     }
                 """.trimIndent()
@@ -47,8 +44,8 @@ class ContactApiTest() : DefaultTestProperties() {
         .then()
             .log().all()
             .statusCode(201)
-            .body("contact.id", notNullValue())
-            .body("contact.name", equalTo("someone"))
+            .body("id", notNullValue())
+            .body("name", equalTo("someone"))
     }
     
     @Test
@@ -64,25 +61,18 @@ class ContactApiTest() : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contact": {
-                        "name": "John Smith", 
-                        "initials": "JS"
-                      },
+                      "name": "John Smith",
                       "details": [
                         {
-                          "detail": {
-                              "type": "email",
-                              "address": "john.smith@example.com",
-                              "isPrimary": true,
-                              "label": "Personal"
-                          }
+                          "type": "email",
+                          "address": "john.smith@example.com",
+                          "isPrimary": true,
+                          "label": "Personal"
                         },
                         {
-                          "detail": {
-                              "type": "phone",
-                              "number": "+1234567890",
-                              "label": "Work"
-                          }
+                          "type": "phone",
+                          "number": "+1234567890",
+                          "label": "Work"
                         }
                       ]
                     }
@@ -92,13 +82,13 @@ class ContactApiTest() : DefaultTestProperties() {
             .then()
             .log().all()
             .statusCode(201)
-            .body("contact.id", notNullValue())
-            .body("contact.name", equalTo("John Smith"))
+            .body("id", notNullValue())
+            .body("name", equalTo("John Smith"))
             .body("details.size()", equalTo(2))
-            .body("details[0].detail.type", equalTo("email"))
-            .body("details[0].detail.address", equalTo("john.smith@example.com"))
-            .body("details[1].detail.type", equalTo("phone"))
-            .body("details[1].detail.number", equalTo("+1234567890"))
+            .body("details[0].type", equalTo("email"))
+            .body("details[0].address", equalTo("john.smith@example.com"))
+            .body("details[1].type", equalTo("phone"))
+            .body("details[1].number", equalTo("+1234567890"))
     }
 
     @Test
@@ -108,24 +98,20 @@ class ContactApiTest() : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         // Create contact with details first
-        val contactId: Long = spec.`when`()
+        val contactId: UUID = spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
             .contentType("application/json")
             .body(
                 """
                     {
-                      "contact": {
-                        "name": "Alice Wonderland"
-                      },
+                      "name": "Alice Wonderland",
                       "details": [
                         {
-                          "detail": {
-                            "type": "email",
-                            "address": "alice@example.com",
-                            "isPrimary": true,
-                            "label": "Personal"
-                          }
+                          "type": "email",
+                          "address": "alice@example.com",
+                          "isPrimary": true,
+                          "label": "Personal"
                         }
                       ]
                     }
@@ -137,7 +123,7 @@ class ContactApiTest() : DefaultTestProperties() {
             .statusCode(201)
             .extract()
             .jsonPath()
-            .getLong("contact.id")
+            .getUUID("id")
 
         // Get the contact details by id
         spec.`when`()
@@ -147,12 +133,12 @@ class ContactApiTest() : DefaultTestProperties() {
             .then()
             .log().all()
             .statusCode(200)
-            .body("contact.id", equalTo(contactId.toInt()))
-            .body("contact.name", equalTo("Alice Wonderland"))
-            .body("contact.initials", equalTo("AW"))
+            .body("id", equalTo(contactId.toString()))
+            .body("name", equalTo("Alice Wonderland"))
+            .body("initials", equalTo("AW"))
             .body("details.size()", equalTo(1))
-            .body("details[0].detail.type", equalTo("email"))
-            .body("details[0].detail.address", equalTo("alice@example.com"))
+            .body("details[0].type", equalTo("email"))
+            .body("details[0].address", equalTo("alice@example.com"))
     }
 
     @Test
@@ -162,17 +148,14 @@ class ContactApiTest() : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         // Create a contact without details
-        val contactId: Long = spec.`when`()
+        val contactId = spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
             .contentType("application/json")
             .body(
                 """
                     {
-                      "contact": {
-                        "name": "Bob Builder",
-                        "initials": "BB"
-                      },
+                      "name": "Bob Builder",
                       "details": []
                     }
                 """.trimIndent()
@@ -183,7 +166,7 @@ class ContactApiTest() : DefaultTestProperties() {
             .statusCode(201)
             .extract()
             .jsonPath()
-            .getLong("contact.id")
+            .getUUID("id")
 
         // Update the contact - change name and add details; also intentionally omit id in payload to test controller normalization
         spec.`when`()
@@ -193,24 +176,20 @@ class ContactApiTest() : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contact": {
-                        "id": $contactId,
-                        "name": "Robert Builder",
-                        "initials": "RB"
-                      },
+                      "id": "$contactId",
+                      "name": "Robert Builder",
+                      "initials": "RB",
                       "details": [
                         {
-                          "detail": {
-                            "type": "phone",
-                            "number": "+4711111111",
-                            "label": "Mobile"
-                          }
+                          "type": "phone",
+                          "number": "+4711111111",
+                          "label": "Mobile"
                         }
                       ]
                     }
                 """.trimIndent()
             )
-            .post("/api/tenants/${tenant.id}/contacts")
+            .post("/api/tenants/${tenant.id}/contacts/")
             .then()
             .log().all()
             .statusCode(201)
@@ -223,11 +202,11 @@ class ContactApiTest() : DefaultTestProperties() {
             .then()
             .log().all()
             .statusCode(200)
-            .body("contact.id", equalTo(contactId.toInt()))
-            .body("contact.name", equalTo("Robert Builder"))
-            .body("contact.initials", equalTo("RB"))
+            .body("id", equalTo(contactId.toString()))
+            .body("name", equalTo("Robert Builder"))
+            .body("initials", equalTo("RB"))
             .body("details.size()", equalTo(1))
-            .body("details[0].detail.type", equalTo("phone"))
-            .body("details[0].detail.number", equalTo("+4711111111"))
+            .body("details[0].type", equalTo("phone"))
+            .body("details[0].number", equalTo("+4711111111"))
     }
 }

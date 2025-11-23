@@ -7,22 +7,46 @@ import io.micronaut.serde.annotation.Serdeable
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import netman.businesslogic.helper.InitialsGenerator
+import java.util.UUID
 
-@Introspected
-data class Contact(
-    val id: Long? = null,
-    @param:NotBlank val name: String,
-    val initials: String? = null
-)
+//@Introspected
+//data class Contact(
+//    val id: Long? = null,
+//    @param:NotBlank val name: String,
+//    val initials: String? = null
+//)
 
-fun newContact(name: String) : Contact {
-    return Contact(name = name, initials = InitialsGenerator.generateInitials(name))
+fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
+    return Contact2(
+        id = UUID.randomUUID(),
+        name = name,
+        details = details
+    )
 }
 
 @Introspected
-data class ContactWithDetails(
-    @param:Valid val contact: Contact,
-    @param:Valid val details: List<ContactDetail<CDetail>>)
+data class Contact2 (
+    val id: UUID? = null,
+    @param:NotBlank
+    val name: String,
+    val details: List<CDetail>
+) {
+    val initials: String
+        get() = InitialsGenerator.generateInitials(name)
+}
+
+@Introspected
+data class Contact2ListItem(
+    val contactId: UUID,
+    val name: String,
+    val contactInfo: String,
+    val contactInfoIcon: String,
+    val labels: String,
+    val hasUpdates: Boolean,
+) {
+    val initials: String
+        get() = InitialsGenerator.generateInitials(name)
+}
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

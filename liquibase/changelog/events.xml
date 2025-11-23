@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    
+    <changeSet id="2025-11-08" author="Lars Aaberg">
+        <createTable tableName="eventstore">
+            <column name="id" type="bigint">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eventstore"/>
+            </column>
+            <column name="aggregate_id" type="uuid"><constraints nullable="false"/></column>
+            <column name="version" type="integer"><constraints nullable="false"/></column>
+            <column name="event" type="jsonb"><constraints nullable="false"/></column>
+            <column name="timestamp" type="timestamp" defaultValueComputed="current_timestamp"><constraints nullable="false"/></column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

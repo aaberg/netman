@@ -4,8 +4,10 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
+import netman.access.repository.Contact2Repository
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
+import java.util.UUID
 
 @Controller("/api/tenants")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -16,7 +18,7 @@ class ContactApiController(
     override fun getContactList(
         authentication: Authentication,
         tenantId: Long
-    ): List<ContactResource> {
+    ): List<ContactListItemResource> {
         val user = getUserId(authentication)
         val contacts = networkManager.getMyContacts(user, tenantId)
         val contactResources = contacts.map { contactResourceMapper.map(it) }
@@ -26,8 +28,8 @@ class ContactApiController(
     override fun saveContactWithDetails(
         authentication: Authentication,
         tenantId: Long,
-        contactWithDetailsRequest: ContactWithDetailsResource
-    ) : ContactWithDetailsResource {
+        contactWithDetailsRequest: ContactResource
+    ) : ContactResource {
         val userId = getUserId(authentication)
 
         val contactWDetail = contactResourceMapper.map(contactWithDetailsRequest)
@@ -39,8 +41,8 @@ class ContactApiController(
     override fun getContactDetails(
         authentication: Authentication,
         tenantId: Long,
-        contactId: Long
-    ): ContactWithDetailsResource {
+        contactId: UUID
+    ): ContactResource {
         val user = getUserId(authentication)
         val contactWithDetails = networkManager.getContactWithDetails(user, tenantId, contactId)
         return contactResourceMapper.map(contactWithDetails)

@@ -18,7 +18,7 @@ data class ContactResource(
 
 @Serdeable
 data class ContactListItemResource(
-    val contactId: UUID? = null,
+    val id: UUID? = null,
     val name: String,
     val initials: String? = "",
     val contactInfo: String,
@@ -37,9 +37,11 @@ abstract class ContactResourceMapper(
     abstract fun map(contactResource: ContactResource) : Contact2
 
     @Mapper
+    @Mapper.Mapping(to = "contactId", from = "id")
     abstract fun map(contactListItemResource: ContactListItemResource) : Contact2ListItem
 
     @Mapper
+    @Mapper.Mapping(to = "id", from = "contactId")
     abstract fun map(contactListItem: Contact2ListItem) : ContactListItemResource
 }
 

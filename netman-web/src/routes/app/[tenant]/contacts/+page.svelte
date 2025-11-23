@@ -40,7 +40,7 @@
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Primary email</th>
+                <th>Contact Information</th>
                 <th></th>
             </tr>
             </thead>
@@ -56,7 +56,7 @@
                         </div>
                     </td>
                     <td>
-                        <div>email not visible yet</div>
+                        <div>{c.contactInfo}</div>
                     </td>
                     <td>
                         <a href="/app/{tenant}/contacts/{c.id}" class="link">Details</a>

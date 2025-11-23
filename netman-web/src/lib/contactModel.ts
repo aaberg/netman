@@ -8,6 +8,9 @@ export interface Contact {
     id: String | null,
     name: String,
     initials: String,
+    contactInfo: String,
+    contactInfoIcon: String,
+    hasUpdates: boolean
 }
 
 export interface ContactDetail<T> {

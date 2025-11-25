@@ -1,6 +1,6 @@
 import type {LayoutServerLoad} from "./$types";
 import {accessToken, basePath} from "$lib/server/common";
-import type {ContactWithDetails} from "$lib/contactModel";
+import {compareDetails, type ContactWithDetails} from "$lib/contactModel";
 
 export const load: LayoutServerLoad = async ({cookies, params}) => {
     const {tenant, contact} = params
@@ -15,8 +15,8 @@ export const load: LayoutServerLoad = async ({cookies, params}) => {
     if (!response.ok) {
         throw new Error("error fetching contact, status: " + response.status + " - " + response.statusText + "")
     }
-    const contactWDetails = await response.json() as ContactWithDetails
+    const contactObj = await response.json() as ContactWithDetails
     return {
-        contact: contactWDetails
+        contact: contactObj
     }
 }

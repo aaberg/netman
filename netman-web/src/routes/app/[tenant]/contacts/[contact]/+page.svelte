@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
-  import type { Email, Note, Phone } from "$lib/contactModel"
+  import {compareDetails, type Email, type Note, type Phone} from "$lib/contactModel"
 
   const { data }: PageProps = $props()
   const { tenant, contact } = data
-  const details = contact.details
+  const details = contact.details.sort(compareDetails)
+  console.log(details)
 
   // Type guards for discriminated rendering
   const isEmail = (d: Email | Phone | Note): d is Email =>
@@ -61,7 +62,7 @@
   </div>
 
   <!-- Details section -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
     {#each details as d}
       {#if isEmail(d)}
         <div class="card bg-base-100 border border-base-200 shadow-sm">
@@ -103,7 +104,7 @@
           </div>
         </div>
       {:else if isNote(d)}
-        <div class="card bg-base-100 border border-base-200 shadow-sm md:col-span-2">
+        <div class="card bg-base-100 border border-base-200 shadow-sm md:col-span-3">
           <div class="card-body">
             <div class="badge badge-secondary badge-outline w-fit" aria-hidden="true">Note</div>
             <p class="mt-2 whitespace-pre-wrap leading-relaxed">{d.note}</p>

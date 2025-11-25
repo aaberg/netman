@@ -42,25 +42,23 @@
             <tr>
                 <th>Name</th>
                 <th>Contact Information</th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
             {#each filtered as c}
                 <tr>
                     <td>
+                        <a href="/app/{tenant}/contacts/{c.id}" class="link link-hover">
                         <div class="flex items-center gap-3">
                             <div class="avatar avatar-placeholder">
                                 <div class="bg-neutral mask mask-squircle w-12 h-12">{c.initials}</div>
                             </div>
                             <div>{c.name}</div>
                         </div>
+                        </a>
                     </td>
                     <td>
                         <div><span class="inline-block pr-2"><ContactInfoIcon icon={c.contactInfoIcon} /></span>{c.contactInfo}</div>
-                    </td>
-                    <td>
-                        <a href="/app/{tenant}/contacts/{c.id}" class="link">Details</a>
                     </td>
                 </tr>
             {/each}

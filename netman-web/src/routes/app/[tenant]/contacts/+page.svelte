@@ -1,6 +1,7 @@
 <script lang="ts">
     import SearchInput from "../../../../components/SearchInput.svelte";
     import type { PageProps } from "./$types";
+    import ContactInfoIcon from "../../../../components/ContactInfoIcon.svelte";
 
     let { data } : PageProps = $props()
     let { tenant } = data
@@ -56,7 +57,7 @@
                         </div>
                     </td>
                     <td>
-                        <div>{c.contactInfo}</div>
+                        <div><span class="inline-block pr-2"><ContactInfoIcon icon={c.contactInfoIcon} /></span>{c.contactInfo}</div>
                     </td>
                     <td>
                         <a href="/app/{tenant}/contacts/{c.id}" class="link">Details</a>

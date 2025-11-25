@@ -1,20 +1,20 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
-  import type { ContactDetail, Email, Note, Phone } from "$lib/contactModel"
+  import type { Email, Note, Phone } from "$lib/contactModel"
 
   const { data }: PageProps = $props()
-  const { tenant, contactWDetails } = data
-  const { contact, details } = contactWDetails
+  const { tenant, contact } = data
+  const details = contact.details
 
   // Type guards for discriminated rendering
-  const isEmail = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Email> =>
-    (d as ContactDetail<Email>).detail && (d as ContactDetail<Email>).detail.address !== undefined
+  const isEmail = (d: Email | Phone | Note): d is Email =>
+    (d as Email) && (d as Email).address !== undefined
 
-  const isPhone = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Phone> =>
-    (d as ContactDetail<Phone>).detail && (d as ContactDetail<Phone>).detail.number !== undefined
+  const isPhone = (d: Email | Phone | Note): d is Phone =>
+    (d as Phone) && (d as Phone).number !== undefined
 
-  const isNote = (d: ContactDetail<Email | Phone | Note>): d is ContactDetail<Note> =>
-    (d as ContactDetail<Note>).detail && (d as ContactDetail<Note>).detail.note !== undefined
+  const isNote = (d: Email | Phone | Note): d is Note =>
+    (d as Note) && (d as Note).note !== undefined
 </script>
 
 <!-- Page container -->
@@ -62,13 +62,13 @@
 
   <!-- Details section -->
   <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-    {#each details as d (d.id)}
+    {#each details as d}
       {#if isEmail(d)}
         <div class="card bg-base-100 border border-base-200 shadow-sm">
           <div class="card-body">
             <div class="flex items-start gap-3">
               <div class="badge badge-primary badge-outline" aria-hidden="true">Email</div>
-              {#if d.detail.isPrimary}
+              {#if d.isPrimary}
                 <div class="badge badge-success">Primary</div>
               {/if}
             </div>
@@ -76,12 +76,12 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 opacity-70">
                 <path d="M1.5 6A2.25 2.25 0 0 1 3.75 3.75h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6zm2.931-.75a.75.75 0 0 0-.681 1.061l7.5 6.75a.75.75 0 0 0 .998 0l7.5-6.75a.75.75 0 0 0-.998-1.122L12 11.69 4.25 5.939a.75.75 0 0 0-.319-.689.754.754 0 0 0-.5 0z" />
               </svg>
-              <a href={`mailto:${d.detail.address}`} class="link link-hover" aria-label={`Email ${contact.name}`}>
-                {d.detail.address}
+              <a href={`mailto:${d.address}`} class="link link-hover" aria-label={`Email ${contact.name}`}>
+                {d.address}
               </a>
             </div>
-            {#if d.detail.label}
-              <div class="text-sm opacity-70 mt-1">{d.detail.label}</div>
+            {#if d.label}
+              <div class="text-sm opacity-70 mt-1">{d.label}</div>
             {/if}
           </div>
         </div>
@@ -93,12 +93,12 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 opacity-70">
                 <path d="M2.25 3A.75.75 0 0 1 3 2.25h4.5a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-.75.75H5.25c.266 3.9 3.6 7.234 7.5 7.5V16.5a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-.75.75H12A10.5 10.5 0 0 1 1.5 11.25V9a.75.75 0 0 1 .75-.75H3A.75.75 0 0 1 2.25 7.5V3z" />
               </svg>
-              <a href={`tel:${d.detail.number}`} class="link link-hover" aria-label={`Call ${contact.name}`}>
-                {d.detail.number}
+              <a href={`tel:${d.number}`} class="link link-hover" aria-label={`Call ${contact.name}`}>
+                {d.number}
               </a>
             </div>
-            {#if d.detail.label}
-              <div class="text-sm opacity-70 mt-1">{d.detail.label}</div>
+            {#if d.label}
+              <div class="text-sm opacity-70 mt-1">{d.label}</div>
             {/if}
           </div>
         </div>
@@ -106,7 +106,7 @@
         <div class="card bg-base-100 border border-base-200 shadow-sm md:col-span-2">
           <div class="card-body">
             <div class="badge badge-secondary badge-outline w-fit" aria-hidden="true">Note</div>
-            <p class="mt-2 whitespace-pre-wrap leading-relaxed">{d.detail.note}</p>
+            <p class="mt-2 whitespace-pre-wrap leading-relaxed">{d.note}</p>
           </div>
         </div>
       {/if}

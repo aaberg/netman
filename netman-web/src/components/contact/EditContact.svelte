@@ -1,75 +1,66 @@
 <script lang="ts">
-    import type {ContactDetail, ContactWithDetails, Email, Note, Phone} from "$lib/contactModel";
+    import type {ContactWithDetails, Email, Note, Phone} from "$lib/contactModel";
 
     let { contact = $bindable()}: {contact: ContactWithDetails } = $props()
 
     let emails = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Email> => detail.detail.type === "email"
+            (detail): detail is Email => detail.type === "email"
         )
     )
 
     let phones = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Phone> => detail.detail.type === "phone"
+            (detail): detail is Phone => detail.type === "phone"
         )
     )
 
     let notes = $derived(
         contact.details.filter(
-            (detail): detail is ContactDetail<Note> => detail.detail.type === "note"
+            (detail): detail is Note => detail.type === "note"
         )
     )
 
     function addEmail() {
         contact.details.push({
-            id: null,
-            detail: {
-                type: "email",
-                address: "",
-                label: "",
-                isPrimary: false
-            }
+            type: "email",
+            address: "",
+            label: "",
+            isPrimary: false
         })
 
         console.log(contact)
     }
 
-    function removeEmail(email: ContactDetail<Email>) {
+    function removeEmail(email: Email) {
         const index = contact.details.indexOf(email)
         contact.details.splice(index, 1)
     }
 
     function addPhone() {
         contact.details.push({
-            id: null,
-            detail: {
-                type: "phone",
-                number: "",
-                label: "",
-                isPrimary: false
-            }
+            type: "phone",
+            number: "",
+            label: "",
+            isPrimary: false
         })
 
         console.log(contact)
     }
 
-    function removePhone(phone: ContactDetail<Phone>) {
+    function removePhone(phone: Phone) {
         const index = contact.details.indexOf(phone)
         contact.details.splice(index, 1)
     }
 
     function addNote() {
         contact.details.push({
-            id: null,
-            detail: {
-                type: "note",
-                note: ""
-            }
+            type: "note",
+            note: ""
         })
     }
 
-    function removeNote(note: ContactDetail<Note>) {
+    function removeNote(note: Note) {
         const index = contact.details.indexOf(note)
         contact.details.splice(index, 1)
     }
@@ -78,7 +69,7 @@
 
 <div class="m-4 w-full max-w-lg">
     <label class="floating-label">
-        <input type="text" placeholder="Name of contact" bind:value={contact.contact.name}
+        <input type="text" placeholder="Name of contact" bind:value={contact.name}
                class="input w-full input-lg" required autofocus autocomplete="off"/>
         <span>Name of contact</span>
     </label>
@@ -93,12 +84,12 @@
         <li class="list-row flex flex-col gap-1">
             <div class="flex flex-row">
                 <label class="floating-label grow pr-4">
-                    <input type="email" placeholder="Email address" bind:value={email.detail.address}
+                    <input type="email" placeholder="Email address" bind:value={email.address}
                            class="input w-full input-sm" required autocomplete="off"/>
                     <span>Email address</span>
                 </label>
                 <label class="floating-label w-28">
-                    <input type="text" placeholder="Label" bind:value={email.detail.label}
+                    <input type="text" placeholder="Label" bind:value={email.label}
                            class="input w-full input-sm" autocomplete="off"/>
                     <span>Label</span>
                 </label>
@@ -107,7 +98,7 @@
             <div class="flex flex-row justify-between">
                 <label class="label cursor-pointer">
                     <span class="label-text">Primary email</span>
-                    <input type="checkbox" class="checkbox" bind:checked={email.detail.isPrimary}/>
+                    <input type="checkbox" class="checkbox" bind:checked={email.isPrimary}/>
                 </label>
                 <button class="btn btn-link btn-warning btn-sm w-16" onclick={() => removeEmail(email)}>Delete</button>
             </div>
@@ -125,12 +116,12 @@
         <li class="list-row flex flex-col gap-1">
             <div class="flex flex-row">
                 <label class="floating-label grow pr-4">
-                    <input type="tel" placeholder="Phone number" bind:value={phone.detail.number}
+                    <input type="tel" placeholder="Phone number" bind:value={phone.number}
                            class="input w-full input-sm" required autocomplete="off"/>
                     <span>Phone number</span>
                 </label>
                 <label class="floating-label w-28">
-                    <input type="text" placeholder="Label" bind:value={phone.detail.label}
+                    <input type="text" placeholder="Label" bind:value={phone.label}
                            class="input w-full input-sm" autocomplete="off"/>
                     <span>Label</span>
                 </label>
@@ -153,7 +144,7 @@
         <li class="list-row flex flex-col gap-1">
             <div class="flex flex-row">
                 <label class="floating-label grow">
-                    <textarea placeholder="Note" bind:value={note.detail.note}
+                    <textarea placeholder="Note" bind:value={note.note}
                               class="textarea w-full input-sm" required></textarea>
                     <span>Note</span>
                 </label>

@@ -80,7 +80,7 @@ data class Email(
 @Serdeable
 data class Phone(
     @param:NotBlank val number: String,
-    val label: String,
+    val label: String = "",
     val isPrimary: Boolean = false
 ) : CDetail()
 

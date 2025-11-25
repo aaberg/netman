@@ -11,11 +11,11 @@ export const actions =  {
         const contactData = form.get('contact') as string
         const contact = JSON.parse(contactData) as ContactWithDetails
 
-        if (contact.contact.id == undefined) {
+        if (contact.id == undefined) {
             throw new Error("contact can't be updated, it doesn't exist")
         }
 
         await saveContact(accessToken(cookies), tenant, contact)
-        return redirect(303, `/app/${tenant}/contacts/${contact.contact.id}`)
+        return redirect(303, `/app/${tenant}/contacts/${contact.id}`)
     }
 } satisfies Actions

@@ -8,11 +8,9 @@
     let { tenant } = data
 
     let contact: ContactWithDetails = $state({
-        contact: {
-            id: null,
-            name: "",
-            initials: "",
-        },
+        id: null,
+        initials: "",
+        name: "",
         details: []
     })
 

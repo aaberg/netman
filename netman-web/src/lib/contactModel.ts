@@ -1,21 +1,18 @@
 
 export interface ContactWithDetails {
-    contact: Contact,
-    details: ContactDetail<Email | Phone | Note>[]
+    id: string | null,
+    name: string,
+    initials: string,
+    details: Array<Email | Phone | Note>
 }
 
 export interface Contact {
-    id: String | null,
-    name: String,
-    initials: String,
-    contactInfo: String,
-    contactInfoIcon: String,
+    id: string | null,
+    name: string,
+    initials: string,
+    contactInfo: string,
+    contactInfoIcon: string,
     hasUpdates: boolean
-}
-
-export interface ContactDetail<T> {
-    id: BigInt | null,
-    detail: T
 }
 
 export interface Email {

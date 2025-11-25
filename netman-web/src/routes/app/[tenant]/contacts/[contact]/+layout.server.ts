@@ -17,6 +17,6 @@ export const load: LayoutServerLoad = async ({cookies, params}) => {
     }
     const contactWDetails = await response.json() as ContactWithDetails
     return {
-        contactWDetails
+        contact: contactWDetails
     }
 }

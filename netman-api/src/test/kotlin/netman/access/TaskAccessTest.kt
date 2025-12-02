@@ -4,6 +4,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.MembershipManager
+import netman.models.FollowUpTask
 import netman.models.Task
 import netman.models.Trigger
 import org.assertj.core.api.Assertions.assertThat
@@ -22,6 +23,9 @@ class TaskAccessTest : DefaultTestProperties() {
     @Inject
     lateinit var membershipManager: MembershipManager
 
+    @Inject
+    lateinit var contactAccess: ContactAccess
+
     private fun createTestUser(): UUID {
         val userId = UUID.randomUUID().toString()
         membershipManager.registerUserWithPrivateTenant(userId, "Test User")
@@ -32,9 +36,10 @@ class TaskAccessTest : DefaultTestProperties() {
     fun `save new task and check that it gets assigned an ID`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = Task(
             userId = userId,
-            data = """{"name": "Test Task", "description": "A test task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Follow up on project proposal"),
             status = "pending"
         )
 
@@ -44,7 +49,10 @@ class TaskAccessTest : DefaultTestProperties() {
         // Assert
         assertThat(savedTask.id).isNotNull
         assertThat(savedTask.userId).isEqualTo(userId)
-        assertThat(savedTask.data).isEqualTo("""{"name": "Test Task", "description": "A test task"}""")
+        assertThat(savedTask.data).isInstanceOf(FollowUpTask::class.java)
+        val followUpTask = savedTask.data as FollowUpTask
+        assertThat(followUpTask.contactId).isEqualTo(contactId)
+        assertThat(followUpTask.note).isEqualTo("Follow up on project proposal")
         assertThat(savedTask.status).isEqualTo("pending")
         assertThat(savedTask.created).isNotNull
     }
@@ -54,10 +62,11 @@ class TaskAccessTest : DefaultTestProperties() {
         // Arrange
         val userId = createTestUser()
         val taskId = UUID.randomUUID()
+        val contactId = UUID.randomUUID()
         val task = Task(
             id = taskId,
             userId = userId,
-            data = """{"name": "Task with ID"}""",
+            data = FollowUpTask(contactId = contactId, note = "Initial consultation follow-up"),
             status = "active",
             created = Instant.now()
         )
@@ -69,15 +78,19 @@ class TaskAccessTest : DefaultTestProperties() {
         assertThat(savedTask.id).isEqualTo(taskId)
         assertThat(savedTask.userId).isEqualTo(userId)
         assertThat(savedTask.status).isEqualTo("active")
+        val followUpTask = savedTask.data as FollowUpTask
+        assertThat(followUpTask.contactId).isEqualTo(contactId)
+        assertThat(followUpTask.note).isEqualTo("Initial consultation follow-up")
     }
 
     @Test
     fun `get task by ID`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = Task(
             userId = userId,
-            data = """{"name": "Retrieve Task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Retrieve this task"),
             status = "pending"
         )
         val savedTask = taskAccess.saveTask(task)
@@ -89,7 +102,9 @@ class TaskAccessTest : DefaultTestProperties() {
         assertThat(retrievedTask).isNotNull
         assertThat(retrievedTask?.id).isEqualTo(savedTask.id)
         assertThat(retrievedTask?.userId).isEqualTo(userId)
-        assertThat(retrievedTask?.data).isEqualTo("""{"name": "Retrieve Task"}""")
+        val followUpTask = retrievedTask?.data as FollowUpTask
+        assertThat(followUpTask.contactId).isEqualTo(contactId)
+        assertThat(followUpTask.note).isEqualTo("Retrieve this task")
         assertThat(retrievedTask?.status).isEqualTo("pending")
     }
 
@@ -110,19 +125,23 @@ class TaskAccessTest : DefaultTestProperties() {
         // Arrange
         val userId = createTestUser()
         val otherUserId = createTestUser()
+        val contactId1 = UUID.randomUUID()
+        val contactId2 = UUID.randomUUID()
+        val contactId3 = UUID.randomUUID()
+        
         val task1 = Task(
             userId = userId,
-            data = """{"name": "Task 1"}""",
+            data = FollowUpTask(contactId = contactId1, note = "Task 1 note"),
             status = "pending"
         )
         val task2 = Task(
             userId = userId,
-            data = """{"name": "Task 2"}""",
+            data = FollowUpTask(contactId = contactId2, note = "Task 2 note"),
             status = "active"
         )
         val task3 = Task(
             userId = otherUserId,
-            data = """{"name": "Task 3"}""",
+            data = FollowUpTask(contactId = contactId3, note = "Task 3 note"),
             status = "pending"
         )
 
@@ -136,48 +155,50 @@ class TaskAccessTest : DefaultTestProperties() {
         // Assert
         assertThat(userTasks).hasSize(2)
         assertThat(userTasks).allSatisfy { it.userId == userId }
-        assertThat(userTasks.map { it.data }).containsExactlyInAnyOrder(
-            """{"name": "Task 1"}""",
-            """{"name": "Task 2"}"""
-        )
+        val notes = userTasks.map { (it.data as FollowUpTask).note }
+        assertThat(notes).containsExactlyInAnyOrder("Task 1 note", "Task 2 note")
     }
 
     @Test
     fun `update existing task`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = Task(
             userId = userId,
-            data = """{"name": "Original Task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Original note"),
             status = "pending"
         )
         val savedTask = taskAccess.saveTask(task)
 
         // Act
         val updatedTask = savedTask.copy(
-            data = """{"name": "Updated Task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Updated note"),
             status = "completed"
         )
         val result = taskAccess.saveTask(updatedTask)
 
         // Assert
         assertThat(result.id).isEqualTo(savedTask.id)
-        assertThat(result.data).isEqualTo("""{"name": "Updated Task"}""")
+        val followUpTask = result.data as FollowUpTask
+        assertThat(followUpTask.note).isEqualTo("Updated note")
         assertThat(result.status).isEqualTo("completed")
 
         // Verify the update persisted
         val retrievedTask = taskAccess.getTask(savedTask.id!!)
         assertThat(retrievedTask?.status).isEqualTo("completed")
-        assertThat(retrievedTask?.data).isEqualTo("""{"name": "Updated Task"}""")
+        val retrievedFollowUp = retrievedTask?.data as FollowUpTask
+        assertThat(retrievedFollowUp.note).isEqualTo("Updated note")
     }
 
     @Test
     fun `save new trigger and check that it gets assigned an ID`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = taskAccess.saveTask(Task(
             userId = userId,
-            data = """{"name": "Task for trigger"}""",
+            data = FollowUpTask(contactId = contactId, note = "Task for trigger"),
             status = "pending"
         ))
 
@@ -203,9 +224,10 @@ class TaskAccessTest : DefaultTestProperties() {
     fun `get trigger by ID`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = taskAccess.saveTask(Task(
             userId = userId,
-            data = """{"name": "Task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Task"),
             status = "pending"
         ))
 
@@ -244,14 +266,15 @@ class TaskAccessTest : DefaultTestProperties() {
     fun `get triggers by task ID`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task1 = taskAccess.saveTask(Task(
             userId = userId,
-            data = """{"name": "Task 1"}""",
+            data = FollowUpTask(contactId = contactId, note = "Task 1"),
             status = "pending"
         ))
         val task2 = taskAccess.saveTask(Task(
             userId = userId,
-            data = """{"name": "Task 2"}""",
+            data = FollowUpTask(contactId = contactId, note = "Task 2"),
             status = "pending"
         ))
 
@@ -297,9 +320,10 @@ class TaskAccessTest : DefaultTestProperties() {
     fun `update existing trigger`() {
         // Arrange
         val userId = createTestUser()
+        val contactId = UUID.randomUUID()
         val task = taskAccess.saveTask(Task(
             userId = userId,
-            data = """{"name": "Task"}""",
+            data = FollowUpTask(contactId = contactId, note = "Task"),
             status = "pending"
         ))
 

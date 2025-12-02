@@ -1,11 +1,13 @@
 package netman.access
 
+import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Singleton
 import netman.access.repository.TaskDTO
 import netman.access.repository.TaskRepository
 import netman.access.repository.TriggerDTO
 import netman.access.repository.TriggerRepository
 import netman.models.Task
+import netman.models.TaskType
 import netman.models.Trigger
 import java.time.Instant
 import java.util.UUID
@@ -13,7 +15,8 @@ import java.util.UUID
 @Singleton
 open class TaskAccess(
     private val taskRepository: TaskRepository,
-    private val triggerRepository: TriggerRepository
+    private val triggerRepository: TriggerRepository,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun saveTask(task: Task): Task {
@@ -21,7 +24,7 @@ open class TaskAccess(
         val taskDto = TaskDTO(
             id = task.id ?: UUID.randomUUID(),
             userId = task.userId,
-            data = task.data,
+            data = objectMapper.writeValueAsString(task.data),
             status = task.status,
             created = task.created ?: Instant.now()
         )
@@ -74,10 +77,11 @@ open class TaskAccess(
     }
 
     private fun mapTask(taskDto: TaskDTO): Task {
+        val taskData = objectMapper.readValue(taskDto.data, TaskType::class.java)
         return Task(
             id = taskDto.id,
             userId = taskDto.userId,
-            data = taskDto.data,
+            data = taskData,
             status = taskDto.status,
             created = taskDto.created
         )

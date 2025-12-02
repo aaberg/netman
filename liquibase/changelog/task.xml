@@ -16,7 +16,6 @@
             <column name="data" type="jsonb"><constraints nullable="false"/></column>
             <column name="status" type="varchar(50)"><constraints nullable="false"/></column>
             <column name="created" type="timestamp" defaultValueComputed="current_timestamp"><constraints nullable="false"/></column>
-            <column name="created" type="timestamp" defaultValueComputed="current_timestamp"><constraints nullable="false"/></column>
         </createTable>
         <createIndex tableName="task" indexName="idx-task-user_id">
             <column name="user_id"/>

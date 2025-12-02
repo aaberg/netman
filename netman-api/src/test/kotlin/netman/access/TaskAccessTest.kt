@@ -401,8 +401,8 @@ class TaskAccessTest : DefaultTestProperties() {
 
         // Assert
         assertThat(pendingOldTriggers).hasSize(2)
-        assertThat(pendingOldTriggers).allSatisfy { 
-            it.status == "pending" && it.triggerTime.isBefore(now) 
+        assertThat(pendingOldTriggers).allSatisfy { trigger ->
+            trigger.status == "pending" && trigger.triggerTime.isBefore(now) 
         }
         assertThat(pendingOldTriggers.map { it.triggerType }).containsExactlyInAnyOrder(
             "scheduled",

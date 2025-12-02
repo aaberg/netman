@@ -38,7 +38,7 @@
             <column name="trigger_time"/>
         </createIndex>
         <createIndex tableName="trigger" indexName="idx-trigger-target_id">
-            <column name="target_id"/>
+            <column name="target_task_id"/>
         </createIndex>
         
 

@@ -3,6 +3,7 @@ package netman.access.repository
 import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.GenericRepository
+import java.time.Instant
 import java.util.UUID
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -12,4 +13,5 @@ interface TriggerRepository : GenericRepository<TriggerDTO, UUID> {
     fun getById(id: UUID): TriggerDTO?
     fun existsById(id: UUID): Boolean
     fun findByTargetTaskId(targetTaskId: UUID): List<TriggerDTO>
+    fun findByStatusAndTriggerTimeBefore(status: String, triggerTime: Instant): List<TriggerDTO>
 }

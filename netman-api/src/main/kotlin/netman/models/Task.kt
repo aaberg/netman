@@ -7,12 +7,18 @@ import io.micronaut.serde.annotation.Serdeable
 import java.time.Instant
 import java.util.UUID
 
+enum class TaskStatus {
+    Pending,
+    Completed,
+    Canceled
+}
+
 @Introspected
 data class Task(
     val id: UUID? = null,
     val userId: UUID,
     val data: TaskType,
-    val status: String,
+    val status: TaskStatus,
     val created: Instant? = null
 )
 

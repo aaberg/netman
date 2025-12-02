@@ -6,6 +6,7 @@ import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.MembershipManager
 import netman.models.FollowUpTask
 import netman.models.Task
+import netman.models.TaskStatus
 import netman.models.Trigger
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -37,7 +38,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Follow up on project proposal"),
-            status = "pending"
+            status = TaskStatus.Pending
         )
 
         // Act
@@ -50,7 +51,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val followUpTask = savedTask.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
         assertThat(followUpTask.note).isEqualTo("Follow up on project proposal")
-        assertThat(savedTask.status).isEqualTo("pending")
+        assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
         assertThat(savedTask.created).isNotNull
     }
 
@@ -64,7 +65,7 @@ class TaskAccessTest : DefaultTestProperties() {
             id = taskId,
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Initial consultation follow-up"),
-            status = "active",
+            status = TaskStatus.Completed,
             created = Instant.now()
         )
 
@@ -74,7 +75,7 @@ class TaskAccessTest : DefaultTestProperties() {
         // Assert
         assertThat(savedTask.id).isEqualTo(taskId)
         assertThat(savedTask.userId).isEqualTo(userId)
-        assertThat(savedTask.status).isEqualTo("active")
+        assertThat(savedTask.status).isEqualTo(TaskStatus.Completed)
         val followUpTask = savedTask.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
         assertThat(followUpTask.note).isEqualTo("Initial consultation follow-up")
@@ -88,7 +89,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Retrieve this task"),
-            status = "pending"
+            status = TaskStatus.Pending
         )
         val savedTask = taskAccess.saveTask(task)
 
@@ -102,7 +103,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val followUpTask = retrievedTask?.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
         assertThat(followUpTask.note).isEqualTo("Retrieve this task")
-        assertThat(retrievedTask?.status).isEqualTo("pending")
+        assertThat(retrievedTask?.status).isEqualTo(TaskStatus.Pending)
     }
 
     @Test
@@ -129,17 +130,17 @@ class TaskAccessTest : DefaultTestProperties() {
         val task1 = Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId1, note = "Task 1 note"),
-            status = "pending"
+            status = TaskStatus.Pending
         )
         val task2 = Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId2, note = "Task 2 note"),
-            status = "active"
+            status = TaskStatus.Completed
         )
         val task3 = Task(
             userId = otherUserId,
             data = FollowUpTask(contactId = contactId3, note = "Task 3 note"),
-            status = "pending"
+            status = TaskStatus.Pending
         )
 
         taskAccess.saveTask(task1)
@@ -164,14 +165,14 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Original note"),
-            status = "pending"
+            status = TaskStatus.Pending
         )
         val savedTask = taskAccess.saveTask(task)
 
         // Act
         val updatedTask = savedTask.copy(
             data = FollowUpTask(contactId = contactId, note = "Updated note"),
-            status = "completed"
+            status = TaskStatus.Completed
         )
         val result = taskAccess.saveTask(updatedTask)
 
@@ -179,11 +180,11 @@ class TaskAccessTest : DefaultTestProperties() {
         assertThat(result.id).isEqualTo(savedTask.id)
         val followUpTask = result.data as FollowUpTask
         assertThat(followUpTask.note).isEqualTo("Updated note")
-        assertThat(result.status).isEqualTo("completed")
+        assertThat(result.status).isEqualTo(TaskStatus.Completed)
 
         // Verify the update persisted
         val retrievedTask = taskAccess.getTask(savedTask.id!!)
-        assertThat(retrievedTask?.status).isEqualTo("completed")
+        assertThat(retrievedTask?.status).isEqualTo(TaskStatus.Completed)
         val retrievedFollowUp = retrievedTask?.data as FollowUpTask
         assertThat(retrievedFollowUp.note).isEqualTo("Updated note")
     }
@@ -196,7 +197,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = taskAccess.saveTask(Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Task for trigger"),
-            status = "pending"
+            status = TaskStatus.Pending
         ))
 
         val trigger = Trigger(
@@ -225,7 +226,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = taskAccess.saveTask(Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Task"),
-            status = "pending"
+            status = TaskStatus.Pending
         ))
 
         val trigger = Trigger(
@@ -267,12 +268,12 @@ class TaskAccessTest : DefaultTestProperties() {
         val task1 = taskAccess.saveTask(Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Task 1"),
-            status = "pending"
+            status = TaskStatus.Pending
         ))
         val task2 = taskAccess.saveTask(Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Task 2"),
-            status = "pending"
+            status = TaskStatus.Pending
         ))
 
         val trigger1 = Trigger(
@@ -321,7 +322,7 @@ class TaskAccessTest : DefaultTestProperties() {
         val task = taskAccess.saveTask(Task(
             userId = userId,
             data = FollowUpTask(contactId = contactId, note = "Task"),
-            status = "pending"
+            status = TaskStatus.Pending
         ))
 
         val trigger = Trigger(
@@ -347,5 +348,65 @@ class TaskAccessTest : DefaultTestProperties() {
         // Verify the update persisted
         val retrievedTrigger = taskAccess.getTrigger(savedTrigger.id!!)
         assertThat(retrievedTrigger?.status).isEqualTo("executed")
+    }
+
+    @Test
+    fun `get triggers by status and time`() {
+        // Arrange
+        val userId = createTestUser()
+        val contactId = UUID.randomUUID()
+        val task = taskAccess.saveTask(Task(
+            userId = userId,
+            data = FollowUpTask(contactId = contactId, note = "Task"),
+            status = TaskStatus.Pending
+        ))
+
+        val now = Instant.now()
+        val pastTrigger1 = Trigger(
+            triggerType = "scheduled",
+            triggerTime = now.minusSeconds(3600),
+            targetTaskId = task.id!!,
+            status = "pending",
+            statusTime = now
+        )
+        val pastTrigger2 = Trigger(
+            triggerType = "event",
+            triggerTime = now.minusSeconds(1800),
+            targetTaskId = task.id!!,
+            status = "pending",
+            statusTime = now
+        )
+        val futureTrigger = Trigger(
+            triggerType = "scheduled",
+            triggerTime = now.plusSeconds(3600),
+            targetTaskId = task.id!!,
+            status = "pending",
+            statusTime = now
+        )
+        val activeTrigger = Trigger(
+            triggerType = "manual",
+            triggerTime = now.minusSeconds(900),
+            targetTaskId = task.id!!,
+            status = "active",
+            statusTime = now
+        )
+
+        taskAccess.saveTrigger(pastTrigger1)
+        taskAccess.saveTrigger(pastTrigger2)
+        taskAccess.saveTrigger(futureTrigger)
+        taskAccess.saveTrigger(activeTrigger)
+
+        // Act
+        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime("pending", now)
+
+        // Assert
+        assertThat(pendingOldTriggers).hasSize(2)
+        assertThat(pendingOldTriggers).allSatisfy { 
+            it.status == "pending" && it.triggerTime.isBefore(now) 
+        }
+        assertThat(pendingOldTriggers.map { it.triggerType }).containsExactlyInAnyOrder(
+            "scheduled",
+            "event"
+        )
     }
 }

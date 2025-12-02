@@ -7,6 +7,7 @@ import netman.access.repository.TaskRepository
 import netman.access.repository.TriggerDTO
 import netman.access.repository.TriggerRepository
 import netman.models.Task
+import netman.models.TaskStatus
 import netman.models.TaskType
 import netman.models.Trigger
 import java.time.Instant
@@ -25,7 +26,7 @@ open class TaskAccess(
             id = task.id ?: UUID.randomUUID(),
             userId = task.userId,
             data = objectMapper.writeValueAsString(task.data),
-            status = task.status,
+            status = task.status.name,
             created = task.created ?: Instant.now()
         )
         
@@ -76,13 +77,17 @@ open class TaskAccess(
         return triggerRepository.findByTargetTaskId(taskId).map { mapTrigger(it) }
     }
 
+    fun getTriggersByStatusAndTime(status: String, currentTime: Instant): List<Trigger> {
+        return triggerRepository.findByStatusAndTriggerTimeBefore(status, currentTime).map { mapTrigger(it) }
+    }
+
     private fun mapTask(taskDto: TaskDTO): Task {
         val taskData = objectMapper.readValue(taskDto.data, TaskType::class.java)
         return Task(
             id = taskDto.id,
             userId = taskDto.userId,
             data = taskData,
-            status = taskDto.status,
+            status = TaskStatus.valueOf(taskDto.status),
             created = taskDto.created
         )
     }

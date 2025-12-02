@@ -23,9 +23,6 @@ class TaskAccessTest : DefaultTestProperties() {
     @Inject
     lateinit var membershipManager: MembershipManager
 
-    @Inject
-    lateinit var contactAccess: ContactAccess
-
     private fun createTestUser(): UUID {
         val userId = UUID.randomUUID().toString()
         membershipManager.registerUserWithPrivateTenant(userId, "Test User")

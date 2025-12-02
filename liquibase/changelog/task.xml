@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2025-11-28:1" author="Lars Aaberg">
+
+        <createTable tableName="task">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk_task" nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk-profile" referencedTableName="profile" referencedColumnNames="user_id"/>
+            </column>
+            <column name="data" type="jsonb"><constraints nullable="false"/></column>
+            <column name="status" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp"><constraints nullable="false"/></column>
+            <column name="created" type="timestamp" defaultValueComputed="current_timestamp"><constraints nullable="false"/></column>
+        </createTable>
+        <createIndex tableName="task" indexName="idx-task-user_id">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createTable tableName="trigger">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="pk-trigger" nullable="false" />
+            </column>
+            <column name="trigger_type" type="text"><constraints nullable="false"/></column>
+            <column name="trigger_time" type="timestamp"><constraints nullable="false"/></column>
+            <column name="target_task_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk-trigger-task" referencedTableName="task" referencedColumnNames="id"/>
+            </column>
+            <column name="status" type="varchar(50)"><constraints nullable="false"/></column>
+            <column name="status_time" type="timestamp"><constraints nullable="false"/></column>
+        </createTable>
+        <createIndex tableName="trigger" indexName="idx-trigger-trigger_time">
+            <column name="status"/>
+            <column name="trigger_time"/>
+        </createIndex>
+        <createIndex tableName="trigger" indexName="idx-trigger-target_id">
+            <column name="target_id"/>
+        </createIndex>
+        
+
+    </changeSet>
+
+</databaseChangeLog>

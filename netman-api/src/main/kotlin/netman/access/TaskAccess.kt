@@ -10,6 +10,7 @@ import netman.models.Task
 import netman.models.TaskStatus
 import netman.models.TaskType
 import netman.models.Trigger
+import netman.models.TriggerStatus
 import java.time.Instant
 import java.util.UUID
 
@@ -55,7 +56,7 @@ open class TaskAccess(
             triggerType = trigger.triggerType,
             triggerTime = trigger.triggerTime,
             targetTaskId = trigger.targetTaskId,
-            status = trigger.status,
+            status = trigger.status.name,
             statusTime = trigger.statusTime
         )
         
@@ -98,7 +99,7 @@ open class TaskAccess(
             triggerType = triggerDto.triggerType,
             triggerTime = triggerDto.triggerTime,
             targetTaskId = triggerDto.targetTaskId,
-            status = triggerDto.status,
+            status = TriggerStatus.valueOf(triggerDto.status),
             statusTime = triggerDto.statusTime
         )
     }

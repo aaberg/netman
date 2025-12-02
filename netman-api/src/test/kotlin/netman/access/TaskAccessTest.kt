@@ -8,6 +8,7 @@ import netman.models.FollowUpTask
 import netman.models.Task
 import netman.models.TaskStatus
 import netman.models.Trigger
+import netman.models.TriggerStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -204,7 +205,7 @@ class TaskAccessTest : DefaultTestProperties() {
             triggerType = "scheduled",
             triggerTime = Instant.now().plusSeconds(3600),
             targetTaskId = task.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
 
@@ -215,7 +216,7 @@ class TaskAccessTest : DefaultTestProperties() {
         assertThat(savedTrigger.id).isNotNull
         assertThat(savedTrigger.triggerType).isEqualTo("scheduled")
         assertThat(savedTrigger.targetTaskId).isEqualTo(task.id)
-        assertThat(savedTrigger.status).isEqualTo("pending")
+        assertThat(savedTrigger.status).isEqualTo(TriggerStatus.Pending)
     }
 
     @Test
@@ -233,7 +234,7 @@ class TaskAccessTest : DefaultTestProperties() {
             triggerType = "event",
             triggerTime = Instant.now(),
             targetTaskId = task.id!!,
-            status = "active",
+            status = TriggerStatus.Triggered,
             statusTime = Instant.now()
         )
         val savedTrigger = taskAccess.saveTrigger(trigger)
@@ -280,21 +281,21 @@ class TaskAccessTest : DefaultTestProperties() {
             triggerType = "scheduled",
             triggerTime = Instant.now().plusSeconds(3600),
             targetTaskId = task1.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
         val trigger2 = Trigger(
             triggerType = "event",
             triggerTime = Instant.now(),
             targetTaskId = task1.id!!,
-            status = "active",
+            status = TriggerStatus.Triggered,
             statusTime = Instant.now()
         )
         val trigger3 = Trigger(
             triggerType = "manual",
             triggerTime = Instant.now(),
             targetTaskId = task2.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
 
@@ -329,25 +330,25 @@ class TaskAccessTest : DefaultTestProperties() {
             triggerType = "scheduled",
             triggerTime = Instant.now(),
             targetTaskId = task.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
         val savedTrigger = taskAccess.saveTrigger(trigger)
 
         // Act
         val updatedTrigger = savedTrigger.copy(
-            status = "executed",
+            status = TriggerStatus.Triggered,
             statusTime = Instant.now()
         )
         val result = taskAccess.saveTrigger(updatedTrigger)
 
         // Assert
         assertThat(result.id).isEqualTo(savedTrigger.id)
-        assertThat(result.status).isEqualTo("executed")
+        assertThat(result.status).isEqualTo(TriggerStatus.Triggered)
 
         // Verify the update persisted
         val retrievedTrigger = taskAccess.getTrigger(savedTrigger.id!!)
-        assertThat(retrievedTrigger?.status).isEqualTo("executed")
+        assertThat(retrievedTrigger?.status).isEqualTo(TriggerStatus.Triggered)
     }
 
     @Test
@@ -366,43 +367,43 @@ class TaskAccessTest : DefaultTestProperties() {
             triggerType = "scheduled",
             triggerTime = now.minusSeconds(3600),
             targetTaskId = task.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = now
         )
         val pastTrigger2 = Trigger(
             triggerType = "event",
             triggerTime = now.minusSeconds(1800),
             targetTaskId = task.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = now
         )
         val futureTrigger = Trigger(
             triggerType = "scheduled",
             triggerTime = now.plusSeconds(3600),
             targetTaskId = task.id!!,
-            status = "pending",
+            status = TriggerStatus.Pending,
             statusTime = now
         )
-        val activeTrigger = Trigger(
+        val triggeredTrigger = Trigger(
             triggerType = "manual",
             triggerTime = now.minusSeconds(900),
             targetTaskId = task.id!!,
-            status = "active",
+            status = TriggerStatus.Triggered,
             statusTime = now
         )
 
         taskAccess.saveTrigger(pastTrigger1)
         taskAccess.saveTrigger(pastTrigger2)
         taskAccess.saveTrigger(futureTrigger)
-        taskAccess.saveTrigger(activeTrigger)
+        taskAccess.saveTrigger(triggeredTrigger)
 
         // Act
-        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime("pending", now)
+        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime("Pending", now)
 
         // Assert
         assertThat(pendingOldTriggers).hasSize(2)
         assertThat(pendingOldTriggers).allSatisfy { trigger ->
-            trigger.status == "pending" && trigger.triggerTime.isBefore(now) 
+            trigger.status == TriggerStatus.Pending && trigger.triggerTime.isBefore(now) 
         }
         assertThat(pendingOldTriggers.map { it.triggerType }).containsExactlyInAnyOrder(
             "scheduled",

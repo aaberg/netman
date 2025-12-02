@@ -10,7 +10,8 @@ import java.util.UUID
 enum class TaskStatus {
     Pending,
     Completed,
-    Canceled
+    Canceled,
+    Due
 }
 
 @Introspected

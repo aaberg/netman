@@ -398,7 +398,7 @@ class TaskAccessTest : DefaultTestProperties() {
         taskAccess.saveTrigger(triggeredTrigger)
 
         // Act
-        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime("Pending", now)
+        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime(TriggerStatus.Pending, now)
 
         // Assert
         assertThat(pendingOldTriggers).hasSize(2)

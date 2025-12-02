@@ -78,8 +78,8 @@ open class TaskAccess(
         return triggerRepository.findByTargetTaskId(taskId).map { mapTrigger(it) }
     }
 
-    fun getTriggersByStatusAndTime(status: String, currentTime: Instant): List<Trigger> {
-        return triggerRepository.findByStatusAndTriggerTimeBefore(status, currentTime).map { mapTrigger(it) }
+    fun getTriggersByStatusAndTime(status: TriggerStatus, currentTime: Instant): List<Trigger> {
+        return triggerRepository.findByStatusAndTriggerTimeBefore(status.name, currentTime).map { mapTrigger(it) }
     }
 
     private fun mapTask(taskDto: TaskDTO): Task {

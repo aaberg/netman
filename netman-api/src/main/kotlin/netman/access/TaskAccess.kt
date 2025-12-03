@@ -57,7 +57,7 @@ open class TaskAccess(
             triggerTime = trigger.triggerTime,
             targetTaskId = trigger.targetTaskId,
             status = trigger.status.name,
-            statusTime = trigger.statusTime
+            statusTime = trigger.statusTime ?: Instant.now()
         )
         
         val savedTriggerDto = if (isNewTrigger) {

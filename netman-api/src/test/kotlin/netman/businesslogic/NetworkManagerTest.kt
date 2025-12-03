@@ -26,6 +26,9 @@ class NetworkManagerTest : DefaultTestProperties() {
     private lateinit var membershipManager: MembershipManager
     
     @Inject
+    private lateinit var taskAccess: netman.access.TaskAccess
+    
+    @Inject
     private lateinit var networkManager: NetworkManager
 
     @Test
@@ -225,7 +228,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         val savedTask1 = networkManager.createTaskWithTrigger(userId, task1, null)
         val savedTask2 = networkManager.createTaskWithTrigger(userId, task2, null)
 
-        // Create triggers with different times and statuses
+        // Create triggers directly using TaskAccess to avoid duplicate task creation
         val dueTrigger = Trigger(
             triggerType = "scheduled",
             triggerTime = now.minusSeconds(3600), // Past time
@@ -241,16 +244,17 @@ class NetworkManagerTest : DefaultTestProperties() {
             statusTime = now
         )
 
-        networkManager.createTaskWithTrigger(userId, task1, dueTrigger)
-        networkManager.createTaskWithTrigger(userId, task2, futureTrigger)
+        taskAccess.saveTrigger(dueTrigger)
+        taskAccess.saveTrigger(futureTrigger)
 
         // Act
+        val currentTime = java.time.Instant.now()
         val dueTriggers = networkManager.listPendingDueTriggers()
 
         // Assert - Should only include triggers with past triggerTime
         assertThat(dueTriggers).isNotEmpty
         assertThat(dueTriggers).allSatisfy { trigger ->
-            trigger.status == TriggerStatus.Pending && trigger.triggerTime.isBefore(now)
+            trigger.status == TriggerStatus.Pending && trigger.triggerTime.isBefore(currentTime)
         }
     }
 

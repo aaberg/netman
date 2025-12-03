@@ -21,7 +21,10 @@ class TaskApiController(
         val userId = getUserId(authentication)
         
         val task = taskResourceMapper.map(request.task)
-        val trigger = request.trigger?.let { taskResourceMapper.map(it) }
+        val trigger = request.trigger?.let { 
+            // Use a dummy UUID for targetTaskId as it will be replaced in NetworkManager
+            taskResourceMapper.map(it.copy(targetTaskId = it.targetTaskId ?: java.util.UUID.randomUUID()))
+        }
         
         val savedTask = networkManager.createTaskWithTrigger(userId, task, trigger)
         

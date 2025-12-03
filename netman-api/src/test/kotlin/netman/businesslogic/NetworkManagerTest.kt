@@ -21,6 +21,10 @@ class NetworkManagerTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var tenantAccess: TenantAccess
+    
+    @Inject
+    private lateinit var membershipManager: MembershipManager
+    
     @Inject
     private lateinit var networkManager: NetworkManager
 
@@ -103,6 +107,157 @@ class NetworkManagerTest : DefaultTestProperties() {
         }
 
         println(validationException.message)
+    }
+
+    @Test
+    fun `create task with trigger successfully`() {
+        // Arrange
+        val userUuid = createTestUser()
+        val userId = userUuid.toString()
+        val contactId = java.util.UUID.randomUUID()
+        val task = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Follow up with client"),
+            status = TaskStatus.Pending
+        )
+        val triggerTime = java.time.Instant.now().plusSeconds(3600)
+        val trigger = Trigger(
+            triggerType = "scheduled",
+            triggerTime = triggerTime,
+            targetTaskId = java.util.UUID.randomUUID(), // Will be replaced with saved task ID
+            status = TriggerStatus.Pending,
+            statusTime = java.time.Instant.now()
+        )
+
+        // Act
+        val savedTask = networkManager.createTaskWithTrigger(userId, task, trigger)
+
+        // Assert
+        assertThat(savedTask.id).isNotNull
+        assertThat(savedTask.userId).isEqualTo(userUuid)
+        assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
+        val followUpTask = savedTask.data as FollowUpTask
+        assertThat(followUpTask.contactId).isEqualTo(contactId)
+        assertThat(followUpTask.note).isEqualTo("Follow up with client")
+    }
+
+    @Test
+    fun `create task without trigger successfully`() {
+        // Arrange
+        val userUuid = createTestUser()
+        val userId = userUuid.toString()
+        val contactId = java.util.UUID.randomUUID()
+        val task = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "No trigger task"),
+            status = TaskStatus.Pending
+        )
+
+        // Act
+        val savedTask = networkManager.createTaskWithTrigger(userId, task, null)
+
+        // Assert
+        assertThat(savedTask.id).isNotNull
+        assertThat(savedTask.userId).isEqualTo(userUuid)
+        assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
+    }
+
+    @Test
+    fun `list pending and due tasks for user`() {
+        // Arrange
+        val userUuid = createTestUser()
+        val userId = userUuid.toString()
+        val contactId = java.util.UUID.randomUUID()
+        
+        // Create some tasks with different statuses
+        val pendingTask = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Pending task"),
+            status = TaskStatus.Pending
+        )
+        val dueTask = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Due task"),
+            status = TaskStatus.Due
+        )
+        val completedTask = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Completed task"),
+            status = TaskStatus.Completed
+        )
+
+        networkManager.createTaskWithTrigger(userId, pendingTask, null)
+        networkManager.createTaskWithTrigger(userId, dueTask, null)
+        networkManager.createTaskWithTrigger(userId, completedTask, null)
+
+        // Act
+        val tasks = networkManager.listPendingAndDueTasks(userId)
+
+        // Assert
+        assertThat(tasks).hasSize(2)
+        assertThat(tasks).allSatisfy { task ->
+            task.status == TaskStatus.Pending || task.status == TaskStatus.Due
+        }
+        val notes = tasks.map { (it.data as FollowUpTask).note }
+        assertThat(notes).containsExactlyInAnyOrder("Pending task", "Due task")
+    }
+
+    @Test
+    fun `list pending due triggers`() {
+        // Arrange
+        val userUuid = createTestUser()
+        val userId = userUuid.toString()
+        val contactId = java.util.UUID.randomUUID()
+        val now = java.time.Instant.now()
+        
+        // Create tasks
+        val task1 = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Task 1"),
+            status = TaskStatus.Pending
+        )
+        val task2 = Task(
+            userId = userUuid,
+            data = FollowUpTask(contactId = contactId, note = "Task 2"),
+            status = TaskStatus.Pending
+        )
+
+        val savedTask1 = networkManager.createTaskWithTrigger(userId, task1, null)
+        val savedTask2 = networkManager.createTaskWithTrigger(userId, task2, null)
+
+        // Create triggers with different times and statuses
+        val dueTrigger = Trigger(
+            triggerType = "scheduled",
+            triggerTime = now.minusSeconds(3600), // Past time
+            targetTaskId = savedTask1.id!!,
+            status = TriggerStatus.Pending,
+            statusTime = now
+        )
+        val futureTrigger = Trigger(
+            triggerType = "scheduled",
+            triggerTime = now.plusSeconds(3600), // Future time
+            targetTaskId = savedTask2.id!!,
+            status = TriggerStatus.Pending,
+            statusTime = now
+        )
+
+        networkManager.createTaskWithTrigger(userId, task1, dueTrigger)
+        networkManager.createTaskWithTrigger(userId, task2, futureTrigger)
+
+        // Act
+        val dueTriggers = networkManager.listPendingDueTriggers()
+
+        // Assert - Should only include triggers with past triggerTime
+        assertThat(dueTriggers).isNotEmpty
+        assertThat(dueTriggers).allSatisfy { trigger ->
+            trigger.status == TriggerStatus.Pending && trigger.triggerTime.isBefore(now)
+        }
+    }
+
+    private fun createTestUser(): java.util.UUID {
+        val userId = java.util.UUID.randomUUID().toString()
+        membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        return java.util.UUID.fromString(userId)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

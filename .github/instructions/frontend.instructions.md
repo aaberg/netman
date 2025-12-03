@@ -288,11 +288,10 @@ The project uses Hanko for authentication:
 ```svelte
 <script lang="ts">
   import { register } from '@teamhanko/hanko-elements'
+  import { PUBLIC_HANKO_API_URL } from '$env/static/public'
   
-  const hankoApi = PUBLIC_HANKO_API_URL
-  
-  onMount(async () => {
-    await register(hankoApi)
+  $effect(() => {
+    register(PUBLIC_HANKO_API_URL)
   })
 </script>
 

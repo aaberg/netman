@@ -17,5 +17,5 @@ data class Trigger(
     val triggerTime: Instant,
     val targetTaskId: UUID,
     val status: TriggerStatus,
-    val statusTime: Instant
+    val statusTime: Instant? = null
 )

@@ -86,8 +86,7 @@ class TaskApiTest : DefaultTestProperties() {
                       "trigger": {
                         "triggerType": "scheduled",
                         "triggerTime": "$triggerTime",
-                        "status": "Pending",
-                        "statusTime": "${Instant.now()}"
+                        "status": "Pending"
                       }
                     }
                 """.trimIndent()

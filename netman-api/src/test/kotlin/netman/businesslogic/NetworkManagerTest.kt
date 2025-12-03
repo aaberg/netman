@@ -128,8 +128,7 @@ class NetworkManagerTest : DefaultTestProperties() {
             triggerType = "scheduled",
             triggerTime = triggerTime,
             targetTaskId = java.util.UUID.randomUUID(), // Will be replaced with saved task ID
-            status = TriggerStatus.Pending,
-            statusTime = java.time.Instant.now()
+            status = TriggerStatus.Pending
         )
 
         // Act

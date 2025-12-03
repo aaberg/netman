@@ -19,7 +19,8 @@ class NetworkManager(
     private val contactAccess: ContactAccess,
     private val taskAccess: TaskAccess,
     private val authorizationEngine: AuthorizationEngine,
-    private val validator: Validator
+    private val validator: Validator,
+    private val timeService: TimeService
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long) : List<Contact2ListItem> {
@@ -67,8 +68,11 @@ class NetworkManager(
                 throw ValidationException(triggerViolations.toString())
             }
             
-            // Ensure trigger points to the saved task
-            val triggerWithTaskId = it.copy(targetTaskId = savedTask.id!!)
+            // Ensure trigger points to the saved task and set statusTime to current time
+            val triggerWithTaskId = it.copy(
+                targetTaskId = savedTask.id!!,
+                statusTime = it.statusTime ?: timeService.now()
+            )
             taskAccess.saveTrigger(triggerWithTaskId)
         }
         
@@ -93,7 +97,7 @@ class NetworkManager(
      * Returns triggers with status Pending where triggerTime is before the current time.
      */
     fun listPendingDueTriggers(): List<Trigger> {
-        val currentTime = Instant.now()
+        val currentTime = timeService.now()
         return taskAccess.getTriggersByStatusAndTime(TriggerStatus.Pending, currentTime)
     }
 }

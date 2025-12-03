@@ -26,7 +26,7 @@ data class TriggerResource(
     val triggerTime: Instant,
     val targetTaskId: UUID? = null,
     val status: TriggerStatus,
-    val statusTime: Instant
+    val statusTime: Instant? = null
 )
 
 @Serdeable

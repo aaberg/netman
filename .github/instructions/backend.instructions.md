@@ -8,8 +8,8 @@ This file provides specific guidance for working on the Kotlin/Micronaut backend
 
 ## Technology Stack
 
-- **Language**: Kotlin 2.2.21
-- **Framework**: Micronaut 4.5.4
+- **Language**: Kotlin 2.2
+- **Framework**: Micronaut 4.5
 - **Database**: PostgreSQL 17 with Micronaut Data JDBC
 - **Build Tool**: Gradle 8.x
 - **Testing**: JUnit 5, WireMock, RestAssured

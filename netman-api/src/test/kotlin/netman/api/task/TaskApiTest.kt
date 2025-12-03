@@ -38,7 +38,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -54,7 +53,6 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
-            .body("userId", equalTo(userId))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.contactId", equalTo(contactId.toString()))
@@ -78,7 +76,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -100,7 +97,6 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
-            .body("userId", equalTo(userId))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.note", equalTo("Follow up in one hour"))
@@ -123,7 +119,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -146,7 +141,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -161,7 +155,7 @@ class TaskApiTest : DefaultTestProperties() {
         .then()
             .statusCode(201)
 
-        // Create a completed task (should not be in the list)
+        // Create only completed tasks
         spec.`when`()
             .auth().oauth2("dummy")
             .contentType("application/json")
@@ -169,7 +163,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -213,7 +206,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "userId": "$userId",
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",

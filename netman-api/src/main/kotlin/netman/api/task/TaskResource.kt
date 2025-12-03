@@ -14,7 +14,6 @@ import java.util.*
 @Serdeable
 data class TaskResource(
     val id: UUID? = null,
-    val userId: UUID,
     val data: TaskType,
     val status: TaskStatus,
     val created: Instant? = null
@@ -39,10 +38,7 @@ data class CreateTaskWithTriggerRequest(
 @Bean
 abstract class TaskResourceMapper {
     @Mapper
-    abstract fun map(task: Task): TaskResource
-
-    @Mapper
-    abstract fun map(taskResource: TaskResource): Task
+    abstract fun mapToResource(task: Task): TaskResource
 
     @Mapper
     abstract fun map(trigger: Trigger): TriggerResource

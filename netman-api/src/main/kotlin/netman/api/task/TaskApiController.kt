@@ -19,8 +19,17 @@ class TaskApiController(
         request: CreateTaskWithTriggerRequest
     ): TaskResource {
         val userId = getUserId(authentication)
+        val userUuid = java.util.UUID.fromString(userId)
         
-        val task = taskResourceMapper.map(request.task)
+        // Manually construct Task with userId from authentication
+        val task = netman.models.Task(
+            id = request.task.id,
+            userId = userUuid,
+            data = request.task.data,
+            status = request.task.status,
+            created = request.task.created
+        )
+        
         val trigger = request.trigger?.let { triggerResource ->
             // targetTaskId will be set by NetworkManager, use a placeholder UUID for now
             val placeholderId = triggerResource.targetTaskId ?: java.util.UUID.randomUUID()
@@ -29,7 +38,7 @@ class TaskApiController(
         
         val savedTask = networkManager.createTaskWithTrigger(userId, task, trigger)
         
-        return taskResourceMapper.map(savedTask)
+        return taskResourceMapper.mapToResource(savedTask)
     }
 
     override fun listPendingAndDueTasks(
@@ -37,6 +46,6 @@ class TaskApiController(
     ): List<TaskResource> {
         val userId = getUserId(authentication)
         val tasks = networkManager.listPendingAndDueTasks(userId)
-        return tasks.map { taskResourceMapper.map(it) }
+        return tasks.map { taskResourceMapper.mapToResource(it) }
     }
 }

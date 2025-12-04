@@ -146,7 +146,10 @@ class ExampleApiTest {
 
 ### File Organization
 - Keep related functionality together
-- Backend: Organize by feature/domain (e.g., `/api/membership`, `/api/tenant`)
+- Backend: Follows layered architecture (Api → Managers → Engines → Access)
+  - `/api/` - Controllers and API interfaces organized by feature/domain (e.g., `/api/membership`, `/api/tenant`)
+  - `/businesslogic/` - Managers and Engines layers
+  - `/access/` - Access Layer with Repository classes and API clients
 - Frontend: Components in `/components`, lib code in `/lib`, routes in `/routes`
 
 ### Environment Variables

@@ -17,14 +17,15 @@ This file provides specific guidance for working on the Kotlin/Micronaut backend
 
 ## Code Organization
 
-The backend follows a layered architecture:
+The backend follows a layered architecture (Api → Managers → Engines → Access):
 
 ```
 netman-api/
 ├── src/
 │   ├── main/kotlin/netman/
 │   │   ├── api/           # Controllers and API interfaces
-│   │   ├── access/        # Authentication and authorization
+│   │   ├── businesslogic/ # Managers and Engines
+│   │   ├── access/        # Access Layer (Repository classes, API clients)
 │   │   ├── models/        # Data models and DTOs
 │   │   └── ...
 │   └── test/kotlin/netman/

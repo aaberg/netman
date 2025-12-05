@@ -39,6 +39,7 @@ jobs:
 
       - name: Build backend
         working-directory: ./netman-api
+        # Exclude AOT optimization tasks due to JVM version mismatch (code compiled for Java 25, Gradle runs with Java 17)
         run: ./gradlew clean jar -x prepareJitOptimizations -x prepareNativeOptimizations -x optimizedJitJar
 
       - name: Run backend tests

@@ -1,9 +1,9 @@
 {
-    "configurations": [
-        {
-            "type": "node",
-            "name": "Node.js configuration",
-            "file": ""
-        }
-    ]
+  "configurations": [
+    {
+      "type": "node",
+      "name": "Node.js configuration",
+      "file": ""
+    }
+  ]
 }

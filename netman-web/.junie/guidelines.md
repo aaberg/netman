@@ -12,6 +12,7 @@ Use these guidelines for new development and when refactoring existing code.
 ## 1) Coding conventions
 
 ### 1.1 netman-api (Kotlin + Micronaut)
+
 - Language and framework
   - Kotlin 2.x, Micronaut 4.x (Netty runtime), KSP for annotation processing.
   - Reactive support available via micronaut-reactor when needed.
@@ -34,6 +35,7 @@ Use these guidelines for new development and when refactoring existing code.
   - Map domain/service errors to proper HTTP statuses via exception handlers.
 
 ### 1.2 netman-web (Svelte/SvelteKit + TypeScript)
+
 - Language and tooling
   - TypeScript with strict mode enabled (see tsconfig.json: strict: true).
   - Lint with ESLint 9 and format with Prettier 3 (+ svelte and tailwind plugins).
@@ -46,13 +48,14 @@ Use these guidelines for new development and when refactoring existing code.
   - Class ordering is managed by prettier-plugin-tailwindcss; don’t hand-reorder utility classes.
 - Accessibility and UX
   - Use semantic HTML, label interactive elements, and prefer keyboard-accessible controls.
-  - Add aria-* attributes and roles where appropriate.
+  - Add aria-\* attributes and roles where appropriate.
 
 ---
 
 ## 2) Code organization and package structure
 
 ### 2.1 netman-api
+
 - High-level package layout (observed examples in current codebase):
   - netman.api.v1.<domain> … Public HTTP layer (controllers + request/response DTOs) for versioned API endpoints. Example: netman.api.v1.membership.
   - netman.api.contact … Additional API surface for contact-related endpoints (some legacy/unversioned paths exist; prefer v1 for new code).
@@ -69,6 +72,7 @@ Use these guidelines for new development and when refactoring existing code.
   - Managed via Gradle Kotlin DSL (build.gradle.kts). Application entry: netman.ApplicationKt.
 
 ### 2.2 netman-web
+
 - Project layout (SvelteKit defaults)
   - src/routes … Route-driven pages and endpoints (+page.svelte, +page.ts, +page.server.ts, +layout.svelte, etc.).
   - src/lib … Shared UI components, stores, utilities, types.
@@ -76,7 +80,7 @@ Use these guidelines for new development and when refactoring existing code.
   - e2e … Playwright tests.
 - Routing and data loading
   - Use +page.ts/+layout.ts load functions for client-side data needs; use +page.server.ts for server-side-only concerns.
-  - Keep API base URL configurable via PUBLIC_… env params (e.g., PUBLIC_API_BASE_URL) and avoid hardcoding endpoints.
+  - Keep API base URL configurable via PUBLIC\_… env params (e.g., PUBLIC_API_BASE_URL) and avoid hardcoding endpoints.
 - State management
   - Prefer simple Svelte stores; avoid heavy global state unless necessary.
 
@@ -85,6 +89,7 @@ Use these guidelines for new development and when refactoring existing code.
 ## 3) Unit and integration test approaches
 
 ### 3.1 netman-api
+
 - Frameworks and libraries
   - JUnit 5 (jupiter), AssertJ, Micronaut Test (micronaut-test-junit5), RestAssured (micronaut-test-rest-assured).
   - WireMock (JUnit 5 extension) for mocking external HTTP dependencies.
@@ -103,6 +108,7 @@ Use these guidelines for new development and when refactoring existing code.
   - If/when enabling Testcontainers, use a per-testcontainer or per-suite container pattern and clear data between tests.
 
 ### 3.2 netman-web
+
 - Unit and component tests (Vitest + @testing-library/svelte)
   - Render components with realistic props; assert against accessible queries (getByRole, getByLabelText) over test IDs when possible.
   - Use jsdom environment; stub network with fetch mocks when components call the API.
@@ -117,6 +123,7 @@ Use these guidelines for new development and when refactoring existing code.
 ## 4) Commands and quality gates
 
 ### 4.1 netman-api
+
 - Build and test
   - From netman-api directory: ./gradlew test (Windows: .\gradlew test)
   - Run application: .\gradlew run or build a shadow jar.
@@ -124,6 +131,7 @@ Use these guidelines for new development and when refactoring existing code.
   - Follow Kotlin conventions; if ktlint/detekt are added in future, integrate into the Gradle lifecycle.
 
 ### 4.2 netman-web
+
 - Install and run
   - npm install
   - npm run dev (local dev server)
@@ -138,6 +146,7 @@ Use these guidelines for new development and when refactoring existing code.
 ---
 
 ## 5) General guidance
+
 - Keep layers separated: controllers → services → repositories/clients.
 - Prefer small, cohesive modules and functions.
 - Write tests along with features; aim for fast unit tests and targeted, reliable integration tests.

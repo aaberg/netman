@@ -140,3 +140,27 @@ Check your compose file for bind mounts that enable live reload inside container
 ## License
 
 Add your project’s license information here (e.g., MIT, Apache-2.0).
+
+## Continuous Integration
+
+This repository uses GitHub Actions for CI/CD. The CI workflow automatically runs on:
+- Push to `main` branch
+- Pull requests to `main` branch
+
+### CI Workflow
+
+The CI workflow (`.github/workflows/ci.yml`) includes two parallel jobs:
+
+**Backend Job:**
+- Sets up JDK 17 and PostgreSQL 17
+- Builds the Kotlin/Micronaut API
+- Runs all backend tests
+
+**Frontend Job:**
+- Sets up Node.js 20
+- Installs dependencies
+- Lints and checks code formatting
+- Builds the Svelte/SvelteKit application
+- Runs unit tests
+
+Both jobs must pass for the CI check to succeed.

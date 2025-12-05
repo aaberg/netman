@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (Kotlin/Micronaut)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: netman
+          POSTGRES_PASSWORD: netman123
+          POSTGRES_DB: netman
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Build backend
+        working-directory: ./netman-api
+        run: ./gradlew clean jar -x prepareJitOptimizations -x prepareNativeOptimizations -x optimizedJitJar
+
+      - name: Run backend tests
+        working-directory: ./netman-api
+        env:
+          DATASOURCES_DEFAULT_URL: jdbc:postgresql://localhost:5432/netman
+          DATASOURCES_DEFAULT_USERNAME: netman
+          DATASOURCES_DEFAULT_PASSWORD: netman123
+        run: ./gradlew test
+
+  frontend:
+    name: Frontend (Svelte/SvelteKit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './netman-web/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./netman-web
+        run: npm ci
+
+      - name: Lint and check formatting
+        working-directory: ./netman-web
+        run: npm run lint
+
+      - name: Build frontend
+        working-directory: ./netman-web
+        run: npm run build
+
+      - name: Run unit tests
+        working-directory: ./netman-web
+        run: npm run test:unit -- --run

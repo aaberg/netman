@@ -3,6 +3,7 @@
 This folder contains the Svelte/SvelteKit frontend for NetMan.
 
 Looking for setup and project-wide instructions? See the repository root README:
+
 - ../README.md
 - Or view it on your hosting platform (GitHub/GitLab/etc.) at the repo root.
 

@@ -1,10 +1,10 @@
 export interface MemberTenant {
-    tenant: Tenant,
-    role: string,
+  tenant: Tenant
+  role: string
 }
 
 export interface Tenant {
-    id: bigint,
-    name: string,
-    tenantType: string,
+  id: bigint
+  name: string
+  tenantType: string
 }

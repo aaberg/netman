@@ -373,21 +373,21 @@ class TaskAccessTest : DefaultTestProperties() {
         val pastTrigger2 = Trigger(
             triggerType = "event",
             triggerTime = now.minusSeconds(1800),
-            targetTaskId = task.id!!,
+            targetTaskId = task.id,
             status = TriggerStatus.Pending,
             statusTime = now
         )
         val futureTrigger = Trigger(
             triggerType = "scheduled",
             triggerTime = now.plusSeconds(3600),
-            targetTaskId = task.id!!,
+            targetTaskId = task.id,
             status = TriggerStatus.Pending,
             statusTime = now
         )
         val triggeredTrigger = Trigger(
             triggerType = "manual",
             triggerTime = now.minusSeconds(900),
-            targetTaskId = task.id!!,
+            targetTaskId = task.id,
             status = TriggerStatus.Triggered,
             statusTime = now
         )

@@ -191,7 +191,7 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/tasks")
+            .get("/api/${tenant.id}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -235,7 +235,7 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/tasks")
+            .get("/api/${tenant.id}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -273,12 +273,11 @@ class TaskApiTest : DefaultTestProperties() {
         .then()
             .statusCode(201)
 
-        // List tasks with tenantId filter
+        // List tasks with tenantId in path
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .queryParam("tenantId", tenant.id)
-            .get("/api/tasks")
+            .get("/api/${tenant.id}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -343,14 +342,26 @@ class TaskApiTest : DefaultTestProperties() {
         .then()
             .statusCode(201)
 
-        // List tasks without tenantId filter - should return tasks from all user's tenants
+        // List tasks from tenant1 - should return only 1 task
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/tasks")
+            .get("/api/${tenant1.id}/tasks")
         .then()
             .log().all()
             .statusCode(200)
-            .body("size()", equalTo(2))
+            .body("size()", equalTo(1))
+            .body("[0].data.note", equalTo("Task in tenant 1"))
+
+        // List tasks from tenant2 - should return only 1 task
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/${tenant2.id}/tasks")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .body("size()", equalTo(1))
+            .body("[0].data.note", equalTo("Task in tenant 2"))
     }
 }

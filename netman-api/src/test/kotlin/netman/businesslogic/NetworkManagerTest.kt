@@ -200,7 +200,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         networkManager.createTaskWithTrigger(userId, completedTask, null)
 
         // Act
-        val tasks = networkManager.listPendingAndDueTasks(userId, null)
+        val tasks = networkManager.listPendingAndDueTasks(userId, testUser.tenantId)
 
         // Assert
         assertThat(tasks).hasSize(2)

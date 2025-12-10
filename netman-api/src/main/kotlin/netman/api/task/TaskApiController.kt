@@ -44,7 +44,7 @@ class TaskApiController(
 
     override fun listPendingAndDueTasks(
         authentication: Authentication,
-        tenantId: Long?
+        tenantId: Long
     ): List<TaskResource> {
         val userId = getUserId(authentication)
         val tasks = networkManager.listPendingAndDueTasks(userId, tenantId)

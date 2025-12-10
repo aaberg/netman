@@ -25,12 +25,12 @@ interface TaskApi {
     ): TaskResource
 
     @Operation(
-        summary = "Get list of pending and due tasks for the authenticated user",
+        summary = "Get list of pending and due tasks for a tenant",
         responses = [ApiResponse(responseCode = "200", description = "List of pending and due tasks")]
     )
-    @Get("/tasks")
+    @Get("/{tenantId}/tasks")
     fun listPendingAndDueTasks(
         authentication: Authentication,
-        @Parameter(description = "Optional tenant ID to filter tasks by") tenantId: Long?
+        @Parameter(description = "ID of the tenant") tenantId: Long
     ): List<TaskResource>
 }

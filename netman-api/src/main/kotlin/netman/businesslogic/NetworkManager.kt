@@ -85,24 +85,16 @@ class NetworkManager(
     }
 
     /**
-     * Lists all pending and due tasks for a specific user.
-     * If tenantId is provided, only returns tasks from that tenant (after validating access).
-     * If tenantId is null, returns tasks from all the user's tenants.
+     * Lists all pending and due tasks for a specific user and tenant.
+     * Validates that the user has access to the tenant.
      * Returns tasks with status Pending or Due.
      */
-    fun listPendingAndDueTasks(userId: String, tenantId: Long?): List<Task> {
+    fun listPendingAndDueTasks(userId: String, tenantId: Long): List<Task> {
         val userUuid = UUID.fromString(userId)
         
-        val allTasks = if (tenantId != null) {
-            // Validate user has access to the specific tenant
-            authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-            taskAccess.getTasksByUserIdAndTenantId(userUuid, tenantId)
-        } else {
-            // Get all tenants the user has access to
-            val userTenants = tenantAccess.getMemberTenants(userId)
-            val tenantIds = userTenants.map { it.tenant.id!! }
-            taskAccess.getTasksByUserIdAndTenantIds(userUuid, tenantIds)
-        }
+        // Validate user has access to the specific tenant
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        val allTasks = taskAccess.getTasksByUserIdAndTenantId(userUuid, tenantId)
         
         return allTasks.filter { task ->
             task.status == TaskStatus.Pending || task.status == TaskStatus.Due

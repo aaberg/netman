@@ -12,6 +12,7 @@ data class TaskDTO(
     @field:Id
     val id: UUID,
     val userId: UUID,
+    val tenantId: Long,
     @field:TypeDef(type = DataType.JSON)
     val data: String,
     val status: String,

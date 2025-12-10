@@ -25,7 +25,7 @@ class TaskApiTest : DefaultTestProperties() {
     @Test
     fun `create a new task without trigger`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
-        membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
@@ -38,6 +38,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -53,6 +54,7 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
+            .body("tenantId", equalTo(tenant.id!!.toInt()))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.contactId", equalTo(contactId.toString()))
@@ -62,7 +64,7 @@ class TaskApiTest : DefaultTestProperties() {
     @Test
     fun `create a new task with trigger`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
-        membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
@@ -76,6 +78,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -96,6 +99,7 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
+            .body("tenantId", equalTo(tenant.id!!.toInt()))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.note", equalTo("Follow up in one hour"))
@@ -104,7 +108,7 @@ class TaskApiTest : DefaultTestProperties() {
     @Test
     fun `list pending and due tasks for authenticated user`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
-        membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
@@ -118,6 +122,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -140,6 +145,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -162,6 +168,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -192,7 +199,7 @@ class TaskApiTest : DefaultTestProperties() {
     @Test
     fun `list tasks returns empty list when no pending or due tasks exist`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
-        membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
@@ -205,6 +212,7 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
+                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",

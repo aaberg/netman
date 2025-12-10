@@ -30,6 +30,7 @@ interface TaskApi {
     )
     @Get("/tasks")
     fun listPendingAndDueTasks(
-        authentication: Authentication
+        authentication: Authentication,
+        @Parameter(description = "Optional tenant ID to filter tasks by") tenantId: Long?
     ): List<TaskResource>
 }

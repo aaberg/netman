@@ -44,4 +44,18 @@
 
     </changeSet>
 
+    <changeSet id="2025-12-10:1" author="Lars Aaberg">
+        <addColumn tableName="task">
+            <column name="tenant_id" type="int8">
+                <constraints nullable="false" 
+                             foreignKeyName="fk_task_tenant"
+                             referencedTableName="tenant" 
+                             referencedColumnNames="id"/>
+            </column>
+        </addColumn>
+        <createIndex tableName="task" indexName="idx-task-tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

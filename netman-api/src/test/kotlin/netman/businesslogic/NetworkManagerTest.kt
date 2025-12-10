@@ -115,11 +115,12 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `create task with trigger successfully`() {
         // Arrange
-        val userUuid = createTestUser()
-        val userId = userUuid.toString()
+        val testUser = createTestUser()
+        val userId = testUser.userId.toString()
         val contactId = java.util.UUID.randomUUID()
         val task = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Follow up with client"),
             status = TaskStatus.Pending
         )
@@ -136,7 +137,8 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Assert
         assertThat(savedTask.id).isNotNull
-        assertThat(savedTask.userId).isEqualTo(userUuid)
+        assertThat(savedTask.userId).isEqualTo(testUser.userId)
+        assertThat(savedTask.tenantId).isEqualTo(testUser.tenantId)
         assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
         val followUpTask = savedTask.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
@@ -146,11 +148,12 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `create task without trigger successfully`() {
         // Arrange
-        val userUuid = createTestUser()
-        val userId = userUuid.toString()
+        val testUser = createTestUser()
+        val userId = testUser.userId.toString()
         val contactId = java.util.UUID.randomUUID()
         val task = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "No trigger task"),
             status = TaskStatus.Pending
         )
@@ -160,30 +163,34 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Assert
         assertThat(savedTask.id).isNotNull
-        assertThat(savedTask.userId).isEqualTo(userUuid)
+        assertThat(savedTask.userId).isEqualTo(testUser.userId)
+        assertThat(savedTask.tenantId).isEqualTo(testUser.tenantId)
         assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
     }
 
     @Test
     fun `list pending and due tasks for user`() {
         // Arrange
-        val userUuid = createTestUser()
-        val userId = userUuid.toString()
+        val testUser = createTestUser()
+        val userId = testUser.userId.toString()
         val contactId = java.util.UUID.randomUUID()
         
         // Create some tasks with different statuses
         val pendingTask = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Pending task"),
             status = TaskStatus.Pending
         )
         val dueTask = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Due task"),
             status = TaskStatus.Due
         )
         val completedTask = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Completed task"),
             status = TaskStatus.Completed
         )
@@ -193,7 +200,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         networkManager.createTaskWithTrigger(userId, completedTask, null)
 
         // Act
-        val tasks = networkManager.listPendingAndDueTasks(userId)
+        val tasks = networkManager.listPendingAndDueTasks(userId, testUser.tenantId)
 
         // Assert
         assertThat(tasks).hasSize(2)
@@ -207,19 +214,21 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `list pending due triggers`() {
         // Arrange
-        val userUuid = createTestUser()
-        val userId = userUuid.toString()
+        val testUser = createTestUser()
+        val userId = testUser.userId.toString()
         val contactId = java.util.UUID.randomUUID()
         val now = java.time.Instant.now()
         
         // Create tasks
         val task1 = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Task 1"),
             status = TaskStatus.Pending
         )
         val task2 = Task(
-            userId = userUuid,
+            userId = testUser.userId,
+            tenantId = testUser.tenantId,
             data = FollowUpTask(contactId = contactId, note = "Task 2"),
             status = TaskStatus.Pending
         )
@@ -257,10 +266,12 @@ class NetworkManagerTest : DefaultTestProperties() {
         }
     }
 
-    private fun createTestUser(): java.util.UUID {
+    private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)
+
+    private fun createTestUser(): TestUserData {
         val userId = java.util.UUID.randomUUID().toString()
-        membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return java.util.UUID.fromString(userId)
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        return TestUserData(java.util.UUID.fromString(userId), tenant.id!!)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

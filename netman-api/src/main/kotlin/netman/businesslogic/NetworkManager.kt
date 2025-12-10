@@ -5,6 +5,7 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TaskAccess
+import netman.access.TenantAccess
 import netman.models.Contact2
 import netman.models.Contact2ListItem
 import netman.models.Task
@@ -18,6 +19,7 @@ import java.util.UUID
 class NetworkManager(
     private val contactAccess: ContactAccess,
     private val taskAccess: TaskAccess,
+    private val tenantAccess: TenantAccess,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val timeService: TimeService
@@ -50,9 +52,12 @@ class NetworkManager(
 
     /**
      * Creates a follow-up task with an optional trigger.
-     * The task is associated with the authenticated user.
+     * The task is associated with the authenticated user and a specific tenant.
      */
     fun createTaskWithTrigger(userId: String, task: Task, trigger: Trigger?): Task {
+        // Validate user has access to the tenant
+        authorizationEngine.validateAccessToTenantOrThrow(userId, task.tenantId)
+        
         val violations = validator.validate(task)
         if (violations.isNotEmpty()) {
             throw ValidationException(violations.toString())
@@ -80,12 +85,16 @@ class NetworkManager(
     }
 
     /**
-     * Lists all pending and due tasks for a specific user.
+     * Lists all pending and due tasks for a specific user and tenant.
+     * Validates that the user has access to the tenant.
      * Returns tasks with status Pending or Due.
      */
-    fun listPendingAndDueTasks(userId: String): List<Task> {
+    fun listPendingAndDueTasks(userId: String, tenantId: Long): List<Task> {
         val userUuid = UUID.fromString(userId)
-        val allTasks = taskAccess.getTasksByUserId(userUuid)
+        
+        // Validate user has access to the specific tenant
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        val allTasks = taskAccess.getTasksByUserIdAndTenantId(userUuid, tenantId)
         
         return allTasks.filter { task ->
             task.status == TaskStatus.Pending || task.status == TaskStatus.Due

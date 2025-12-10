@@ -3,6 +3,7 @@ package netman.api.task
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Status
 import io.micronaut.security.authentication.Authentication
@@ -25,11 +26,12 @@ interface TaskApi {
     ): TaskResource
 
     @Operation(
-        summary = "Get list of pending and due tasks for the authenticated user",
+        summary = "Get list of pending and due tasks for a tenant",
         responses = [ApiResponse(responseCode = "200", description = "List of pending and due tasks")]
     )
-    @Get("/tasks")
+    @Get("/{tenantId}/tasks")
     fun listPendingAndDueTasks(
-        authentication: Authentication
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long
     ): List<TaskResource>
 }

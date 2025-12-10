@@ -14,6 +14,7 @@ import java.util.*
 @Serdeable
 data class TaskResource(
     val id: UUID? = null,
+    val tenantId: Long,
     val data: TaskType,
     val status: TaskStatus,
     val created: Instant? = null

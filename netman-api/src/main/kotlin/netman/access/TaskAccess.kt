@@ -26,6 +26,7 @@ open class TaskAccess(
         val taskDto = TaskDTO(
             id = task.id ?: UUID.randomUUID(),
             userId = task.userId,
+            tenantId = task.tenantId,
             data = objectMapper.writeValueAsString(task.data),
             status = task.status.name,
             created = task.created ?: Instant.now()
@@ -48,6 +49,11 @@ open class TaskAccess(
     fun getTasksByUserId(userId: UUID): List<Task> {
         return taskRepository.findByUserId(userId).map { mapTask(it) }
     }
+
+    fun getTasksByUserIdAndTenantId(userId: UUID, tenantId: Long): List<Task> {
+        return taskRepository.findByUserIdAndTenantId(userId, tenantId).map { mapTask(it) }
+    }
+
 
     fun saveTrigger(trigger: Trigger): Trigger {
         val isNewTrigger = trigger.id == null || !triggerRepository.existsById(trigger.id)
@@ -87,6 +93,7 @@ open class TaskAccess(
         return Task(
             id = taskDto.id,
             userId = taskDto.userId,
+            tenantId = taskDto.tenantId,
             data = taskData,
             status = TaskStatus.valueOf(taskDto.status),
             created = taskDto.created

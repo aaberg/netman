@@ -18,6 +18,7 @@ enum class TaskStatus {
 data class Task(
     val id: UUID? = null,
     val userId: UUID,
+    val tenantId: Long,
     val data: TaskType,
     val status: TaskStatus,
     val created: Instant? = null

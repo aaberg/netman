@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.specification.RequestSpecification
 import jakarta.inject.Inject
+import netman.access.TenantAccess
 import netman.access.client.setupAuthenticationClientForSuccessfullAuthentication
 import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.MembershipManager
@@ -21,6 +22,9 @@ class TaskApiTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var membershipManager: MembershipManager
+
+    @Inject
+    private lateinit var tenantAccess: TenantAccess
 
     @Test
     fun `create a new task without trigger`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
@@ -236,5 +240,117 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(200)
             .body("size()", equalTo(0))
+    }
+
+    @Test
+    fun `list tasks filtered by specific tenantId`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val contactId = UUID.randomUUID()
+        
+        // Create two pending tasks
+        spec.`when`()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "task": {
+                        "tenantId": ${tenant.id},
+                        "data": {
+                          "type": "followup",
+                          "contactId": "$contactId",
+                          "note": "Task in tenant"
+                        },
+                        "status": "Pending"
+                      }
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tasks")
+        .then()
+            .statusCode(201)
+
+        // List tasks with tenantId filter
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .queryParam("tenantId", tenant.id)
+            .get("/api/tasks")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .body("size()", equalTo(1))
+            .body("[0].tenantId", equalTo(tenant.id!!.toInt()))
+            .body("[0].data.note", equalTo("Task in tenant"))
+    }
+
+    @Test
+    fun `list tasks from multiple tenants when tenantId not specified`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant1 = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
+        // Register another tenant for the same user
+        val tenant2 = tenantAccess.registerNewTenant("Second Tenant", netman.models.TenantType.ORGANIZATION, userId)
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val contactId = UUID.randomUUID()
+        
+        // Create task in tenant1
+        spec.`when`()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "task": {
+                        "tenantId": ${tenant1.id},
+                        "data": {
+                          "type": "followup",
+                          "contactId": "$contactId",
+                          "note": "Task in tenant 1"
+                        },
+                        "status": "Pending"
+                      }
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tasks")
+        .then()
+            .statusCode(201)
+
+        // Create task in tenant2
+        spec.`when`()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "task": {
+                        "tenantId": ${tenant2.id},
+                        "data": {
+                          "type": "followup",
+                          "contactId": "$contactId",
+                          "note": "Task in tenant 2"
+                        },
+                        "status": "Pending"
+                      }
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tasks")
+        .then()
+            .statusCode(201)
+
+        // List tasks without tenantId filter - should return tasks from all user's tenants
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tasks")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .body("size()", equalTo(2))
     }
 }

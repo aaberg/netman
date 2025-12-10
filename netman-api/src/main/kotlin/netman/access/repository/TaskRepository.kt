@@ -13,5 +13,4 @@ interface TaskRepository : GenericRepository<TaskDTO, UUID> {
     fun existsById(id: UUID): Boolean
     fun findByUserId(userId: UUID): List<TaskDTO>
     fun findByUserIdAndTenantId(userId: UUID, tenantId: Long): List<TaskDTO>
-    fun findByUserIdAndTenantIdIn(userId: UUID, tenantIds: List<Long>): List<TaskDTO>
 }

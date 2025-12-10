@@ -54,9 +54,6 @@ open class TaskAccess(
         return taskRepository.findByUserIdAndTenantId(userId, tenantId).map { mapTask(it) }
     }
 
-    fun getTasksByUserIdAndTenantIds(userId: UUID, tenantIds: List<Long>): List<Task> {
-        return taskRepository.findByUserIdAndTenantIdIn(userId, tenantIds).map { mapTask(it) }
-    }
 
     fun saveTrigger(trigger: Trigger): Trigger {
         val isNewTrigger = trigger.id == null || !triggerRepository.existsById(trigger.id)

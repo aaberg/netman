@@ -287,7 +287,7 @@ class TaskApiTest : DefaultTestProperties() {
     }
 
     @Test
-    fun `list tasks from multiple tenants when tenantId not specified`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+    fun `list tasks shows only tasks from specified tenant`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
         val tenant1 = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         // Register another tenant for the same user

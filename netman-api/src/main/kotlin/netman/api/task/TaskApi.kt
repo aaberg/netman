@@ -18,10 +18,11 @@ interface TaskApi {
         summary = "Create a new follow-up task with an optional trigger",
         responses = [ApiResponse(responseCode = "201", description = "Task created successfully")]
     )
-    @Post("/tasks")
+    @Post("/{tenantId}/tasks")
     @Status(HttpStatus.CREATED)
     fun createTaskWithTrigger(
         authentication: Authentication,
+        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
         @Parameter(description = "Task and optional trigger information") @Body request: CreateTaskWithTriggerRequest
     ): TaskResource
 

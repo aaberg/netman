@@ -380,11 +380,13 @@ class TaskAccessTest : DefaultTestProperties() {
             status = TaskStatus.Pending
         ))
 
+        requireNotNull(task.id)
+
         val now = Instant.now()
         val pastTrigger1 = Trigger(
             triggerType = "scheduled",
             triggerTime = now.minusSeconds(3600),
-            targetTaskId = task.id!!,
+            targetTaskId = task.id,
             status = TriggerStatus.Pending,
             statusTime = now
         )
@@ -416,7 +418,9 @@ class TaskAccessTest : DefaultTestProperties() {
         taskAccess.saveTrigger(triggeredTrigger)
 
         // Act
-        val pendingOldTriggers = taskAccess.getTriggersByStatusAndTime(TriggerStatus.Pending, now)
+        val pendingOldTriggers = taskAccess
+            .getTriggersByStatusAndTime(TriggerStatus.Pending, now)
+            .filter { it.targetTaskId == task.id } // only interested in triggers created for this task
 
         // Assert
         assertThat(pendingOldTriggers).hasSize(2)

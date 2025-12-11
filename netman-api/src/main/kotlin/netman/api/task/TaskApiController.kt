@@ -6,35 +6,35 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
+import netman.businesslogic.TimeService
 
-@Controller("/api")
+@Controller("/api/tenants/")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class TaskApiController(
     private val networkManager: NetworkManager,
-    private val taskResourceMapper: TaskResourceMapper
+    private val taskResourceMapper: TaskResourceMapper,
+    private val timeService: TimeService
 ) : TaskApi {
 
     override fun createTaskWithTrigger(
         authentication: Authentication,
+        tenantId: Long,
         request: CreateTaskWithTriggerRequest
     ): TaskResource {
         val userId = getUserId(authentication)
         val userUuid = java.util.UUID.fromString(userId)
-        
+
         // Manually construct Task with userId and tenantId from request
         val task = netman.models.Task(
-            id = request.task.id,
             userId = userUuid,
-            tenantId = request.task.tenantId,
+            tenantId = tenantId,
             data = request.task.data,
             status = request.task.status,
-            created = request.task.created
+            created = timeService.now()
         )
         
         val trigger = request.trigger?.let { triggerResource ->
-            // targetTaskId will be set by NetworkManager, use a placeholder UUID for now
-            val placeholderId = triggerResource.targetTaskId ?: java.util.UUID.randomUUID()
-            taskResourceMapper.map(triggerResource.copy(targetTaskId = placeholderId))
+            taskResourceMapper.map(triggerResource)
         }
         
         val savedTask = networkManager.createTaskWithTrigger(userId, task, trigger)

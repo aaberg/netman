@@ -3,6 +3,8 @@ package netman.api.task
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Mapper
 import io.micronaut.serde.annotation.Serdeable
+import jakarta.inject.Inject
+import netman.businesslogic.TimeService
 import netman.models.Task
 import netman.models.TaskStatus
 import netman.models.TaskType
@@ -21,6 +23,12 @@ data class TaskResource(
 )
 
 @Serdeable
+data class CreateTaskRequest(
+    val data: TaskType,
+    val status: TaskStatus = TaskStatus.Pending
+)
+
+@Serdeable
 data class TriggerResource(
     val id: UUID? = null,
     val triggerType: String,
@@ -31,19 +39,36 @@ data class TriggerResource(
 )
 
 @Serdeable
+data class CreateTriggerRequest(
+    val triggerType: String,
+    val triggerTime: Instant,
+)
+
+@Serdeable
 data class CreateTaskWithTriggerRequest(
-    val task: TaskResource,
-    val trigger: TriggerResource? = null
+    val task: CreateTaskRequest,
+    val trigger: CreateTriggerRequest? = null
 )
 
 @Bean
 abstract class TaskResourceMapper {
+
+    @Inject
+    lateinit var timeService: TimeService
+
     @Mapper
     abstract fun mapToResource(task: Task): TaskResource
 
     @Mapper
     abstract fun map(trigger: Trigger): TriggerResource
 
-    @Mapper
-    abstract fun map(triggerResource: TriggerResource): Trigger
+    fun map(triggerResource: CreateTriggerRequest): Trigger {
+        return Trigger(
+            null,
+            triggerResource.triggerType,
+            triggerResource.triggerTime,
+            null,
+            TriggerStatus.Pending,
+            timeService.now());
+    }
 }

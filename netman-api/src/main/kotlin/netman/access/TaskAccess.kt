@@ -57,6 +57,7 @@ open class TaskAccess(
 
     fun saveTrigger(trigger: Trigger): Trigger {
         val isNewTrigger = trigger.id == null || !triggerRepository.existsById(trigger.id)
+        requireNotNull(trigger.targetTaskId)
         val triggerDto = TriggerDTO(
             id = trigger.id ?: UUID.randomUUID(),
             triggerType = trigger.triggerType,

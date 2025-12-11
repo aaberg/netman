@@ -42,18 +42,16 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Follow up with client about project proposal"
-                        },
-                        "status": "Pending"
+                        }
                       }
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .post("/api/tenants/{tenantId}/tasks", tenant.id)
         .then()
             .log().all()
             .statusCode(201)
@@ -73,7 +71,7 @@ class TaskApiTest : DefaultTestProperties() {
 
         val contactId = UUID.randomUUID()
         val triggerTime = Instant.now().plusSeconds(3600).toString()
-        
+
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
@@ -82,28 +80,25 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Follow up in one hour"
-                        },
-                        "status": "Pending"
+                        }
                       },
                       "trigger": {
                         "triggerType": "scheduled",
-                        "triggerTime": "$triggerTime",
-                        "status": "Pending"
+                        "triggerTime": "$triggerTime"
                       }
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .post("/api/tenants/{tenantId}/tasks", tenant.id)
         .then()
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
-            .body("tenantId", equalTo(tenant.id!!.toInt()))
+            .body("tenantId", equalTo(tenant.id.toInt()))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.note", equalTo("Follow up in one hour"))
@@ -116,7 +111,7 @@ class TaskApiTest : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
-        
+
         // Create a pending task
         spec.`when`()
             .log().all()
@@ -126,30 +121,30 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Pending task 1"
-                        },
-                        "status": "Pending"
+                        }
                       }
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
+            .log().all()
             .statusCode(201)
 
         // Create a due task
         spec.`when`()
+            .log().all()
             .auth().oauth2("dummy")
             .contentType("application/json")
             .body(
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -160,8 +155,10 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
+            .log().all()
             .statusCode(201)
 
         // Create only completed tasks
@@ -172,7 +169,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -183,7 +179,8 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
             .statusCode(201)
 
@@ -191,7 +188,7 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/${tenant.id}/tasks")
+            .get("/api/tenants/{tenantId}/tasks", tenant.id)
         .then()
             .log().all()
             .statusCode(200)
@@ -207,7 +204,7 @@ class TaskApiTest : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
-        
+
         // Create only completed tasks
         spec.`when`()
             .auth().oauth2("dummy")
@@ -216,7 +213,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -227,7 +223,8 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
             .statusCode(201)
 
@@ -235,7 +232,8 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/${tenant.id}/tasks")
+            .pathParam("tenantId", tenant.id)
+            .get("/api/tenants/{tenantId}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -249,7 +247,7 @@ class TaskApiTest : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
-        
+
         // Create two pending tasks
         spec.`when`()
             .auth().oauth2("dummy")
@@ -258,7 +256,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -269,7 +266,8 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
             .statusCode(201)
 
@@ -277,7 +275,8 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/${tenant.id}/tasks")
+            .pathParam("tenantId", tenant.id)
+            .get("/api/tenants/{tenantId}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -295,7 +294,7 @@ class TaskApiTest : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
         val contactId = UUID.randomUUID()
-        
+
         // Create task in tenant1
         spec.`when`()
             .auth().oauth2("dummy")
@@ -304,7 +303,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant1.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -315,7 +313,8 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant1.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
             .statusCode(201)
 
@@ -327,7 +326,6 @@ class TaskApiTest : DefaultTestProperties() {
                 """
                     {
                       "task": {
-                        "tenantId": ${tenant2.id},
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
@@ -338,7 +336,8 @@ class TaskApiTest : DefaultTestProperties() {
                     }
                 """.trimIndent()
             )
-            .post("/api/tasks")
+            .pathParam("tenantId", tenant2.id)
+            .post("/api/tenants/{tenantId}/tasks")
         .then()
             .statusCode(201)
 
@@ -346,7 +345,8 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/${tenant1.id}/tasks")
+            .pathParam("tenantId", tenant1.id)
+            .get("/api/tenants/{tenantId}/tasks")
         .then()
             .log().all()
             .statusCode(200)
@@ -357,7 +357,8 @@ class TaskApiTest : DefaultTestProperties() {
         spec.`when`()
             .log().all()
             .auth().oauth2("dummy")
-            .get("/api/${tenant2.id}/tasks")
+            .pathParam("tenantId", tenant2.id)
+            .get("/api/tenants/{tenantId}/tasks")
         .then()
             .log().all()
             .statusCode(200)

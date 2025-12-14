@@ -125,12 +125,12 @@ class NetworkManager(
         val allTasks = taskAccess.getTasksByUserIdAndTenantId(userIdUUID, tenantId)
 
 
-        return allTasks.
-            filter { it.status == TaskStatus.Pending || it.status == TaskStatus.Due }
-            .map {
-                requireNotNull(it.id)
-                val triggers = taskAccess.getTriggersByTaskId(it.id)
-                TaskResource(it.id, tenantId, it.data, it.status, it.created, triggers.map {trigger ->
+        return allTasks
+            .filter { it.status == TaskStatus.Pending || it.status == TaskStatus.Due }
+            .map { task ->
+                requireNotNull(task.id)
+                val triggers = taskAccess.getTriggersByTaskId(task.id)
+                TaskResource(task.id, tenantId, task.data, task.status, task.created, triggers.map {trigger ->
                     TriggerResource(
                         id = trigger.id,
                         triggerType = trigger.triggerType,

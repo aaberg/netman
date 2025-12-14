@@ -1,16 +1,14 @@
 package netman.api.task
 
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.annotation.Status
+import io.micronaut.http.annotation.*
 import io.micronaut.security.authentication.Authentication
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.TaskResource
 
 @Tag(name = "Task", description = "API for managing task resources")
 interface TaskApi {
@@ -23,7 +21,7 @@ interface TaskApi {
     fun createTaskWithTrigger(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
-        @Parameter(description = "Task and optional trigger information") @Body request: CreateTaskWithTriggerRequest
+        @Parameter(description = "Task and optional trigger information") @Body request: CreateFollowUpTaskRequest
     ): TaskResource
 
     @Operation(

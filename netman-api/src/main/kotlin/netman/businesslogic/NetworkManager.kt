@@ -5,42 +5,37 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TaskAccess
-import netman.access.TenantAccess
-import netman.models.Contact2
-import netman.models.Contact2ListItem
-import netman.models.Task
-import netman.models.TaskStatus
-import netman.models.Trigger
-import netman.models.TriggerStatus
-import java.time.Instant
-import java.util.UUID
+import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.TaskResource
+import netman.businesslogic.models.TriggerResource
+import netman.models.*
+import java.util.*
 
 @Singleton
 class NetworkManager(
     private val contactAccess: ContactAccess,
     private val taskAccess: TaskAccess,
-    private val tenantAccess: TenantAccess,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val timeService: TimeService
 ) {
 
-    fun getMyContacts(userId: String, tenantId: Long) : List<Contact2ListItem> {
+    fun getMyContacts(userId: String, tenantId: Long): List<Contact2ListItem> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
         return contactAccess.listContacts(tenantId)
     }
 
-    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID) : Contact2 {
+    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID): Contact2 {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         return contactAccess.getContact(tenantId, contactId)
     }
 
-    fun saveContactWithDetails(userId: String, tenantId: Long, contact: Contact2) : Contact2 {
+    fun saveContactWithDetails(userId: String, tenantId: Long, contact: Contact2): Contact2 {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        val violations = validator.validate(contact )
+        val violations = validator.validate(contact)
 
-        if (violations.isNotEmpty()){
+        if (violations.isNotEmpty()) {
             throw ValidationException(violations.toString())
         }
 
@@ -54,34 +49,67 @@ class NetworkManager(
      * Creates a follow-up task with an optional trigger.
      * The task is associated with the authenticated user and a specific tenant.
      */
-    fun createTaskWithTrigger(userId: String, task: Task, trigger: Trigger?): Task {
+    fun createTaskWithTrigger(
+        userId: String,
+        tenantId: Long,
+        createTaskRequest: CreateFollowUpTaskRequest
+    ): TaskResource {
+        val userIdUUID = UUID.fromString(userId)
+
         // Validate user has access to the tenant
-        authorizationEngine.validateAccessToTenantOrThrow(userId, task.tenantId)
-        
-        val violations = validator.validate(task)
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val violations = validator.validate(createTaskRequest)
         if (violations.isNotEmpty()) {
             throw ValidationException(violations.toString())
         }
 
         // Save the task first
+        val task = Task(
+            userId = userIdUUID,
+            tenantId = tenantId,
+            data = createTaskRequest.data,
+            status = createTaskRequest.status
+        )
         val savedTask = taskAccess.saveTask(task)
-        
+
         // If a trigger is provided, validate and save it
-        trigger?.let {
+        val savedTrigger = createTaskRequest.trigger?.let {
             val triggerViolations = validator.validate(it)
             if (triggerViolations.isNotEmpty()) {
                 throw ValidationException(triggerViolations.toString())
             }
-            
+
             // Ensure trigger points to the saved task and set statusTime to current time
-            val triggerWithTaskId = it.copy(
-                targetTaskId = savedTask.id!!,
-                statusTime = it.statusTime ?: timeService.now()
+            val trigger = Trigger(
+                triggerType = "FollowUp",
+                triggerTime = it.triggerTime,
+                targetTaskId = savedTask.id,
+                status = TriggerStatus.Pending,
+                statusTime = timeService.now()
             )
-            taskAccess.saveTrigger(triggerWithTaskId)
+            taskAccess.saveTrigger(trigger)
         }
-        
-        return savedTask
+
+        return TaskResource(
+            id = savedTask.id,
+            tenantId = tenantId,
+            data = savedTask.data,
+            status = savedTask.status,
+            created = savedTask.created,
+            triggers = if (savedTrigger != null)
+                listOf(
+                    TriggerResource(
+                        id = savedTrigger.id,
+                        triggerType = savedTrigger.triggerType,
+                        triggerTime = savedTrigger.triggerTime,
+                        targetTaskId = savedTrigger.targetTaskId,
+                        status = savedTrigger.status,
+                        statusTime = savedTrigger.statusTime
+                    )
+                ) else emptyList()
+
+        )
     }
 
     /**
@@ -89,16 +117,30 @@ class NetworkManager(
      * Validates that the user has access to the tenant.
      * Returns tasks with status Pending or Due.
      */
-    fun listPendingAndDueTasks(userId: String, tenantId: Long): List<Task> {
-        val userUuid = UUID.fromString(userId)
-        
+    fun listPendingAndDueTasks(userId: String, tenantId: Long): List<TaskResource> {
+        val userIdUUID = UUID.fromString(userId)
+
         // Validate user has access to the specific tenant
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        val allTasks = taskAccess.getTasksByUserIdAndTenantId(userUuid, tenantId)
-        
-        return allTasks.filter { task ->
-            task.status == TaskStatus.Pending || task.status == TaskStatus.Due
-        }
+        val allTasks = taskAccess.getTasksByUserIdAndTenantId(userIdUUID, tenantId)
+
+
+        return allTasks.
+            filter { it.status == TaskStatus.Pending || it.status == TaskStatus.Due }
+            .map {
+                requireNotNull(it.id)
+                val triggers = taskAccess.getTriggersByTaskId(it.id)
+                TaskResource(it.id, tenantId, it.data, it.status, it.created, triggers.map {trigger ->
+                    TriggerResource(
+                        id = trigger.id,
+                        triggerType = trigger.triggerType,
+                        triggerTime = trigger.triggerTime,
+                        targetTaskId = trigger.targetTaskId,
+                        status = trigger.status,
+                        statusTime = trigger.statusTime
+                    )
+                })
+            }
     }
 
     /**

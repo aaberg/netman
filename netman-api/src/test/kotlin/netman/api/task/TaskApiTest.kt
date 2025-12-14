@@ -41,13 +41,11 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Follow up with client about project proposal"
                         }
-                      }
                     }
                 """.trimIndent()
             )
@@ -79,17 +77,15 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
-                          "type": "followup",
-                          "contactId": "$contactId",
-                          "note": "Follow up in one hour"
+                            "type": "followup",
+                            "contactId": "$contactId",
+                            "note": "Follow up in one hour"
+                        },
+                        "trigger": {
+                            "triggerType": "scheduled",
+                            "triggerTime": "$triggerTime"
                         }
-                      },
-                      "trigger": {
-                        "triggerType": "scheduled",
-                        "triggerTime": "$triggerTime"
-                      }
                     }
                 """.trimIndent()
             )
@@ -120,13 +116,11 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Pending task 1"
                         }
-                      }
                     }
                 """.trimIndent()
             )
@@ -144,14 +138,12 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Due task 1"
                         },
                         "status": "Due"
-                      }
                     }
                 """.trimIndent()
             )
@@ -168,14 +160,13 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Completed task"
                         },
                         "status": "Completed"
-                      }
+
                     }
                 """.trimIndent()
             )
@@ -212,14 +203,12 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Completed task"
                         },
                         "status": "Completed"
-                      }
                     }
                 """.trimIndent()
             )
@@ -255,14 +244,12 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Task in tenant"
                         },
                         "status": "Pending"
-                      }
                     }
                 """.trimIndent()
             )
@@ -302,14 +289,12 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Task in tenant 1"
                         },
                         "status": "Pending"
-                      }
                     }
                 """.trimIndent()
             )
@@ -325,14 +310,12 @@ class TaskApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "task": {
                         "data": {
                           "type": "followup",
                           "contactId": "$contactId",
                           "note": "Task in tenant 2"
                         },
                         "status": "Pending"
-                      }
                     }
                 """.trimIndent()
             )

@@ -6,6 +6,8 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
+import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.CreateTriggerRequest
 import netman.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -115,30 +117,21 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `create task with trigger successfully`() {
         // Arrange
-        val testUser = createTestUser()
-        val userId = testUser.userId.toString()
+        val (userId, tenantId) = createTestUser()
         val contactId = java.util.UUID.randomUUID()
-        val task = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
-            data = FollowUpTask(contactId = contactId, note = "Follow up with client"),
-            status = TaskStatus.Pending
-        )
         val triggerTime = java.time.Instant.now().plusSeconds(3600)
-        val trigger = Trigger(
-            triggerType = "scheduled",
-            triggerTime = triggerTime,
-            targetTaskId = java.util.UUID.randomUUID(), // Will be replaced with saved task ID
-            status = TriggerStatus.Pending
+        val createTaskRequest = CreateFollowUpTaskRequest(
+            FollowUpTask(contactId = contactId, note = "Follow up with client"),
+            TaskStatus.Pending,
+            CreateTriggerRequest("scheduled", triggerTime)
         )
 
         // Act
-        val savedTask = networkManager.createTaskWithTrigger(userId, task, trigger)
+        val savedTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, createTaskRequest)
 
         // Assert
         assertThat(savedTask.id).isNotNull
-        assertThat(savedTask.userId).isEqualTo(testUser.userId)
-        assertThat(savedTask.tenantId).isEqualTo(testUser.tenantId)
+        assertThat(savedTask.tenantId).isEqualTo(tenantId)
         assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
         val followUpTask = savedTask.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
@@ -148,59 +141,48 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `create task without trigger successfully`() {
         // Arrange
-        val testUser = createTestUser()
-        val userId = testUser.userId.toString()
+        val (userId, tenantId) = createTestUser()
         val contactId = java.util.UUID.randomUUID()
-        val task = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val task = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "No trigger task"),
             status = TaskStatus.Pending
         )
 
         // Act
-        val savedTask = networkManager.createTaskWithTrigger(userId, task, null)
+        val savedTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, task)
 
         // Assert
         assertThat(savedTask.id).isNotNull
-        assertThat(savedTask.userId).isEqualTo(testUser.userId)
-        assertThat(savedTask.tenantId).isEqualTo(testUser.tenantId)
+        assertThat(savedTask.tenantId).isEqualTo(tenantId)
         assertThat(savedTask.status).isEqualTo(TaskStatus.Pending)
     }
 
     @Test
     fun `list pending and due tasks for user`() {
         // Arrange
-        val testUser = createTestUser()
-        val userId = testUser.userId.toString()
+        val (userId, tenantId) = createTestUser()
         val contactId = java.util.UUID.randomUUID()
-        
+
         // Create some tasks with different statuses
-        val pendingTask = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val pendingTask = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "Pending task"),
             status = TaskStatus.Pending
         )
-        val dueTask = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val dueTask = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "Due task"),
             status = TaskStatus.Due
         )
-        val completedTask = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val completedTask = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "Completed task"),
             status = TaskStatus.Completed
         )
 
-        networkManager.createTaskWithTrigger(userId, pendingTask, null)
-        networkManager.createTaskWithTrigger(userId, dueTask, null)
-        networkManager.createTaskWithTrigger(userId, completedTask, null)
+        val task1 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, pendingTask)
+        val task2 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, dueTask)
+        val task3 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, completedTask)
 
         // Act
-        val tasks = networkManager.listPendingAndDueTasks(userId, testUser.tenantId)
+        val tasks = networkManager.listPendingAndDueTasks(userId.toString(), tenantId)
 
         // Assert
         assertThat(tasks).hasSize(2)
@@ -214,27 +196,22 @@ class NetworkManagerTest : DefaultTestProperties() {
     @Test
     fun `list pending due triggers`() {
         // Arrange
-        val testUser = createTestUser()
-        val userId = testUser.userId.toString()
+        val (userId, tenantId) = createTestUser()
         val contactId = java.util.UUID.randomUUID()
         val now = java.time.Instant.now()
-        
+
         // Create tasks
-        val task1 = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val task1 = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "Task 1"),
             status = TaskStatus.Pending
         )
-        val task2 = Task(
-            userId = testUser.userId,
-            tenantId = testUser.tenantId,
+        val task2 = CreateFollowUpTaskRequest(
             data = FollowUpTask(contactId = contactId, note = "Task 2"),
             status = TaskStatus.Pending
         )
 
-        val savedTask1 = networkManager.createTaskWithTrigger(userId, task1, null)
-        val savedTask2 = networkManager.createTaskWithTrigger(userId, task2, null)
+        val savedTask1 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, task1)
+        val savedTask2 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, task2)
 
         // Create triggers directly using TaskAccess to avoid duplicate task creation
         val dueTrigger = Trigger(

@@ -17,11 +17,12 @@ open class MembershipManager(
 
     @Transactional
     open fun registerUserWithPrivateTenant(userId: String, userFullName: String) : Tenant {
+        val userIdUUID = java.util.UUID.fromString(userId)
         val existing = tenantAccess.getMemberTenants(userId)
             .firstOrNull { it.tenant.tenantType == TenantType.PERSONAL }
             ?.tenant
         val tenant = existing ?: tenantAccess.registerNewTenant("Personal tenant", TenantType.PERSONAL, userId)
-        profileAccess.storeProfile(userId, UserProfile(userFullName, InitialsGenerator.generateInitials(userFullName)))
+        profileAccess.storeProfile(userIdUUID, UserProfile(userFullName, InitialsGenerator.generateInitials(userFullName)))
         return tenant
     }
 
@@ -34,5 +35,8 @@ open class MembershipManager(
         return tenants.single{tenant -> tenant.tenant.tenantType == TenantType.PERSONAL}
     }
 
-    fun getProfile(userId: String) : UserProfile? = profileAccess.getProfile(userId)
+    fun getProfile(userId: String) : UserProfile?{
+        val userIdUUID = java.util.UUID.fromString(userId)
+        return profileAccess.getProfile(userIdUUID)
+    }
 }

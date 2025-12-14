@@ -6,7 +6,7 @@
 
     <changeSet id="2025-09-02:2" author="Lars Aaberg">
         <createTable tableName="profile">
-            <column name="user_id" type="uniqueidentifier">
+            <column name="user_id" type="uuid">
                 <constraints primaryKey="true" primaryKeyName="pk_profile" />
             </column>
             <column name="name" type="text">

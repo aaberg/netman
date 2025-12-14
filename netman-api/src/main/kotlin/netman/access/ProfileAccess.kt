@@ -12,8 +12,7 @@ class ProfileAccess(
     val profileAccessMapper: ProfileAccessMapper
 ) {
 
-    fun storeProfile(userId: String, userProfile: UserProfile) {
-        val userId = UUID.fromString(userId)
+    fun storeProfile(userId: UUID, userProfile: UserProfile) {
         val existingProfile = profileRepository.getByUserId(userId)
 
         //val dto = ProfileDTO(userId, userProfile.name, "")
@@ -25,8 +24,7 @@ class ProfileAccess(
         }
     }
 
-    fun getProfile(userId:String) : UserProfile? {
-        val userId = UUID.fromString(userId)
+    fun getProfile(userId: UUID) : UserProfile? {
         val profileDto = profileRepository.getByUserId(userId) ?: return null
         return profileAccessMapper.toUserProfile(profileDto)
     }

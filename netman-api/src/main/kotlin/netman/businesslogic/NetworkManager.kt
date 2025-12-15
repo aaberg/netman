@@ -5,6 +5,9 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TaskAccess
+import netman.api.contact.ContactListItemResource
+import netman.api.contact.ContactResource
+import netman.api.contact.ContactResourceMapper
 import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.TaskResource
 import netman.businesslogic.models.TriggerResource
@@ -17,22 +20,27 @@ class NetworkManager(
     private val taskAccess: TaskAccess,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
-    private val timeService: TimeService
+    private val timeService: TimeService,
+    private val contactResourceMapper: ContactResourceMapper
 ) {
 
-    fun getMyContacts(userId: String, tenantId: Long): List<Contact2ListItem> {
+    fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
-        return contactAccess.listContacts(tenantId)
+        val contacts = contactAccess.listContacts(tenantId)
+        return contacts.map { contactResourceMapper.map(it) }
     }
 
-    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID): Contact2 {
+    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID): ContactResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        return contactAccess.getContact(tenantId, contactId)
+        val contact = contactAccess.getContact(tenantId, contactId)
+        return contactResourceMapper.map(contact)
     }
 
-    fun saveContactWithDetails(userId: String, tenantId: Long, contact: Contact2): Contact2 {
+    fun saveContactWithDetails(userId: String, tenantId: Long, contactResource: ContactResource): ContactResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        
+        val contact = contactResourceMapper.map(contactResource)
         val violations = validator.validate(contact)
 
         if (violations.isNotEmpty()) {
@@ -42,7 +50,7 @@ class NetworkManager(
         val savedContact = contactAccess.saveContact(tenantId, contact)
         requireNotNull(savedContact.id)
 
-        return savedContact
+        return contactResourceMapper.map(savedContact)
     }
 
     /**

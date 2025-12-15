@@ -4,7 +4,6 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
-import netman.access.repository.Contact2Repository
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
 import java.util.UUID
@@ -12,17 +11,14 @@ import java.util.UUID
 @Controller("/api/tenants")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class ContactApiController(
-    private val networkManager: NetworkManager,
-    private val contactResourceMapper: ContactResourceMapper
+    private val networkManager: NetworkManager
 ) : ContactApi {
     override fun getContactList(
         authentication: Authentication,
         tenantId: Long
     ): List<ContactListItemResource> {
         val user = getUserId(authentication)
-        val contacts = networkManager.getMyContacts(user, tenantId)
-        val contactResources = contacts.map { contactResourceMapper.map(it) }
-        return contactResources
+        return networkManager.getMyContacts(user, tenantId)
     }
 
     override fun saveContactWithDetails(
@@ -31,11 +27,7 @@ class ContactApiController(
         contactWithDetailsRequest: ContactResource
     ) : ContactResource {
         val userId = getUserId(authentication)
-
-        val contactWDetail = contactResourceMapper.map(contactWithDetailsRequest)
-        val savedContactWDetail = networkManager.saveContactWithDetails(userId, tenantId, contactWDetail)
-
-        return contactResourceMapper.map(savedContactWDetail)
+        return networkManager.saveContactWithDetails(userId, tenantId, contactWithDetailsRequest)
     }
 
     override fun getContactDetails(
@@ -44,7 +36,6 @@ class ContactApiController(
         contactId: UUID
     ): ContactResource {
         val user = getUserId(authentication)
-        val contactWithDetails = networkManager.getContactWithDetails(user, tenantId, contactId)
-        return contactResourceMapper.map(contactWithDetails)
+        return networkManager.getContactWithDetails(user, tenantId, contactId)
     }
 }

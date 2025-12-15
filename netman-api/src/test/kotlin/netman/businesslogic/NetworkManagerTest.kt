@@ -6,6 +6,7 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
+import netman.api.contact.ContactResource
 import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.CreateTriggerRequest
 import netman.models.*
@@ -57,7 +58,7 @@ class NetworkManagerTest : DefaultTestProperties() {
         val fetchedContacts =  networkManager.getMyContacts(userId, tenant.id)
 
         // Assert
-        assertThat(fetchedContacts).allSatisfy { c -> createdContacts.any { it.id == c.contactId } }
+        assertThat(fetchedContacts).allSatisfy { c -> createdContacts.any { it.id == c.id } }
     }
 
     @Test
@@ -70,8 +71,8 @@ class NetworkManagerTest : DefaultTestProperties() {
 
 
         // Act
-        val savedContact = networkManager.saveContactWithDetails(userId, tenant.id,
-            newContact("Ola Normann", listOf(email, phone)))
+        val contactResource = ContactResource(name = "Ola Normann", details = listOf(email, phone))
+        val savedContact = networkManager.saveContactWithDetails(userId, tenant.id, contactResource)
 
         val fetchedContact = networkManager.getContactWithDetails(userId, tenant.id, savedContact.id!!)
 
@@ -86,11 +87,11 @@ class NetworkManagerTest : DefaultTestProperties() {
         val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
 
         // Act
-        val contactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
-            newContact("Ola Normann", listOf()))
+        val contactResource = ContactResource(name = "Ola Normann", details = listOf())
+        val contactWDetail = networkManager.saveContactWithDetails(userId,tenant.id, contactResource)
 
-        val updatedContactWDetail = networkManager.saveContactWithDetails(userId,tenant.id,
-            contactWDetail.copy(name = "new name"))
+        val updatedContactResource = contactWDetail.copy(name = "new name")
+        val updatedContactWDetail = networkManager.saveContactWithDetails(userId,tenant.id, updatedContactResource)
 
         val myContacts = networkManager.getMyContacts(userId, tenant.id)
 
@@ -108,7 +109,8 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Act & Assert
         val validationException = assertThrows<ValidationException> {
-            networkManager.saveContactWithDetails(userId, tenant.id, newContact("", listOf()))
+            val contactResource = ContactResource(name = "", details = listOf())
+            networkManager.saveContactWithDetails(userId, tenant.id, contactResource)
         }
 
         println(validationException.message)

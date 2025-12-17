@@ -8,6 +8,7 @@ import netman.businesslogic.helper.InitialsGenerator
 import netman.businesslogic.models.MemberTenantResource
 import netman.businesslogic.models.ProfileResource
 import netman.businesslogic.models.TenantResource
+import netman.models.MemberTenant
 import netman.models.TenantType
 import netman.models.UserProfile
 
@@ -29,22 +30,22 @@ open class MembershipManager(
 
     fun getMemberTenants(userId: String) : List<MemberTenantResource> {
         val memberTenants = tenantAccess.getMemberTenants(userId)
-        return memberTenants.map { memberTenant ->
-            MemberTenantResource(
-                tenant = TenantResource(
-                    id = memberTenant.tenant.id,
-                    name = memberTenant.tenant.name,
-                    tenantType = memberTenant.tenant.tenantType
-                ),
-                userId = memberTenant.userId,
-                role = memberTenant.role
-            )
-        }
+        return memberTenants.map { toMemberTenantResource(it) }
     }
 
     fun getMemberDefaultTenant(userId: String) : MemberTenantResource {
         val tenants = tenantAccess.getMemberTenants(userId)
         val memberTenant = tenants.single{tenant -> tenant.tenant.tenantType == TenantType.PERSONAL}
+        return toMemberTenantResource(memberTenant)
+    }
+
+    fun getProfile(userId: String) : ProfileResource?{
+        val userIdUUID = java.util.UUID.fromString(userId)
+        val profile = profileAccess.getProfile(userIdUUID)
+        return profile?.let { ProfileResource(it.name, it.initials) }
+    }
+
+    private fun toMemberTenantResource(memberTenant: MemberTenant): MemberTenantResource {
         return MemberTenantResource(
             tenant = TenantResource(
                 id = memberTenant.tenant.id,
@@ -54,11 +55,5 @@ open class MembershipManager(
             userId = memberTenant.userId,
             role = memberTenant.role
         )
-    }
-
-    fun getProfile(userId: String) : ProfileResource?{
-        val userIdUUID = java.util.UUID.fromString(userId)
-        val profile = profileAccess.getProfile(userIdUUID)
-        return profile?.let { ProfileResource(it.name, it.initials) }
     }
 }

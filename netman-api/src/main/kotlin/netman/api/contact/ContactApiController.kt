@@ -6,6 +6,8 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
+import netman.businesslogic.models.ContactListItemResource
+import netman.businesslogic.models.ContactResource
 import java.util.UUID
 
 @Controller("/api/tenants")

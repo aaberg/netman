@@ -6,7 +6,7 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
-import netman.api.contact.ContactResource
+import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.CreateTriggerRequest
 import netman.models.*

@@ -1,4 +1,4 @@
-package netman.api.contact
+package netman.businesslogic.models
 
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Mapper

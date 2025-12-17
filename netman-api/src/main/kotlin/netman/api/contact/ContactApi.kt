@@ -11,7 +11,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import netman.models.Contact2
+import netman.businesslogic.models.ContactListItemResource
+import netman.businesslogic.models.ContactResource
 import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contact resources")

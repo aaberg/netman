@@ -5,9 +5,9 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TaskAccess
-import netman.api.contact.ContactListItemResource
-import netman.api.contact.ContactResource
-import netman.api.contact.ContactResourceMapper
+import netman.businesslogic.models.ContactListItemResource
+import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.ContactResourceMapper
 import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.TaskResource
 import netman.businesslogic.models.TriggerResource

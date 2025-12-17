@@ -6,7 +6,7 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.api.tenant.models.MemberTenantResource
-import netman.api.tenant.models.TenantResourceMapper
+import netman.api.tenant.models.TenantResource
 import netman.businesslogic.MembershipManager
 
 
@@ -14,14 +14,22 @@ import netman.businesslogic.MembershipManager
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class TenantApiController(
     private val membershipManager: MembershipManager,
-    private val tenantResourceMapper: TenantResourceMapper,
 ) : TenantApi {
 
     override fun getTenants(authentication: Authentication) : List<MemberTenantResource> {
         val user = getUserId(authentication)
 
         val tenants = membershipManager.getMemberTenants(user)
-        val tenantResources = tenants.map { tenantResourceMapper.map(it) }
+        val tenantResources = tenants.map { 
+            MemberTenantResource(
+                tenant = TenantResource(
+                    id = it.tenant.id,
+                    name = it.tenant.name,
+                    tenantType = it.tenant.tenantType.toString()
+                ),
+                role = it.role.toString()
+            )
+        }
         return tenantResources
     }
 
@@ -29,13 +37,27 @@ class TenantApiController(
         val user = getUserId(authentication)
 
         val tenant = membershipManager.getMemberTenants(user).single { it.tenant.id == tenantId }
-        return tenantResourceMapper.map(tenant)
+        return MemberTenantResource(
+            tenant = TenantResource(
+                id = tenant.tenant.id,
+                name = tenant.tenant.name,
+                tenantType = tenant.tenant.tenantType.toString()
+            ),
+            role = tenant.role.toString()
+        )
     }
 
     override fun getDefaultTenant(authentication: Authentication): MemberTenantResource {
         val user = getUserId(authentication)
         val tenant = membershipManager.getMemberDefaultTenant(user)
-        return tenantResourceMapper.map(tenant)
+        return MemberTenantResource(
+            tenant = TenantResource(
+                id = tenant.tenant.id,
+                name = tenant.tenant.name,
+                tenantType = tenant.tenant.tenantType.toString()
+            ),
+            role = tenant.role.toString()
+        )
     }
 
 

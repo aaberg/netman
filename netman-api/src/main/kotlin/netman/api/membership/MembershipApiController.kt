@@ -8,7 +8,7 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.MembershipManager
-import reactor.core.publisher.Mono
+import netman.businesslogic.models.ProfileResource
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/api/membership")
@@ -18,16 +18,15 @@ class MembershipApiController(val membershipManager: MembershipManager) : Member
     override fun registerProfile(
         authentication: Authentication,
         profile: CreateProfileRequest
-    ): Mono<HttpStatus> {
+    ): HttpStatus {
         val userId = getUserId(authentication)
         membershipManager.registerUserWithPrivateTenant(userId, profile.name)
-        return Mono.just(HttpStatus.OK)
+        return HttpStatus.OK
     }
 
-    override fun getProfile(authentication: Authentication): Mono<ProfileResource?> {
+    override fun getProfile(authentication: Authentication): ProfileResource? {
         val userId = getUserId(authentication)
-        val profile = membershipManager.getProfile(userId)
-        return if (profile != null) Mono.just(ProfileResource(profile.name, profile.initials)) else Mono.empty()
+        return membershipManager.getProfile(userId)
     }
 
 }

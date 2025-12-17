@@ -20,45 +20,30 @@ class TenantApiController(
         val user = getUserId(authentication)
 
         val tenants = membershipManager.getMemberTenants(user)
-        val tenantResources = tenants.map { 
-            MemberTenantResource(
-                tenant = TenantResource(
-                    id = it.tenant.id,
-                    name = it.tenant.name,
-                    tenantType = it.tenant.tenantType.toString()
-                ),
-                role = it.role.toString()
-            )
-        }
-        return tenantResources
+        return tenants.map { toApiResource(it) }
     }
 
     override fun getTenant(authentication: Authentication, tenantId: Long) : MemberTenantResource {
         val user = getUserId(authentication)
 
         val tenant = membershipManager.getMemberTenants(user).single { it.tenant.id == tenantId }
-        return MemberTenantResource(
-            tenant = TenantResource(
-                id = tenant.tenant.id,
-                name = tenant.tenant.name,
-                tenantType = tenant.tenant.tenantType.toString()
-            ),
-            role = tenant.role.toString()
-        )
+        return toApiResource(tenant)
     }
 
     override fun getDefaultTenant(authentication: Authentication): MemberTenantResource {
         val user = getUserId(authentication)
         val tenant = membershipManager.getMemberDefaultTenant(user)
-        return MemberTenantResource(
-            tenant = TenantResource(
-                id = tenant.tenant.id,
-                name = tenant.tenant.name,
-                tenantType = tenant.tenant.tenantType.toString()
-            ),
-            role = tenant.role.toString()
-        )
+        return toApiResource(tenant)
     }
 
-
+    private fun toApiResource(memberTenant: netman.businesslogic.models.MemberTenantResource): MemberTenantResource {
+        return MemberTenantResource(
+            tenant = TenantResource(
+                id = memberTenant.tenant.id,
+                name = memberTenant.tenant.name,
+                tenantType = memberTenant.tenant.tenantType.toString()
+            ),
+            role = memberTenant.role.toString()
+        )
+    }
 }

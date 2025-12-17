@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import netman.api.tenant.models.MemberTenantResource
+import netman.businesslogic.models.MemberTenantResource
 
 @Tag(name = "Tenant", description = "API for managing tenant resources")
 interface TenantApi {

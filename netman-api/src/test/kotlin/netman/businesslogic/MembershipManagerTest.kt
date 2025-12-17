@@ -3,7 +3,7 @@ package netman.businesslogic
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.DefaultTestProperties
-import netman.models.UserProfile
+import netman.businesslogic.models.ProfileResource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -26,7 +26,7 @@ class MembershipManagerTest : DefaultTestProperties() {
         val profile = membershipManager.getProfile(userId)
 
         // Assert
-        assertThat(profile).isEqualTo(UserProfile("Jane Doe", "JD"))
+        assertThat(profile).isEqualTo(ProfileResource("Jane Doe", "JD"))
     }
 
     @Test
@@ -37,7 +37,7 @@ class MembershipManagerTest : DefaultTestProperties() {
         // Act
         val firstTenant = membershipManager.registerUserWithPrivateTenant(userId, "Jane Doe")
         // sanity check: initial profile saved
-        assertThat(membershipManager.getProfile(userId)).isEqualTo(UserProfile("Jane Doe", "JD"))
+        assertThat(membershipManager.getProfile(userId)).isEqualTo(ProfileResource("Jane Doe", "JD"))
 
         val secondTenant = membershipManager.registerUserWithPrivateTenant(userId, "Janet Dee")
         val tenants = membershipManager.getMemberTenants(userId)
@@ -45,6 +45,6 @@ class MembershipManagerTest : DefaultTestProperties() {
         // Assert
         assertThat(tenants).hasSize(1)
         assertThat(secondTenant.id).isEqualTo(firstTenant.id)
-        assertThat(membershipManager.getProfile(userId)).isEqualTo(UserProfile("Janet Dee", "JD"))
+        assertThat(membershipManager.getProfile(userId)).isEqualTo(ProfileResource("Janet Dee", "JD"))
     }
 }

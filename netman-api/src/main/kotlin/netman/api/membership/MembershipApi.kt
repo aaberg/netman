@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameters
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import reactor.core.publisher.Mono
+import netman.businesslogic.models.ProfileResource
 
 /**
  * API for managing user membership profiles.
@@ -36,7 +36,7 @@ interface MembershipApi {
         ApiResponse(responseCode = "404", description = "User not found")
     )
     @Put("profile", produces = ["application/json"])
-    fun registerProfile(authentication: Authentication, @Body profile: CreateProfileRequest) : Mono<HttpStatus>
+    fun registerProfile(authentication: Authentication, @Body profile: CreateProfileRequest) : HttpStatus
 
     @Operation(
         method = "GET",
@@ -55,20 +55,8 @@ interface MembershipApi {
         ApiResponse(responseCode = "404", description = "Profile not found")
     )
     @Get("profile", produces = ["application/json"])
-    fun getProfile(authentication: Authentication) : Mono<ProfileResource?>
+    fun getProfile(authentication: Authentication) : ProfileResource?
 }
-
-/**
- * Represents a user profile with basic information.
- *
- * @property name The display name of the user
- */
-@Serdeable
-data class ProfileResource(
-    /** The display name of the user */
-    val name: String,
-    val initials: String
-)
 
 @Serdeable
 data class CreateProfileRequest(

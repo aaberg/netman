@@ -150,13 +150,4 @@ class NetworkManager(
                 })
             }
     }
-
-    /**
-     * Lists all triggers that are pending and whose trigger time is due.
-     * Returns triggers with status Pending where triggerTime is before the current time.
-     */
-    fun listPendingDueTriggers(): List<Trigger> {
-        val currentTime = timeService.now()
-        return taskAccess.getTriggersByStatusAndTime(TriggerStatus.Pending, currentTime)
-    }
 }

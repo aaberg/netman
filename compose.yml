@@ -80,6 +80,12 @@ services:
     networks:
       - default
 
+  nats:
+    image: nats:latest
+    ports:
+      - 4222:4222
+      - 8222:8222
+
 networks:
   default:
     name: netman-network

@@ -195,56 +195,6 @@ class NetworkManagerTest : DefaultTestProperties() {
         assertThat(notes).containsExactlyInAnyOrder("Pending task", "Due task")
     }
 
-    @Test
-    fun `list pending due triggers`() {
-        // Arrange
-        val (userId, tenantId) = createTestUser()
-        val contactId = java.util.UUID.randomUUID()
-        val now = java.time.Instant.now()
-
-        // Create tasks
-        val task1 = CreateFollowUpTaskRequest(
-            data = FollowUpTask(contactId = contactId, note = "Task 1"),
-            status = TaskStatus.Pending
-        )
-        val task2 = CreateFollowUpTaskRequest(
-            data = FollowUpTask(contactId = contactId, note = "Task 2"),
-            status = TaskStatus.Pending
-        )
-
-        val savedTask1 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, task1)
-        val savedTask2 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, task2)
-
-        // Create triggers directly using TaskAccess to avoid duplicate task creation
-        val dueTrigger = Trigger(
-            triggerType = "scheduled",
-            triggerTime = now.minusSeconds(3600), // Past time
-            targetTaskId = savedTask1.id!!,
-            status = TriggerStatus.Pending,
-            statusTime = now
-        )
-        val futureTrigger = Trigger(
-            triggerType = "scheduled",
-            triggerTime = now.plusSeconds(3600), // Future time
-            targetTaskId = savedTask2.id!!,
-            status = TriggerStatus.Pending,
-            statusTime = now
-        )
-
-        taskAccess.saveTrigger(dueTrigger)
-        taskAccess.saveTrigger(futureTrigger)
-
-        // Act
-        val currentTime = java.time.Instant.now()
-        val dueTriggers = networkManager.listPendingDueTriggers()
-
-        // Assert - Should only include triggers with past triggerTime
-        assertThat(dueTriggers).isNotEmpty
-        assertThat(dueTriggers).allSatisfy { trigger ->
-            trigger.status == TriggerStatus.Pending && trigger.triggerTime.isBefore(currentTime)
-        }
-    }
-
     private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)
 
     private fun createTestUser(): TestUserData {

@@ -1,11 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.2.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.2.21"
-    id("com.google.devtools.ksp") version "2.2.21-2.0.4"
-    id("io.micronaut.application") version "4.5.4"
+    id("org.jetbrains.kotlin.jvm") version "2.3.0"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.3.0"
+    id("com.google.devtools.ksp") version "2.3.4"
+    id("io.micronaut.application") version "4.6.1"
 //    id("io.micronaut.test-resources") version "4.5.4"
-    id("com.gradleup.shadow") version "8.3.9"
-    id("io.micronaut.aot") version "4.5.4"
+    id("com.gradleup.shadow") version "9.3.0"
+    id("io.micronaut.aot") version "4.6.1"
 }
 
 version = "0.1"
@@ -56,8 +56,8 @@ application {
     mainClass = "netman.ApplicationKt"
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("24")
-    targetCompatibility = JavaVersion.toVersion("24")
+    sourceCompatibility = JavaVersion.toVersion("25")
+    targetCompatibility = JavaVersion.toVersion("25")
 }
 kotlin {
     jvmToolchain(25)

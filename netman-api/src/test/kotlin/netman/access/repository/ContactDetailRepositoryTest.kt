@@ -12,7 +12,7 @@ import org.junit.jupiter.api.TestInstance
 class ContactDetailRepositoryTest : DefaultTestProperties() {
 
     @Inject
-    private lateinit var contactDetailRepository:ContactDetailRepository
+    private lateinit var contactDetailRepository: ContactDetailRepository
 
     @Inject
     private lateinit var contactRepository: ContactRepository

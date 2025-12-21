@@ -165,18 +165,17 @@ class NetworkManager(
             requireNotNull(trigger.targetTaskId)
             
             // Fetch and update the task to Due status
-            val task = taskAccess.getTask(trigger.targetTaskId)
-            if (task != null) {
-                val updatedTask = task.copy(status = TaskStatus.Due)
-                taskAccess.saveTask(updatedTask)
-                
-                // Update trigger to Triggered status
-                val updatedTrigger = trigger.copy(
-                    status = TriggerStatus.Triggered,
-                    statusTime = currentTime
-                )
-                taskAccess.saveTrigger(updatedTrigger)
-            }
+            val task = taskAccess.getTask(trigger.targetTaskId) ?: return@forEach
+            
+            val updatedTask = task.copy(status = TaskStatus.Due)
+            taskAccess.saveTask(updatedTask)
+            
+            // Update trigger to Triggered status
+            val updatedTrigger = trigger.copy(
+                status = TriggerStatus.Triggered,
+                statusTime = currentTime
+            )
+            taskAccess.saveTrigger(updatedTrigger)
         }
     }
 }

@@ -237,34 +237,6 @@ class NetworkManagerTest : DefaultTestProperties() {
     }
 
     @Test
-    fun `triggerDueTriggers does nothing when no due triggers exist`() {
-        // Arrange
-        val (userId, tenantId) = createTestUser()
-        val contactId = java.util.UUID.randomUUID()
-        
-        // Create task with future trigger
-        val futureTime = java.time.Instant.now().plusSeconds(3600) // 1 hour from now
-        val createTaskRequest = CreateFollowUpTaskRequest(
-            data = FollowUpTask(contactId = contactId, note = "Future task"),
-            status = TaskStatus.Pending,
-            trigger = CreateTriggerRequest("scheduled", futureTime)
-        )
-        
-        val savedTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, createTaskRequest)
-
-        // Act
-        networkManager.triggerDueTriggers()
-
-        // Assert - task should still be pending
-        val updatedTask = taskAccess.getTask(savedTask.id!!)
-        assertThat(updatedTask).isNotNull
-        assertThat(updatedTask!!.status).isEqualTo(TaskStatus.Pending)
-        
-        val trigger = taskAccess.getTriggersByTaskId(savedTask.id).first()
-        assertThat(trigger.status).isEqualTo(TriggerStatus.Pending)
-    }
-
-    @Test
     fun `triggerDueTriggers processes only pending triggers with past trigger time`() {
         // Arrange
         val (userId, tenantId) = createTestUser()

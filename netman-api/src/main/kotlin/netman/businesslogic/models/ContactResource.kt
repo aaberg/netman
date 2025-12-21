@@ -28,8 +28,7 @@ data class ContactListItemResource(
 )
 
 @Bean
-abstract class ContactResourceMapper(
-) {
+abstract class ContactResourceMapper {
     @Mapper
     abstract fun map(contact: Contact2) : ContactResource
 

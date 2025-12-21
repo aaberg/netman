@@ -14,7 +14,7 @@ class ContactRepositoryTest : DefaultTestProperties() {
     lateinit var contactRepository: ContactRepository
 
     @Inject
-    lateinit var tenantRepository: TenantRepository;
+    lateinit var tenantRepository: TenantRepository
 
     @Test
     fun `save and fetch contact by id`() {

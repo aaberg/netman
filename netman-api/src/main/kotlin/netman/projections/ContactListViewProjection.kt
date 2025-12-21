@@ -1,4 +1,3 @@
 package netman.projections
 
-class ContactListViewProjection {
-}
+class ContactListViewProjection

@@ -25,7 +25,7 @@ class TenantAccessTest : DefaultTestProperties() {
 
         val tenant1 = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
         val tenant2 = tenantAccess.registerNewTenant("tenant2", TenantType.ORGANIZATION, user1)
-        val tenant3 = tenantAccess.registerNewTenant("tenant3", TenantType.ORGANIZATION, user2)
+        tenantAccess.registerNewTenant("tenant3", TenantType.ORGANIZATION, user2)
 
         // Act
         val tenants = tenantAccess.getMemberTenants(user1)

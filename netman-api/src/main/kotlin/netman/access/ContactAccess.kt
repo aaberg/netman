@@ -34,7 +34,7 @@ open class ContactAccess(
             tenantId = tenantId,
             data = objectMapper.writeValueAsString(contactData),
             lastUpdated = Instant.now())
-        val savedContactDto: Contact2DTO;
+        val savedContactDto: Contact2DTO
         if (isNewContact) {
             savedContactDto = contact2Repository.save(contactDto)
         } else {

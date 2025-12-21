@@ -17,7 +17,7 @@ import java.util.*
 @WireMockTest(httpPort = 8091)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
-class ContactApiTest() : DefaultTestProperties() {
+class ContactApiTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var membershipManager: MembershipManager

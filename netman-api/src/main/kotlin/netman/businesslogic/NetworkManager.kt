@@ -150,4 +150,33 @@ class NetworkManager(
                 })
             }
     }
+
+    /**
+     * Processes pending triggers whose trigger time has passed.
+     * For each due trigger:
+     * - Marks the corresponding task as Due
+     * - Marks the trigger as Triggered
+     */
+    fun triggerDueTriggers() {
+        val currentTime = timeService.now()
+        val dueTriggers = taskAccess.getTriggersByStatusAndTime(TriggerStatus.Pending, currentTime)
+        
+        dueTriggers.forEach { trigger ->
+            requireNotNull(trigger.targetTaskId)
+            
+            // Fetch and update the task to Due status
+            val task = taskAccess.getTask(trigger.targetTaskId)
+            if (task != null) {
+                val updatedTask = task.copy(status = TaskStatus.Due)
+                taskAccess.saveTask(updatedTask)
+                
+                // Update trigger to Triggered status
+                val updatedTrigger = trigger.copy(
+                    status = TriggerStatus.Triggered,
+                    statusTime = currentTime
+                )
+                taskAccess.saveTrigger(updatedTrigger)
+            }
+        }
+    }
 }

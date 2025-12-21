@@ -200,7 +200,7 @@ class NetworkManagerTest : DefaultTestProperties() {
     private fun createTestUser(): TestUserData {
         val userId = java.util.UUID.randomUUID().toString()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return TestUserData(java.util.UUID.fromString(userId), tenant.id!!)
+        return TestUserData(java.util.UUID.fromString(userId), tenant.id)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

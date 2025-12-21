@@ -30,7 +30,7 @@ class TaskAccessTest : DefaultTestProperties() {
     private fun createTestUser(): TestUserData {
         val userId = UUID.randomUUID().toString()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return TestUserData(UUID.fromString(userId), tenant.id!!)
+        return TestUserData(UUID.fromString(userId), tenant.id)
     }
 
     @Test
@@ -104,15 +104,15 @@ class TaskAccessTest : DefaultTestProperties() {
         // Act
         val retrievedTask = taskAccess.getTask(savedTask.id!!)
 
-        // Assert
-        assertThat(retrievedTask).isNotNull
-        assertThat(retrievedTask?.id).isEqualTo(savedTask.id)
-        assertThat(retrievedTask?.userId).isEqualTo(testUser.userId)
-        assertThat(retrievedTask?.tenantId).isEqualTo(testUser.tenantId)
-        val followUpTask = retrievedTask?.data as FollowUpTask
+        //
+        requireNotNull(retrievedTask)
+        assertThat(retrievedTask.id).isEqualTo(savedTask.id)
+        assertThat(retrievedTask.userId).isEqualTo(testUser.userId)
+        assertThat(retrievedTask.tenantId).isEqualTo(testUser.tenantId)
+        val followUpTask = retrievedTask.data as FollowUpTask
         assertThat(followUpTask.contactId).isEqualTo(contactId)
         assertThat(followUpTask.note).isEqualTo("Retrieve this task")
-        assertThat(retrievedTask?.status).isEqualTo(TaskStatus.Pending)
+        assertThat(retrievedTask.status).isEqualTo(TaskStatus.Pending)
     }
 
     @Test
@@ -164,7 +164,7 @@ class TaskAccessTest : DefaultTestProperties() {
 
         // Assert
         assertThat(userTasks).hasSize(2)
-        assertThat(userTasks).allSatisfy { it.userId == testUser1.userId }
+        assertThat(userTasks).allSatisfy { assertThat(it.userId).isEqualTo(testUser1.userId) }
         val notes = userTasks.map { (it.data as FollowUpTask).note }
         assertThat(notes).containsExactlyInAnyOrder("Task 1 note", "Task 2 note")
     }
@@ -292,25 +292,27 @@ class TaskAccessTest : DefaultTestProperties() {
             data = FollowUpTask(contactId = contactId, note = "Task 2"),
             status = TaskStatus.Pending
         ))
+        requireNotNull(task1.id)
+        requireNotNull(task2.id)
 
         val trigger1 = Trigger(
             triggerType = "scheduled",
             triggerTime = Instant.now().plusSeconds(3600),
-            targetTaskId = task1.id!!,
+            targetTaskId = task1.id,
             status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
         val trigger2 = Trigger(
             triggerType = "event",
             triggerTime = Instant.now(),
-            targetTaskId = task1.id!!,
+            targetTaskId = task1.id,
             status = TriggerStatus.Triggered,
             statusTime = Instant.now()
         )
         val trigger3 = Trigger(
             triggerType = "manual",
             triggerTime = Instant.now(),
-            targetTaskId = task2.id!!,
+            targetTaskId = task2.id,
             status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )
@@ -320,11 +322,11 @@ class TaskAccessTest : DefaultTestProperties() {
         taskAccess.saveTrigger(trigger3)
 
         // Act
-        val task1Triggers = taskAccess.getTriggersByTaskId(task1.id!!)
+        val task1Triggers = taskAccess.getTriggersByTaskId(task1.id)
 
         // Assert
         assertThat(task1Triggers).hasSize(2)
-        assertThat(task1Triggers).allSatisfy { it.targetTaskId == task1.id }
+        assertThat(task1Triggers).allSatisfy { assertThat(it.targetTaskId).isEqualTo(task1.id) }
         assertThat(task1Triggers.map { it.triggerType }).containsExactlyInAnyOrder(
             "scheduled",
             "event"
@@ -342,11 +344,12 @@ class TaskAccessTest : DefaultTestProperties() {
             data = FollowUpTask(contactId = contactId, note = "Task"),
             status = TaskStatus.Pending
         ))
+        requireNotNull(task.id)
 
         val trigger = Trigger(
             triggerType = "scheduled",
             triggerTime = Instant.now(),
-            targetTaskId = task.id!!,
+            targetTaskId = task.id,
             status = TriggerStatus.Pending,
             statusTime = Instant.now()
         )

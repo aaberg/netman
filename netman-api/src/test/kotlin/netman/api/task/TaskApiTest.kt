@@ -54,7 +54,7 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("id", notNullValue())
-            .body("tenantId", equalTo(tenant.id!!.toInt()))
+            .body("tenantId", equalTo(tenant.id.toInt()))
             .body("status", equalTo("Pending"))
             .body("data.type", equalTo("followup"))
             .body("data.contactId", equalTo(contactId.toString()))
@@ -268,7 +268,7 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(200)
             .body("size()", equalTo(1))
-            .body("[0].tenantId", equalTo(tenant.id!!.toInt()))
+            .body("[0].tenantId", equalTo(tenant.id.toInt()))
             .body("[0].data.note", equalTo("Task in tenant"))
     }
 

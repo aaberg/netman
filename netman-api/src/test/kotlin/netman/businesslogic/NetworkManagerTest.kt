@@ -195,6 +195,88 @@ class NetworkManagerTest : DefaultTestProperties() {
         assertThat(notes).containsExactlyInAnyOrder("Pending task", "Due task")
     }
 
+    @Test
+    fun `triggerDueTriggers marks tasks as due and triggers as triggered`() {
+        // Arrange
+        val (userId, tenantId) = createTestUser()
+        val contactId = java.util.UUID.randomUUID()
+        
+        // Create tasks with triggers that are already past due
+        val pastTime = java.time.Instant.now().minusSeconds(3600) // 1 hour ago
+        val createTaskRequest1 = CreateFollowUpTaskRequest(
+            data = FollowUpTask(contactId = contactId, note = "Task 1"),
+            status = TaskStatus.Pending,
+            trigger = CreateTriggerRequest("scheduled", pastTime)
+        )
+        val createTaskRequest2 = CreateFollowUpTaskRequest(
+            data = FollowUpTask(contactId = contactId, note = "Task 2"),
+            status = TaskStatus.Pending,
+            trigger = CreateTriggerRequest("scheduled", pastTime)
+        )
+        
+        val savedTask1 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, createTaskRequest1)
+        val savedTask2 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, createTaskRequest2)
+
+        // Act
+        networkManager.triggerDueTriggers()
+
+        // Assert
+        val updatedTask1 = taskAccess.getTask(savedTask1.id!!)
+        val updatedTask2 = taskAccess.getTask(savedTask2.id!!)
+        
+        assertThat(updatedTask1).isNotNull
+        assertThat(updatedTask1!!.status).isEqualTo(TaskStatus.Due)
+        assertThat(updatedTask2).isNotNull
+        assertThat(updatedTask2!!.status).isEqualTo(TaskStatus.Due)
+        
+        val trigger1 = taskAccess.getTriggersByTaskId(savedTask1.id).first()
+        val trigger2 = taskAccess.getTriggersByTaskId(savedTask2.id).first()
+        
+        assertThat(trigger1.status).isEqualTo(TriggerStatus.Triggered)
+        assertThat(trigger2.status).isEqualTo(TriggerStatus.Triggered)
+    }
+
+    @Test
+    fun `triggerDueTriggers processes only pending triggers with past trigger time`() {
+        // Arrange
+        val (userId, tenantId) = createTestUser()
+        val contactId = java.util.UUID.randomUUID()
+        
+        // Create mix of tasks: past due, future, and already triggered
+        val pastTime = java.time.Instant.now().minusSeconds(3600)
+        val futureTime = java.time.Instant.now().plusSeconds(3600)
+        
+        val pastDueTask = CreateFollowUpTaskRequest(
+            data = FollowUpTask(contactId = contactId, note = "Past due task"),
+            status = TaskStatus.Pending,
+            trigger = CreateTriggerRequest("scheduled", pastTime)
+        )
+        val futureTask = CreateFollowUpTaskRequest(
+            data = FollowUpTask(contactId = contactId, note = "Future task"),
+            status = TaskStatus.Pending,
+            trigger = CreateTriggerRequest("scheduled", futureTime)
+        )
+        
+        val savedPastDueTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, pastDueTask)
+        val savedFutureTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, futureTask)
+
+        // Act
+        networkManager.triggerDueTriggers()
+
+        // Assert
+        val updatedPastDueTask = taskAccess.getTask(savedPastDueTask.id!!)
+        val updatedFutureTask = taskAccess.getTask(savedFutureTask.id!!)
+        
+        assertThat(updatedPastDueTask!!.status).isEqualTo(TaskStatus.Due)
+        assertThat(updatedFutureTask!!.status).isEqualTo(TaskStatus.Pending)
+        
+        val pastTrigger = taskAccess.getTriggersByTaskId(savedPastDueTask.id).first()
+        val futureTrigger = taskAccess.getTriggersByTaskId(savedFutureTask.id).first()
+        
+        assertThat(pastTrigger.status).isEqualTo(TriggerStatus.Triggered)
+        assertThat(futureTrigger.status).isEqualTo(TriggerStatus.Pending)
+    }
+
     private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)
 
     private fun createTestUser(): TestUserData {

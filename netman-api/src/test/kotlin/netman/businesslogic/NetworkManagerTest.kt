@@ -179,9 +179,9 @@ class NetworkManagerTest : DefaultTestProperties() {
             status = TaskStatus.Completed
         )
 
-        val task1 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, pendingTask)
-        val task2 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, dueTask)
-        val task3 = networkManager.createTaskWithTrigger(userId.toString(), tenantId, completedTask)
+        networkManager.createTaskWithTrigger(userId.toString(), tenantId, pendingTask)
+        networkManager.createTaskWithTrigger(userId.toString(), tenantId, dueTask)
+        networkManager.createTaskWithTrigger(userId.toString(), tenantId, completedTask)
 
         // Act
         val tasks = networkManager.listPendingAndDueTasks(userId.toString(), tenantId)
@@ -200,7 +200,7 @@ class NetworkManagerTest : DefaultTestProperties() {
     private fun createTestUser(): TestUserData {
         val userId = java.util.UUID.randomUUID().toString()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return TestUserData(java.util.UUID.fromString(userId), tenant.id!!)
+        return TestUserData(java.util.UUID.fromString(userId), tenant.id)
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

@@ -51,8 +51,8 @@ class ContactAccessTest : DefaultTestProperties() {
         ))
 
         // Act
-        val savedContact1 = contactAccess.saveContact(tenant.id, contact1)
-        val savedContact2 = contactAccess.saveContact(tenant.id, contact2)
+        contactAccess.saveContact(tenant.id, contact1)
+        contactAccess.saveContact(tenant.id, contact2)
 
         val contactList = contactAccess.listContacts(tenant.id)
 

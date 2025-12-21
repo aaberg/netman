@@ -24,7 +24,7 @@ class TenantRepositoryTest : DefaultTestProperties() {
         ))
         assertNotNull(saved.id)
 
-        val tenant = tenantRepository.getById(saved.id!!)
+        val tenant = tenantRepository.getById(saved.id)
         assertTrue(tenant != null)
 
         assertEquals("Acme Corp", tenant?.name)

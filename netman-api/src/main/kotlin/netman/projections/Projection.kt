@@ -1,5 +1,3 @@
 package netman.projections
 
-open class Projection(projectionId: String) {
-
-}
+open class Projection(projectionId: String)

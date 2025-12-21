@@ -104,7 +104,7 @@ class TaskAccessTest : DefaultTestProperties() {
         // Act
         val retrievedTask = taskAccess.getTask(savedTask.id!!)
 
-        //
+        // Assert
         requireNotNull(retrievedTask)
         assertThat(retrievedTask.id).isEqualTo(savedTask.id)
         assertThat(retrievedTask.userId).isEqualTo(testUser.userId)

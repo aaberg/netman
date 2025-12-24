@@ -33,6 +33,7 @@ dependencies {
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("org.slf4j:jul-to-slf4j")
     implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.nats:micronaut-nats")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("org.postgresql:postgresql")

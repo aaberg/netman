@@ -1,5 +1,7 @@
 package netman.messaging
 
+import io.micronaut.nats.annotation.NatsClient
+import io.micronaut.nats.annotation.Subject
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.DefaultTestProperties
@@ -18,11 +20,11 @@ import java.util.*
 /**
  * Test for TaskTriggerSubscriber.
  * 
- * Tests the subscriber by calling its method directly to avoid transaction isolation
- * issues that occur when testing asynchronous messaging.
+ * Note: These tests require NATS to be running (typically via docker-compose).
+ * If NATS is not available, the tests will fail with connection errors.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@MicronautTest(startApplication = false)
+@MicronautTest(startApplication = false, transactional = false)
 class TaskTriggerSubscriberTest : DefaultTestProperties() {
 
     @Inject
@@ -35,10 +37,10 @@ class TaskTriggerSubscriberTest : DefaultTestProperties() {
     private lateinit var taskAccess: netman.access.TaskAccess
     
     @Inject
-    private lateinit var taskTriggerSubscriber: TaskTriggerSubscriber
+    private lateinit var taskTriggerPublisher: TaskTriggerPublisher
 
     @Test
-    fun `subscriber processes due triggers when called`() {
+    fun `subscriber processes due triggers when message is published`() {
         // Arrange
         val (userId, tenantId) = createTestUser()
         val contactId = UUID.randomUUID()
@@ -57,8 +59,11 @@ class TaskTriggerSubscriberTest : DefaultTestProperties() {
         val initialTask = taskAccess.getTask(savedTask.id!!)
         assertThat(initialTask!!.status).isEqualTo(TaskStatus.Pending)
 
-        // Act - Call the subscriber method directly
-        taskTriggerSubscriber.onTaskTriggerDue()
+        // Act - Publish message to trigger processing via NATS
+        taskTriggerPublisher.publishTaskTriggerDue("")
+
+        // Give the subscriber time to process the message
+        Thread.sleep(1000)
 
         // Assert - Verify the task status was updated
         val updatedTask = taskAccess.getTask(savedTask.id)
@@ -86,8 +91,11 @@ class TaskTriggerSubscriberTest : DefaultTestProperties() {
 
         val savedTask = networkManager.createTaskWithTrigger(userId.toString(), tenantId, createTaskRequest)
 
-        // Act - Call the subscriber method directly
-        taskTriggerSubscriber.onTaskTriggerDue()
+        // Act - Publish message to trigger processing via NATS
+        taskTriggerPublisher.publishTaskTriggerDue("")
+
+        // Give the subscriber time to process the message
+        Thread.sleep(1000)
 
         // Assert - Verify the task status remains Pending
         val updatedTask = taskAccess.getTask(savedTask.id!!)
@@ -105,5 +113,14 @@ class TaskTriggerSubscriberTest : DefaultTestProperties() {
         val userId = UUID.randomUUID()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId.toString(), "Test User")
         return TestUserData(userId, tenant.id)
+    }
+
+    /**
+     * NATS client interface for publishing test messages.
+     */
+    @NatsClient
+    interface TaskTriggerPublisher {
+        @Subject("task.trigger.due")
+        fun publishTaskTriggerDue(message: String = "")
     }
 }

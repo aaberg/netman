@@ -102,8 +102,8 @@ class TaskTriggerSubscriberTest : DefaultTestProperties() {
     private data class TestUserData(val userId: UUID, val tenantId: Long)
 
     private fun createTestUser(): TestUserData {
-        val userId = UUID.randomUUID().toString()
-        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return TestUserData(UUID.fromString(userId), tenant.id)
+        val userId = UUID.randomUUID()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId.toString(), "Test User")
+        return TestUserData(userId, tenant.id)
     }
 }

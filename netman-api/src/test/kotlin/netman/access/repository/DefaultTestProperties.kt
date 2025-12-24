@@ -53,6 +53,8 @@ abstract class DefaultTestProperties : TestPropertyProvider {
             "micronaut.security.enabled" to "true",
             "micronaut.security.authentication" to "bearer",
             "logging.level.io.micronaut.security" to "DEBUG",
+            
+            "nats.default.addresses[0]" to "nats://localhost:4222",
 
 
         )

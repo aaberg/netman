@@ -158,10 +158,10 @@ class ExampleApiTest {
 
 ### Ports
 - Web UI: 5173 (development)
-- API: 8090
+- API: 8080
 - Main DB: 5433 (host) → 5432 (container)
 - Hanko DB: 5432 (host) → 5432 (container)
-- Mailslurper: 8080
+- Mailslurper: 8090
 
 ## Build Artifacts and Dependencies
 

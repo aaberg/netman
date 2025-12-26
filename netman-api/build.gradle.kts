@@ -31,6 +31,7 @@ dependencies {
     implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut.security:micronaut-security")
     implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut:micronaut-management")
     implementation("org.slf4j:jul-to-slf4j")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.nats:micronaut-nats")

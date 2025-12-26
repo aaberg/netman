@@ -75,7 +75,7 @@ services:
   mailslurper:
     image: marcopas/docker-mailslurper:latest
     ports:
-      - '8080:8080' # web UI
+      - '8090:8080' # web UI
       - '8085:8085'
     networks:
       - default

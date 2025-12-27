@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./netman-api
-          file: ./netman-api/Dockerfile
+          file: ./netman-api/Dockerfile.native
           push: true
           tags: ${{ steps.meta-api.outputs.tags }}
           labels: ${{ steps.meta-api.outputs.labels }}

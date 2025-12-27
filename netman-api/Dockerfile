@@ -1,8 +1,6 @@
-# Multi-stage build for Micronaut native image
-FROM ghcr.io/graalvm/native-image-community:25-muslib AS builder
-
-# Install required build tools
-RUN microdnf install -y findutils
+# Multi-stage build for Micronaut application
+# Stage 1: Build the application
+FROM eclipse-temurin:25-jdk-alpine AS builder
 
 # Set working directory
 WORKDIR /home/app
@@ -18,17 +16,23 @@ COPY micronaut-cli.yml .
 # Copy source code
 COPY src src
 
-# Build the native image
-RUN ./gradlew nativeCompile --no-daemon --no-configuration-cache
+# Build the application
+RUN ./gradlew buildLayers --no-daemon
 
-# Runtime stage
-FROM cgr.dev/chainguard/glibc-dynamic:latest
+# Stage 2: Create the runtime image
+FROM eclipse-temurin:25-jre-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy application layers from builder
+COPY --from=builder /home/app/build/layers/libs /app/libs
+COPY --from=builder /home/app/build/layers/classes /app/classes
+COPY --from=builder /home/app/build/layers/resources /app/resources
+COPY --from=builder /home/app/build/layers/application.jar /app/application.jar
 
 # Expose the application port
 EXPOSE 8080
 
-# Copy the native binary from builder
-COPY --from=builder /home/app/build/native/nativeCompile/netman-api /app/netman-api
-
-# Set the entrypoint
-ENTRYPOINT ["/app/netman-api"]
+# Set the entrypoint to run the application
+ENTRYPOINT ["java", "-jar", "/app/application.jar"]

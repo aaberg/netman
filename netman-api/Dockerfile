@@ -19,7 +19,7 @@ COPY src src
 # Make gradlew executable, ensure Unix line endings, and build the application
 RUN chmod +x gradlew && \
     sed -i 's/\r$//' gradlew && \
-    ./gradlew buildLayers --no-daemon
+    ./gradlew shadowJar --no-daemon
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:25-jre-alpine
@@ -30,11 +30,8 @@ RUN apk add --no-cache wget
 # Set working directory
 WORKDIR /app
 
-# Copy application layers from builder
-COPY --from=builder /home/app/build/layers/libs /app/libs
-COPY --from=builder /home/app/build/layers/classes /app/classes
-COPY --from=builder /home/app/build/layers/resources /app/resources
-COPY --from=builder /home/app/build/layers/application.jar /app/application.jar
+# Copy the built jar from builder
+COPY --from=builder /home/app/build/libs/*-all.jar /app/application.jar
 
 # Expose the application port
 EXPOSE 8080

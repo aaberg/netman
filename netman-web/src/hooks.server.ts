@@ -1,7 +1,7 @@
 import { type Handle, redirect, type RequestEvent } from "@sveltejs/kit"
-import { env } from "$env/dynamic/public"
+import { env } from "$env/dynamic/private"
 
-const hankoApiUrl = env.PUBLIC_HANKO_API_URL
+const hankoApiUrl = env.SERVER_HANKO_API_URL
 
 export const handle: Handle = async ({ event, resolve }) => {
   const session = await authenticatedUser(event)
@@ -37,6 +37,7 @@ const authenticatedUser = async (event: RequestEvent) => {
 
     return await response.json()
   } catch (error) {
+    console.error(error)
     return false
   }
 }

@@ -1,3 +1,114 @@
+# NetMan
+
+NetMan is a modern contact management and networking application built with Micronaut and SvelteKit.
+
+## Architecture
+
+- **Backend**: Kotlin/Micronaut REST API
+- **Frontend**: SvelteKit web application
+- **Database**: PostgreSQL 17
+- **Authentication**: Hanko
+- **Messaging**: NATS
+
+## Quick Start
+
+### Using Docker Compose (Recommended)
+
+The fastest way to get started is using Docker Compose which runs all services:
+
+```bash
+# Start all services
+docker compose up -d --build
+
+# View logs
+docker compose logs -f
+
+# Access the application
+# - Web UI: http://localhost:3000
+# - API: http://localhost:8081
+# - API Documentation: http://localhost:8081/swagger-ui
+```
+
+For detailed Docker instructions, see [DOCKER.md](DOCKER.md).
+
+### Local Development
+
+#### Prerequisites
+
+- Java 25
+- Node.js 20+
+- Docker and Docker Compose (for supporting services)
+
+#### Backend (API)
+
+```bash
+# Start supporting services (database, etc.)
+docker compose up -d db postgres_hanko hanko liquibase nats
+
+# Run the API
+cd netman-api
+./gradlew run
+
+# API available at http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui
+```
+
+#### Frontend (Web)
+
+```bash
+# Copy environment template
+cd netman-web
+cp .env.example .env
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Web available at http://localhost:5173
+```
+
+## Development
+
+### Backend Development
+
+```bash
+cd netman-api
+
+# Build
+./gradlew build
+
+# Run tests
+./gradlew test
+
+# Check code coverage
+./gradlew test jacocoTestReport
+```
+
+### Frontend Development
+
+```bash
+cd netman-web
+
+# Install dependencies
+npm install
+
+# Run dev server
+npm run dev
+
+# Run unit tests
+npm run test:unit
+
+# Run E2E tests
+npm run test:e2e
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+```
 
 ## NATS Messaging
 

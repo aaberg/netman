@@ -3,12 +3,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "2.3.0"
     id("com.google.devtools.ksp") version "2.3.4"
     id("io.micronaut.application") version "4.6.1"
-//    id("io.micronaut.test-resources") version "4.5.4"
     id("com.gradleup.shadow") version "9.3.0"
     id("io.micronaut.aot") version "4.6.1"
 }
 
-version = "0.1"
+version = System.getenv("APP_VERSION") ?: "0.1-SNAPSHOT"
 group = "netman.api"
 val kotlinVersion= project.properties["kotlinVersion"]
 
@@ -40,9 +39,6 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("io.micronaut:micronaut-http-client")
 
-//    testImplementation(platform("org.testcontainers:testcontaivernelandners-bom:1.21.3"))
-//    testImplementation("org.testcontainers:postgresql")
-//    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("org.junit.jupiter:junit-jupiter-params")

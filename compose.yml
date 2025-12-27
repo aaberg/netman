@@ -105,6 +105,7 @@ services:
       NETMAN_JDBC_USER: netman
       NETMAN_JDBC_PASSWORD: netman123
       NETMAN_NATS_URL: nats://nats:4222
+      NETMAN_HANKO_BASE_URL: http://hanko:8000
     networks:
       - default
     healthcheck:
@@ -128,9 +129,11 @@ services:
     environment:
       NETMAN_API_URL: http://api:8080
       PUBLIC_HANKO_API_URL: http://localhost:8000
+      SERVER_HANKO_API_URL: http://hanko:8000
       NODE_ENV: production
       PORT: 3000
       HOST: 0.0.0.0
+      ORIGIN: http://localhost:3000
     networks:
       - default
 

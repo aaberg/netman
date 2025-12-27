@@ -22,6 +22,9 @@ RUN ./gradlew buildLayers --no-daemon
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:25-jre-alpine
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Set working directory
 WORKDIR /app
 

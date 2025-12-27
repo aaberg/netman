@@ -68,6 +68,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.event_name == 'release' }}
 
       - name: Build and push API Docker image
+        id: build-api
         uses: docker/build-push-action@v6
         with:
           context: ./netman-api
@@ -81,6 +82,7 @@ jobs:
             APP_VERSION=${{ steps.get_version.outputs.version }}
 
       - name: Build and push Web Docker image
+        id: build-web
         uses: docker/build-push-action@v6
         with:
           context: ./netman-web

@@ -171,14 +171,21 @@ If you see "port already in use" errors:
 
 If builds fail:
 
-1. Clean Docker build cache:
+1. **For gradlew not found errors**, rebuild without cache to ensure the latest Dockerfile changes are used:
+   ```bash
+   docker compose build --no-cache
+   ```
+
+2. Clean Docker build cache:
    ```bash
    docker builder prune
    ```
 
-2. Rebuild without cache:
+3. If you see "gradlew: not found" even after rebuilding, the cached layers may be stale. Force a complete rebuild:
    ```bash
-   docker compose build --no-cache
+   docker compose down
+   docker compose build --no-cache --pull
+   docker compose up -d
    ```
 
 ### Cannot Connect to API

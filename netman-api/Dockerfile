@@ -16,8 +16,10 @@ COPY micronaut-cli.yml .
 # Copy source code
 COPY src src
 
-# Make gradlew executable and build the application
-RUN chmod +x gradlew && ./gradlew buildLayers --no-daemon
+# Make gradlew executable, ensure Unix line endings, and build the application
+RUN chmod +x gradlew && \
+    sed -i 's/\r$//' gradlew && \
+    ./gradlew buildLayers --no-daemon
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:25-jre-alpine

@@ -22,8 +22,10 @@ COPY micronaut-cli.yml .
 # Copy source code
 COPY src src
 
-# Make gradlew executable and build the native image (this can take 10-15 minutes)
-RUN chmod +x gradlew && ./gradlew nativeCompile --no-daemon --no-configuration-cache
+# Make gradlew executable, ensure Unix line endings, and build the native image (this can take 10-15 minutes)
+RUN chmod +x gradlew && \
+    sed -i 's/\r$//' gradlew && \
+    ./gradlew nativeCompile --no-daemon --no-configuration-cache
 
 # Stage 2: Create minimal runtime image
 FROM cgr.dev/chainguard/glibc-dynamic:latest

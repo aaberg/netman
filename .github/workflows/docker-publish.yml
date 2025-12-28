@@ -71,7 +71,7 @@ jobs:
           DOCKER_REGISTRY: ${{ env.REGISTRY }}
           DOCKER_IMAGE_NAME: ${{ env.API_IMAGE_NAME }}
         run: |
-          ./gradlew dockerBuildNative --no-daemon
+          ./gradlew dockerBuildNative --no-daemon --no-configuration-cache
           docker tag netman/api:${{ steps.get_version.outputs.version }} ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
           docker push ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
           if [ "${{ github.event_name }}" = "release" ]; then

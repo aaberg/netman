@@ -1,0 +1,51 @@
+# Git files
+.git
+.gitignore
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+.svelte-kit/
+build/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.junie/
+
+# Test files
+test-results/
+playwright-report/
+coverage/
+e2e/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files (except examples)
+.env
+.env.*
+!.env.example
+
+# Documentation
+README.md
+*.md
+
+# Config files not needed in production
+.prettierrc
+.prettierignore
+eslint.config.js
+playwright.config.ts
+vitest-setup-client.ts
+tsconfig.json
+
+# Docker files
+Dockerfile
+.dockerignore

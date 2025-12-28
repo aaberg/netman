@@ -10,7 +10,7 @@ import io.micronaut.serde.config.naming.SnakeCaseStrategy
 import reactor.core.publisher.Mono
 import java.time.Instant
 
-@Client("\${hanko.base-url:`http://localhost:8000`}")
+@Client("\${hanko.base-url}")
 interface AuthenticationClient {
 
     @Post("/sessions/validate")

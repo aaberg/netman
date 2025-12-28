@@ -1,0 +1,33 @@
+# Git files
+.git
+.gitignore
+
+# Build artifacts
+build/
+target/
+out/
+.gradle/
+.micronaut/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.settings/
+.classpath
+.factorypath
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+*.md
+
+# Docker files
+Dockerfile
+.dockerignore

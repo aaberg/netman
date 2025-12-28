@@ -62,7 +62,16 @@ kotlin {
 }
 
 
-graalvmNative.toolchainDetection = false
+graalvmNative {
+    toolchainDetection.set(false)
+    binaries {
+        named("main") {
+            buildArgs.add("--initialize-at-build-time=io.micronaut.security.authentication.AuthenticationMode")
+        }
+    }
+}
+
+//graalvmNative.toolchainDetection = false
 
 micronaut {
     runtime("netty")
@@ -89,5 +98,7 @@ micronaut {
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "25"
 }
+
+
 
 

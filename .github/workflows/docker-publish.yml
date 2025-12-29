@@ -14,6 +14,7 @@ env:
   REGISTRY: ghcr.io
   API_IMAGE_NAME: ${{ github.repository }}/api
   WEB_IMAGE_NAME: ${{ github.repository }}/web
+  LIQUIBASE_IMAGE_NAME: ${{ github.repository }}/liquibase
 
 jobs:
   build-and-push:
@@ -87,5 +88,26 @@ jobs:
           push: true
           tags: ${{ steps.meta-web.outputs.tags }}
           labels: ${{ steps.meta-web.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract metadata for Liquibase image
+        id: meta-liquibase
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.LIQUIBASE_IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.get_version.outputs.version }}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
+
+      - name: Build and push Liquibase Docker image
+        id: build-liquibase
+        uses: docker/build-push-action@v6
+        with:
+          context: ./liquibase
+          file: ./liquibase/Dockerfile
+          push: true
+          tags: ${{ steps.meta-liquibase.outputs.tags }}
+          labels: ${{ steps.meta-liquibase.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   release:
-    types: [created, published]
+    types: [published]
   workflow_dispatch:
     inputs:
       version:
@@ -66,13 +66,9 @@ jobs:
 
       - name: Build and push API Docker native image
         working-directory: ./netman-api
-        env:
-          APP_VERSION: ${{ steps.get_version.outputs.version }}
-          DOCKER_REGISTRY: ${{ env.REGISTRY }}
-          DOCKER_IMAGE_NAME: ${{ env.API_IMAGE_NAME }}
         run: |
           ./gradlew dockerBuildNative --no-daemon --no-configuration-cache
-          docker tag netman/api:${{ steps.get_version.outputs.version }} ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
+          docker tag netman-api:latest ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
           docker push ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
           if [ "${{ github.event_name }}" = "release" ]; then
             docker tag ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }} ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest

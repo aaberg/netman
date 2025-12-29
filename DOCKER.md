@@ -129,10 +129,12 @@ Docker images are automatically published to GitHub Container Registry (ghcr.io)
 # Pull published images
 docker pull ghcr.io/aaberg/netman/api:latest
 docker pull ghcr.io/aaberg/netman/web:latest
+docker pull ghcr.io/aaberg/netman/migrate:latest
 
 # Or specific version
 docker pull ghcr.io/aaberg/netman/api:1.0.0
 docker pull ghcr.io/aaberg/netman/web:1.0.0
+docker pull ghcr.io/aaberg/netman/migrate:1.0.0
 ```
 
 ## Environment Variables

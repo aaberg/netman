@@ -9,6 +9,7 @@ WORKDIR /liquibase/changelog
 
 # Set default environment variables (can be overridden at runtime)
 ENV LIQUIBASE_SEARCH_PATH=/liquibase/changelog
+# INSTALL_MYSQL is a base image variable - set to false since we use PostgreSQL
 ENV INSTALL_MYSQL=false
 
 # The entrypoint from the base image will be used

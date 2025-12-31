@@ -10,6 +10,9 @@ const config = {
     experimental: {
       instrumentation: {
         server: true
+      },
+      tracing: {
+        server: true
       }
     }
   }

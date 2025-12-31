@@ -12,6 +12,7 @@ import { env } from "$env/dynamic/private"
  * - OTEL_EXPORTER_AZUREMONITOR_ENABLED: Set to "true" to enable (disabled by default)
  * - OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING: Azure Application Insights connection string
  * - OTEL_SERVICE_NAME: Service name for telemetry (defaults to "netman-web")
+ * - OTEL_SAMPLING_RATIO: Sampling ratio 0-1 (defaults to 0.1 for 10% sampling)
  */
 export function initializeOpenTelemetry(): void {
   const enabled = env.OTEL_EXPORTER_AZUREMONITOR_ENABLED === "true"
@@ -34,12 +35,16 @@ export function initializeOpenTelemetry(): void {
 
   console.log(`Initializing OpenTelemetry with Azure Monitor for service: ${serviceName}`)
 
+  // Sampling ratio - defaults to 0.1 (10%) to reduce telemetry volume
+  // Set OTEL_SAMPLING_RATIO to override (value between 0 and 1)
+  const samplingRatio = parseFloat(env.OTEL_SAMPLING_RATIO || "0.1")
+
   const options: AzureMonitorOpenTelemetryOptions = {
     azureMonitorExporterOptions: {
       connectionString
     },
-    // Sample all requests in production - adjust as needed
-    samplingRatio: 1,
+    // Sample a percentage of requests - configurable via OTEL_SAMPLING_RATIO
+    samplingRatio,
     // Configure instrumentations
     instrumentationOptions: {
       http: { enabled: true },
@@ -56,8 +61,7 @@ export function initializeOpenTelemetry(): void {
     enableStandardMetrics: true,
     // Disable browser SDK loader (server-side only)
     browserSdkLoaderOptions: {
-      enabled: false,
-      connectionString: ""
+      enabled: false
     }
   }
 

@@ -92,7 +92,7 @@ describe("OpenTelemetry Configuration", () => {
         azureMonitorExporterOptions: {
           connectionString: "InstrumentationKey=test-key"
         },
-        samplingRatio: 1,
+        samplingRatio: 0.1,
         enableLiveMetrics: true,
         enableStandardMetrics: true
       })
@@ -112,6 +112,23 @@ describe("OpenTelemetry Configuration", () => {
 
     expect(consoleSpy.log).toHaveBeenCalledWith(
       "Initializing OpenTelemetry with Azure Monitor for service: netman-web"
+    )
+  })
+
+  it("should use custom sampling ratio when OTEL_SAMPLING_RATIO is set", async () => {
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    mockEnv.OTEL_SAMPLING_RATIO = "0.5"
+
+    const { initializeOpenTelemetry } = await import("$lib/server/otel")
+    const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
+
+    initializeOpenTelemetry()
+
+    expect(useAzureMonitor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        samplingRatio: 0.5
+      })
     )
   })
 })

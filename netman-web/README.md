@@ -29,6 +29,7 @@ OpenTelemetry can be configured using the following environment variables:
 - `OTEL_EXPORTER_AZUREMONITOR_ENABLED`: Set to `"true"` to enable Azure Monitor exporter (default: `false`)
 - `OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING`: Azure Application Insights connection string (required when enabled)
 - `OTEL_SERVICE_NAME`: Service name for telemetry (default: `"netman-web"`)
+- `OTEL_SAMPLING_RATIO`: Sampling ratio 0-1 (default: `0.1` for 10% sampling to reduce telemetry volume)
 
 ### Example
 
@@ -40,6 +41,7 @@ To enable OpenTelemetry with Azure Monitor:
    export OTEL_EXPORTER_AZUREMONITOR_ENABLED=true
    export OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING="InstrumentationKey=your-key;..."
    export OTEL_SERVICE_NAME=netman-web
+   export OTEL_SAMPLING_RATIO=0.1  # Sample 10% of requests (optional)
    ```
 
 2. Or add them to your `.env` file (copy from `.env.example`):

@@ -21,9 +21,11 @@ Both components use Docker Compose for orchestration with PostgreSQL databases a
 
 ### Setting Up the Environment
 
-All services are orchestrated via Docker Compose:
+All services are orchestrated via Docker Compose. Two compose files are available:
+
+**Full stack (all services):**
 ```bash
-# Start all services
+# Start all services (dependencies + API + web)
 docker compose up -d --build
 
 # View logs
@@ -31,6 +33,18 @@ docker compose logs -f
 
 # Stop services
 docker compose down
+```
+
+**Dependencies only (for local development):**
+```bash
+# Start only dependencies (database, auth, messaging, etc.)
+docker compose -f compose.deps.yml up -d
+
+# View logs
+docker compose -f compose.deps.yml logs -f
+
+# Stop services
+docker compose -f compose.deps.yml down
 ```
 
 ### Running Components Individually

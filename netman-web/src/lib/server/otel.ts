@@ -37,7 +37,15 @@ export function initializeOpenTelemetry(): void {
 
   // Sampling ratio - defaults to 0.1 (10%) to reduce telemetry volume
   // Set OTEL_SAMPLING_RATIO to override (value between 0 and 1)
-  const samplingRatio = parseFloat(env.OTEL_SAMPLING_RATIO || "0.1")
+  let samplingRatio = parseFloat(env.OTEL_SAMPLING_RATIO || "0.1")
+
+  // Validate sampling ratio
+  if (isNaN(samplingRatio) || samplingRatio < 0 || samplingRatio > 1) {
+    console.warn(
+      `Invalid OTEL_SAMPLING_RATIO value: ${env.OTEL_SAMPLING_RATIO}. Using default: 0.1`
+    )
+    samplingRatio = 0.1
+  }
 
   const options: AzureMonitorOpenTelemetryOptions = {
     azureMonitorExporterOptions: {

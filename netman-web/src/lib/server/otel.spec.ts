@@ -11,7 +11,11 @@ vi.mock("$env/dynamic/private", () => ({
 }))
 
 describe("OpenTelemetry Configuration", () => {
-  let consoleSpy: { log: ReturnType<typeof vi.spyOn>; error: ReturnType<typeof vi.spyOn> }
+  let consoleSpy: {
+    log: ReturnType<typeof vi.spyOn>
+    error: ReturnType<typeof vi.spyOn>
+    warn: ReturnType<typeof vi.spyOn>
+  }
   let mockEnv: Record<string, string>
 
   beforeEach(() => {
@@ -21,7 +25,8 @@ describe("OpenTelemetry Configuration", () => {
     // Spy on console methods
     consoleSpy = {
       log: vi.spyOn(console, "log").mockImplementation(() => {}),
-      error: vi.spyOn(console, "error").mockImplementation(() => {})
+      error: vi.spyOn(console, "error").mockImplementation(() => {}),
+      warn: vi.spyOn(console, "warn").mockImplementation(() => {})
     }
 
     // Setup mock environment
@@ -128,6 +133,46 @@ describe("OpenTelemetry Configuration", () => {
     expect(useAzureMonitor).toHaveBeenCalledWith(
       expect.objectContaining({
         samplingRatio: 0.5
+      })
+    )
+  })
+
+  it("should use default sampling ratio when OTEL_SAMPLING_RATIO is invalid", async () => {
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    mockEnv.OTEL_SAMPLING_RATIO = "invalid"
+
+    const { initializeOpenTelemetry } = await import("$lib/server/otel")
+    const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
+
+    initializeOpenTelemetry()
+
+    expect(consoleSpy.warn).toHaveBeenCalledWith(
+      "Invalid OTEL_SAMPLING_RATIO value: invalid. Using default: 0.1"
+    )
+    expect(useAzureMonitor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        samplingRatio: 0.1
+      })
+    )
+  })
+
+  it("should use default sampling ratio when OTEL_SAMPLING_RATIO is out of range", async () => {
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    mockEnv.OTEL_SAMPLING_RATIO = "1.5"
+
+    const { initializeOpenTelemetry } = await import("$lib/server/otel")
+    const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
+
+    initializeOpenTelemetry()
+
+    expect(consoleSpy.warn).toHaveBeenCalledWith(
+      "Invalid OTEL_SAMPLING_RATIO value: 1.5. Using default: 0.1"
+    )
+    expect(useAzureMonitor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        samplingRatio: 0.1
       })
     )
   })

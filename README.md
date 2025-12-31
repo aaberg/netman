@@ -17,7 +17,7 @@ NetMan is a modern contact management and networking application built with Micr
 The fastest way to get started is using Docker Compose which runs all services:
 
 ```bash
-# Start all services
+# Start all services (dependencies + API + web)
 docker compose up -d --build
 
 # View logs
@@ -33,19 +33,30 @@ For detailed Docker instructions, see [DOCKER.md](DOCKER.md).
 
 ### Local Development
 
+For local development, you can run just the dependencies in Docker and run the API/web locally:
+
 #### Prerequisites
 
 - Java 25
 - Node.js 20+
 - Docker and Docker Compose (for supporting services)
 
+#### Start Dependencies Only
+
+```bash
+# Start only the supporting services (database, auth, messaging, etc.)
+docker compose -f compose.deps.yml up -d
+
+# View logs
+docker compose -f compose.deps.yml logs -f
+```
+
 #### Backend (API)
 
 ```bash
-# Start supporting services (database, etc.)
-docker compose up -d db postgres_hanko hanko liquibase nats
+# Dependencies should be running (see above)
 
-# Run the API
+# Run the API locally
 cd netman-api
 ./gradlew run
 

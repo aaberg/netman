@@ -2,9 +2,20 @@
 
 This guide explains how to build and run the NetMan application using Docker and Docker Compose.
 
+## Compose File Overview
+
+NetMan provides two Docker Compose files for different use cases:
+
+- **`compose.yml`**: Full application stack (dependencies + API + Web)
+- **`compose.deps.yml`**: Dependencies only (database, auth, messaging, etc.)
+
+The `compose.yml` file includes `compose.deps.yml` using Docker Compose's inheritance feature, so you only need to maintain the dependencies in one place.
+
 ## Quick Start with Docker Compose
 
-To start all services (database, API, web, etc.) with Docker Compose:
+### Option 1: Full Stack (All Services)
+
+To start all services including API and web:
 
 ```bash
 # Build and start all services
@@ -24,44 +35,106 @@ docker compose down
 docker compose down -v
 ```
 
+### Option 2: Dependencies Only (For Local Development)
+
+To start only the dependencies and run API/web locally:
+
+```bash
+# Start only dependencies
+docker compose -f compose.deps.yml up -d
+
+# View logs
+docker compose -f compose.deps.yml logs -f
+
+# Stop dependencies
+docker compose -f compose.deps.yml down
+```
+
+This is useful when:
+- Developing the API or web application locally
+- You want faster iteration cycles without rebuilding Docker images
+- You need to debug the application with your IDE
+
+After starting dependencies, you can run the API and/or web locally:
+
+```bash
+# Run API locally
+cd netman-api
+./gradlew run
+
+# Run web locally (in another terminal)
+cd netman-web
+npm run dev
+```
+
 ## Service Port Mappings
 
 The following ports are mapped to avoid conflicts with local development:
 
-| Service | Container Port | Host Port | Purpose |
-|---------|---------------|-----------|---------|
-| API | 8080 | 8081 | REST API (Docker) |
-| Web | 3000 | 3000 | Web UI (Docker) |
-| Database | 5432 | 5433 | PostgreSQL |
-| Hanko | 8000 | 8000 | Authentication API |
-| Hanko Admin | 8001 | 8001 | Authentication Admin |
-| Mailslurper | 8080 | 8090 | Email testing UI |
-| NATS | 4222 | 4222 | Messaging |
+| Service | Container Port | Host Port | Purpose | Compose File |
+|---------|---------------|-----------|---------|--------------|
+| API | 8080 | 8081 | REST API (Docker) | compose.yml |
+| Web | 3000 | 3000 | Web UI (Docker) | compose.yml |
+| Database | 5432 | 5433 | PostgreSQL | compose.deps.yml |
+| Hanko | 8000 | 8000 | Authentication API | compose.deps.yml |
+| Hanko Admin | 8001 | 8001 | Authentication Admin | compose.deps.yml |
+| Mailslurper | 8080 | 8090 | Email testing UI | compose.deps.yml |
+| NATS | 4222 | 4222 | Messaging | compose.deps.yml |
+
+## Dependencies Included in compose.deps.yml
+
+The dependencies-only compose file includes:
+- **db**: PostgreSQL 17 database for the application
+- **liquibase**: Database migration tool
+- **postgres_hanko**: PostgreSQL database for Hanko authentication
+- **hanko-migrate**: Hanko database migration
+- **hanko**: Hanko authentication service
+- **mailslurper**: Email testing service
+- **nats**: NATS messaging server
 
 ## Local Development vs Docker
 
-### Running API Locally
+### Running API Locally with Dependencies in Docker
 
-When running the API locally (not in Docker), it will use port **8080** on localhost:
+The most common development workflow is to run dependencies in Docker and the API locally:
 
 ```bash
+# 1. Start dependencies
+docker compose -f compose.deps.yml up -d
+
+# 2. Wait for services to be healthy
+docker compose -f compose.deps.yml ps
+
+# 3. Run API locally
 cd netman-api
 ./gradlew run
 # API available at http://localhost:8080
 ```
 
-### Running Web Locally
+### Running Web Locally with Dependencies in Docker
 
-When running the web frontend locally (not in Docker), it will use port **5173**:
+Similarly, for web development:
 
 ```bash
+# 1. Start dependencies (if not already running)
+docker compose -f compose.deps.yml up -d
+
+# 2. Run web locally
 cd netman-web
 npm install
 npm run dev
 # Web available at http://localhost:5173
 ```
 
-When running locally, the frontend is configured to connect to the **dockerized API** at `http://localhost:8081` by setting the `NETMAN_API_URL` environment variable.
+### Running Full Stack in Docker
+
+For testing the complete dockerized application:
+
+```bash
+docker compose up -d --build
+# API available at http://localhost:8081 (note different port!)
+# Web available at http://localhost:3000
+```
 
 ### Mixed Mode (Frontend Local + API Docker)
 

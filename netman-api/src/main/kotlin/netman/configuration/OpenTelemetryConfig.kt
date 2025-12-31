@@ -17,6 +17,9 @@ class OpenTelemetryConfig {
     @Requires(property = "otel.exporter.azuremonitor.enabled", value = "true")
     fun azureMonitorExporter(@Value("\${otel.exporter.azuremonitor.connection-string}") connectionString: String)
     : OpenTelemetry {
+        require(connectionString.isNotBlank()) {
+            "Configuration property 'otel.exporter.azuremonitor.connection-string' must not be blank when Azure Monitor exporter is enabled."
+        }
         val otelBuilder = AutoConfiguredOpenTelemetrySdk.builder()
 
         AzureMonitorAutoConfigure.customize(otelBuilder, connectionString)

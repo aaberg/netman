@@ -20,6 +20,16 @@ dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
     ksp("io.micronaut.openapi:micronaut-openapi")
     ksp("io.micronaut.data:micronaut-data-processor")
+
+    // OpenTelemetry dependencies
+    implementation("io.micronaut.tracing:micronaut-tracing-opentelemetry")
+    implementation("io.micronaut.tracing:micronaut-tracing-opentelemetry-http")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-jdbc")
+
+    // Azure insights
+    implementation("com.azure:azure-monitor-opentelemetry-autoconfigure:1.4.0")
+
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")

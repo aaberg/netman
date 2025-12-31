@@ -76,7 +76,7 @@ graalvmNative {
     toolchainDetection.set(false)
     binaries {
         named("main") {
-            buildArgs.add("--initialize-at-build-time=io.micronaut.security.authentication.AuthenticationMode")
+            buildArgs.add("--initialize-at-build-time=io.micronaut.security.authentication.AuthenticationMode,org.slf4j.helpers.SubstituteServiceProvider")
         }
     }
 }

@@ -5,18 +5,13 @@ vi.mock("@azure/monitor-opentelemetry", () => ({
   useAzureMonitor: vi.fn()
 }))
 
-// Mock the env module
-vi.mock("$env/dynamic/private", () => ({
-  env: {}
-}))
-
 describe("OpenTelemetry Configuration", () => {
   let consoleSpy: {
     log: ReturnType<typeof vi.spyOn>
     error: ReturnType<typeof vi.spyOn>
     warn: ReturnType<typeof vi.spyOn>
   }
-  let mockEnv: Record<string, string>
+  let originalEnv: NodeJS.ProcessEnv
 
   beforeEach(() => {
     // Reset mocks
@@ -29,19 +24,22 @@ describe("OpenTelemetry Configuration", () => {
       warn: vi.spyOn(console, "warn").mockImplementation(() => {})
     }
 
-    // Setup mock environment
-    mockEnv = {}
-    vi.doMock("$env/dynamic/private", () => ({
-      env: mockEnv
-    }))
+    // Save original environment and clear relevant env vars
+    originalEnv = { ...process.env }
+    delete process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED
+    delete process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING
+    delete process.env.OTEL_SERVICE_NAME
+    delete process.env.OTEL_SAMPLING_RATIO
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
+    // Restore original environment
+    process.env = originalEnv
   })
 
   it("should not initialize when OTEL_EXPORTER_AZUREMONITOR_ENABLED is false", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "false"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "false"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
@@ -65,8 +63,8 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should log error when enabled but connection string is missing", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = ""
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = ""
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
@@ -80,9 +78,9 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should initialize when enabled with valid connection string", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
-    mockEnv.OTEL_SERVICE_NAME = "test-service"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    process.env.OTEL_SERVICE_NAME = "test-service"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
@@ -108,8 +106,8 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should use default service name when OTEL_SERVICE_NAME is not set", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
 
@@ -121,9 +119,9 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should use custom sampling ratio when OTEL_SAMPLING_RATIO is set", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
-    mockEnv.OTEL_SAMPLING_RATIO = "0.5"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    process.env.OTEL_SAMPLING_RATIO = "0.5"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
@@ -138,9 +136,9 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should use default sampling ratio when OTEL_SAMPLING_RATIO is invalid", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
-    mockEnv.OTEL_SAMPLING_RATIO = "invalid"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    process.env.OTEL_SAMPLING_RATIO = "invalid"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
@@ -158,9 +156,9 @@ describe("OpenTelemetry Configuration", () => {
   })
 
   it("should use default sampling ratio when OTEL_SAMPLING_RATIO is out of range", async () => {
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
-    mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
-    mockEnv.OTEL_SAMPLING_RATIO = "1.5"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
+    process.env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
+    process.env.OTEL_SAMPLING_RATIO = "1.5"
 
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")

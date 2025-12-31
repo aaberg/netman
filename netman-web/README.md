@@ -22,6 +22,8 @@ npm run test:e2e   # end-to-end tests (Playwright)
 
 The web application includes OpenTelemetry support for Azure Application Insights, which is **disabled by default**.
 
+This implementation uses SvelteKit's built-in instrumentation support (`src/instrumentation.server.ts`) which ensures OpenTelemetry is initialized before any application code runs. See the [SvelteKit Observability documentation](https://svelte.dev/docs/kit/observability) for more details.
+
 ### Configuration
 
 OpenTelemetry can be configured using the following environment variables:

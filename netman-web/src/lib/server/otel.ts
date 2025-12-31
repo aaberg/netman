@@ -1,10 +1,13 @@
-import { useAzureMonitor, type AzureMonitorOpenTelemetryOptions } from "@azure/monitor-opentelemetry"
+import {
+  useAzureMonitor,
+  type AzureMonitorOpenTelemetryOptions
+} from "@azure/monitor-opentelemetry"
 import { env } from "$env/dynamic/private"
 
 /**
  * Initializes OpenTelemetry with Azure Monitor integration if enabled.
  * This function should be called once at application startup, before any other imports.
- * 
+ *
  * Configuration is controlled via environment variables:
  * - OTEL_EXPORTER_AZUREMONITOR_ENABLED: Set to "true" to enable (disabled by default)
  * - OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING: Azure Application Insights connection string
@@ -12,14 +15,14 @@ import { env } from "$env/dynamic/private"
  */
 export function initializeOpenTelemetry(): void {
   const enabled = env.OTEL_EXPORTER_AZUREMONITOR_ENABLED === "true"
-  
+
   if (!enabled) {
     console.log("OpenTelemetry Azure Monitor exporter is disabled")
     return
   }
 
   const connectionString = env.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING
-  
+
   if (!connectionString || connectionString.trim() === "") {
     console.error(
       "OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING must be set when Azure Monitor exporter is enabled"

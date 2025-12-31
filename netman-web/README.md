@@ -35,6 +35,7 @@ OpenTelemetry can be configured using the following environment variables:
 To enable OpenTelemetry with Azure Monitor:
 
 1. Set the environment variables:
+
    ```bash
    export OTEL_EXPORTER_AZUREMONITOR_ENABLED=true
    export OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING="InstrumentationKey=your-key;..."
@@ -42,6 +43,7 @@ To enable OpenTelemetry with Azure Monitor:
    ```
 
 2. Or add them to your `.env` file (copy from `.env.example`):
+
    ```
    OTEL_EXPORTER_AZUREMONITOR_ENABLED=true
    OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING=InstrumentationKey=your-key;...

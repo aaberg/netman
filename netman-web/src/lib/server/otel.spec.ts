@@ -11,13 +11,13 @@ vi.mock("$env/dynamic/private", () => ({
 }))
 
 describe("OpenTelemetry Configuration", () => {
-  let consoleSpy: { log: any; error: any }
+  let consoleSpy: { log: ReturnType<typeof vi.spyOn>; error: ReturnType<typeof vi.spyOn> }
   let mockEnv: Record<string, string>
 
   beforeEach(() => {
     // Reset mocks
     vi.resetModules()
-    
+
     // Spy on console methods
     consoleSpy = {
       log: vi.spyOn(console, "log").mockImplementation(() => {}),
@@ -37,41 +37,37 @@ describe("OpenTelemetry Configuration", () => {
 
   it("should not initialize when OTEL_EXPORTER_AZUREMONITOR_ENABLED is false", async () => {
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "false"
-    
+
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
-    
+
     initializeOpenTelemetry()
-    
-    expect(consoleSpy.log).toHaveBeenCalledWith(
-      "OpenTelemetry Azure Monitor exporter is disabled"
-    )
+
+    expect(consoleSpy.log).toHaveBeenCalledWith("OpenTelemetry Azure Monitor exporter is disabled")
     expect(useAzureMonitor).not.toHaveBeenCalled()
   })
 
   it("should not initialize when OTEL_EXPORTER_AZUREMONITOR_ENABLED is not set", async () => {
     // Don't set the enabled flag
-    
+
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
-    
+
     initializeOpenTelemetry()
-    
-    expect(consoleSpy.log).toHaveBeenCalledWith(
-      "OpenTelemetry Azure Monitor exporter is disabled"
-    )
+
+    expect(consoleSpy.log).toHaveBeenCalledWith("OpenTelemetry Azure Monitor exporter is disabled")
     expect(useAzureMonitor).not.toHaveBeenCalled()
   })
 
   it("should log error when enabled but connection string is missing", async () => {
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = ""
-    
+
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
-    
+
     initializeOpenTelemetry()
-    
+
     expect(consoleSpy.error).toHaveBeenCalledWith(
       "OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING must be set when Azure Monitor exporter is enabled"
     )
@@ -82,12 +78,12 @@ describe("OpenTelemetry Configuration", () => {
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
     mockEnv.OTEL_SERVICE_NAME = "test-service"
-    
+
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
     const { useAzureMonitor } = await import("@azure/monitor-opentelemetry")
-    
+
     initializeOpenTelemetry()
-    
+
     expect(consoleSpy.log).toHaveBeenCalledWith(
       "Initializing OpenTelemetry with Azure Monitor for service: test-service"
     )
@@ -109,11 +105,11 @@ describe("OpenTelemetry Configuration", () => {
   it("should use default service name when OTEL_SERVICE_NAME is not set", async () => {
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_ENABLED = "true"
     mockEnv.OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING = "InstrumentationKey=test-key"
-    
+
     const { initializeOpenTelemetry } = await import("$lib/server/otel")
-    
+
     initializeOpenTelemetry()
-    
+
     expect(consoleSpy.log).toHaveBeenCalledWith(
       "Initializing OpenTelemetry with Azure Monitor for service: netman-web"
     )

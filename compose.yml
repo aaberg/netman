@@ -50,5 +50,9 @@ services:
       PORT: 3000
       HOST: 0.0.0.0
       ORIGIN: http://localhost:3000
+      # OpenTelemetry - disabled by default, set to true and provide connection string to enable
+      OTEL_EXPORTER_AZUREMONITOR_ENABLED: ${OTEL_EXPORTER_AZUREMONITOR_ENABLED:-false}
+      OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING: ${OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING:-}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-netman-web}
     networks:
       - default

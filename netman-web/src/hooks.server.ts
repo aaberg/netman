@@ -1,3 +1,7 @@
+// Initialize OpenTelemetry before any other imports (must be first)
+import { initializeOpenTelemetry } from "$lib/server/otel"
+initializeOpenTelemetry()
+
 import { type Handle, redirect, type RequestEvent } from "@sveltejs/kit"
 import { env } from "$env/dynamic/private"
 

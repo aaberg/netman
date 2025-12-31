@@ -45,6 +45,7 @@
     "vitest": "^3.0.0"
   },
   "dependencies": {
+    "@azure/monitor-opentelemetry": "^1.14.2",
     "@teamhanko/hanko-elements": "^2.1.0"
   }
 }

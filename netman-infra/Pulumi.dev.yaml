@@ -1,0 +1,12 @@
+config:
+  azure-native:location: norwayeast
+  netman-infra:netman-db-admin-password:
+    secure: AAABAJ8gT9dhGwsvgzaGsAPoNJrjGNy3Lya4BuT9Bx3sTNKkYYCMMQMNixF8gUtPUHhqc99e9LY=
+  netman-infra:netman-db-sku-name: Standard_B1ms
+  netman-infra:netman-db-sku-tier: Burstable
+  netman-infra:netman-db-storage-iops: "120"
+  netman-infra:netman-db-storage-size: "32"
+  netman-infra:netman-db-storage-tier: P4
+  netman-infra:azure.tenantId:
+    secure: AAABAEBa7LL7/sdQCBGgIKydKCT7Z5DvGwW4BI5DEBAxJl2yUq50dtUGjsosyad+cK2gaqhHa4IbVvP2M++BDUihw0k=
+  netman-infra:netman-hanko-base-url: https://d6b0ce7f-6df4-4d61-abf7-f8ae28eb4279.hanko.io

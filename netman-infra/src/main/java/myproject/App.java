@@ -1,4 +1,4 @@
-package myproject;
+package no.aaberg.netman.infra;
 
 import com.pulumi.Pulumi;
 import com.pulumi.azurenative.app.inputs.*;

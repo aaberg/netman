@@ -12,7 +12,7 @@
  ## Prerequisites
 
  - [Pulumi CLI](https://www.pulumi.com/docs/get-started/install/)
- - [Java 11+](https://adoptium.net/)
+ - [Java 25+](https://adoptium.net/)
  - [Maven 3.6+](https://maven.apache.org/install.html)
  - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (and be logged in via `az login`)
 

@@ -76,7 +76,11 @@ graalvmNative {
     toolchainDetection.set(false)
     binaries {
         named("main") {
-            buildArgs.add("--initialize-at-build-time=io.micronaut.security.authentication.AuthenticationMode,org.slf4j.helpers.SubstituteServiceProvider")
+            buildArgs.add("--initialize-at-build-time=io.micronaut.security.authentication.AuthenticationMode")
+            buildArgs.add("--initialize-at-build-time=ch.qos.logback")
+            buildArgs.add("--initialize-at-build-time=org.slf4j")
+            buildArgs.add("--initialize-at-build-time=com.fasterxml.jackson.core")
+            buildArgs.add("--initialize-at-build-time=org.xml.sax.helpers")
         }
     }
 }

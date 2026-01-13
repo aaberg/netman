@@ -4,7 +4,7 @@
 
   const { data }: PageProps = $props()
   const { tenant, contact } = data
-  const details = contact.details.sort(compareDetails)
+  const details = (contact.details || []).sort(compareDetails)
   console.log(details)
 
   // Type guards for discriminated rendering

@@ -3,6 +3,11 @@
 
   let { contact = $bindable() }: { contact: ContactWithDetails } = $props()
 
+  // Ensure details array is initialized
+  if (!contact.details) {
+    contact.details = []
+  }
+
   let emails = $derived(
     contact.details.filter((detail): detail is Email => detail.type === "email")
   )
@@ -14,7 +19,7 @@
   let notes = $derived(contact.details.filter((detail): detail is Note => detail.type === "note"))
 
   function addEmail() {
-    contact.details.push({
+    contact.details!.push({
       type: "email",
       address: "",
       label: "",
@@ -25,12 +30,12 @@
   }
 
   function removeEmail(email: Email) {
-    const index = contact.details.indexOf(email)
-    contact.details.splice(index, 1)
+    const index = contact.details!.indexOf(email)
+    contact.details!.splice(index, 1)
   }
 
   function addPhone() {
-    contact.details.push({
+    contact.details!.push({
       type: "phone",
       number: "",
       label: "",
@@ -41,20 +46,20 @@
   }
 
   function removePhone(phone: Phone) {
-    const index = contact.details.indexOf(phone)
-    contact.details.splice(index, 1)
+    const index = contact.details!.indexOf(phone)
+    contact.details!.splice(index, 1)
   }
 
   function addNote() {
-    contact.details.push({
+    contact.details!.push({
       type: "note",
       note: ""
     })
   }
 
   function removeNote(note: Note) {
-    const index = contact.details.indexOf(note)
-    contact.details.splice(index, 1)
+    const index = contact.details!.indexOf(note)
+    contact.details!.splice(index, 1)
   }
 </script>
 

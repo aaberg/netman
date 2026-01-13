@@ -2,7 +2,7 @@ export interface ContactWithDetails {
   id: string | null
   name: string
   initials: string
-  details: Array<Email | Phone | Note>
+  details?: Array<Email | Phone | Note>
 }
 
 export interface Contact {

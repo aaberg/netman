@@ -120,7 +120,7 @@ describe("contactModel", () => {
         id: "123",
         name: "John Doe",
         initials: "JD",
-        details: null as any // null should be treated same as undefined
+        details: null
       }
 
       // Verify that null details can be handled with || [] pattern

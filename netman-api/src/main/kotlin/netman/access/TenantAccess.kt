@@ -10,7 +10,10 @@ import netman.models.TenantRole
 import netman.models.TenantType
 
 @Singleton
-open class TenantAccess(private val tenantRepository: TenantRepository) {
+open class TenantAccess(
+    private val tenantRepository: TenantRepository,
+    private val labelAccess: LabelAccess
+) {
 
     @Transactional
     open fun registerNewTenant(name: String, type: TenantType, ownerUserId: String) : Tenant {
@@ -21,6 +24,9 @@ open class TenantAccess(private val tenantRepository: TenantRepository) {
         }
 
         tenantRepository.addMemberToTenant(ownerUserId, tenantDto.id, TenantRole.Owner.toString())
+        
+        // Add common labels for new tenant
+        labelAccess.saveCommonLabels(tenantDto.id)
 
         return Tenant(tenantDto.id, tenantDto.name, TenantType.valueOf(tenantDto.type))
     }

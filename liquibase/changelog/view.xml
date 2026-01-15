@@ -24,4 +24,18 @@
             <column name="tenant_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="2026-01-15-1" author="Lars Aaberg">
+        <createTable tableName="view_labels">
+            <column name="label" type="varchar(100)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_view_labels" />
+            </column>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createIndex tableName="view_labels" indexName="idx_view_labels_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

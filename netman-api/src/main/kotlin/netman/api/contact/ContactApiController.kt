@@ -40,4 +40,12 @@ class ContactApiController(
         val user = getUserId(authentication)
         return networkManager.getContactWithDetails(user, tenantId, contactId)
     }
+    
+    override fun getLabels(
+        authentication: Authentication,
+        tenantId: Long
+    ): List<String> {
+        val user = getUserId(authentication)
+        return networkManager.getLabels(user, tenantId)
+    }
 }

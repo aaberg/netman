@@ -4,6 +4,7 @@ import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
+import netman.access.LabelAccess
 import netman.access.TaskAccess
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
@@ -21,7 +22,8 @@ class NetworkManager(
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val timeService: TimeService,
-    private val contactResourceMapper: ContactResourceMapper
+    private val contactResourceMapper: ContactResourceMapper,
+    private val labelAccess: LabelAccess
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
@@ -177,5 +179,10 @@ class NetworkManager(
             )
             taskAccess.saveTrigger(updatedTrigger)
         }
+    }
+    
+    fun getLabels(userId: String, tenantId: Long): List<String> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        return labelAccess.getLabels(tenantId).map { it.label }.sorted()
     }
 }

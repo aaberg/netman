@@ -11,6 +11,10 @@ class LabelAccess(
     private val labelRepository: LabelRepository
 ) {
     
+    companion object {
+        private val COMMON_LABELS = listOf("Home", "Work")
+    }
+    
     fun saveLabel(tenantId: Long, label: String) {
         val labelId = LabelId(label, tenantId)
         if (!labelRepository.existsById(labelId)) {
@@ -25,8 +29,7 @@ class LabelAccess(
     }
     
     fun saveCommonLabels(tenantId: Long) {
-        val commonLabels = listOf("Home", "Work")
-        commonLabels.forEach { label ->
+        COMMON_LABELS.forEach { label ->
             saveLabel(tenantId, label)
         }
     }

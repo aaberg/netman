@@ -5,8 +5,8 @@ import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.GenericRepository
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-interface LabelRepository : GenericRepository<LabelDTO, String> {
+interface LabelRepository : GenericRepository<LabelDTO, LabelId> {
     fun save(dto: LabelDTO): LabelDTO
-    fun findByTenantId(tenantId: Long): List<LabelDTO>
-    fun existsByLabelAndTenantId(label: String, tenantId: Long): Boolean
+    fun findByIdTenantId(tenantId: Long): List<LabelDTO>
+    fun existsById(id: LabelId): Boolean
 }

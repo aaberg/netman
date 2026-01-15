@@ -28,14 +28,20 @@
     <changeSet id="2026-01-15-1" author="Lars Aaberg">
         <createTable tableName="view_labels">
             <column name="label" type="varchar(100)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_view_labels" />
+                <constraints nullable="false" />
             </column>
             <column name="tenant_id" type="bigint">
                 <constraints nullable="false" />
             </column>
         </createTable>
+        <addPrimaryKey tableName="view_labels" columnNames="label" constraintName="pk_view_labels"/>
         <createIndex tableName="view_labels" indexName="idx_view_labels_tenant_id">
             <column name="tenant_id"/>
         </createIndex>
+    </changeSet>
+    
+    <changeSet id="2026-01-15-2" author="Lars Aaberg">
+        <dropPrimaryKey tableName="view_labels" constraintName="pk_view_labels"/>
+        <addPrimaryKey tableName="view_labels" columnNames="label,tenant_id" constraintName="pk_view_labels"/>
     </changeSet>
 </databaseChangeLog>

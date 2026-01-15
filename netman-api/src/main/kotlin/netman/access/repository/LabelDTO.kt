@@ -1,21 +1,15 @@
 package netman.access.repository
 
-import io.micronaut.data.annotation.Embeddable
-import io.micronaut.data.annotation.EmbeddedId
+import io.micronaut.data.annotation.GeneratedValue
+import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.MappedEntity
-import io.micronaut.data.annotation.MappedProperty
-import java.io.Serializable
-
-@Embeddable
-data class LabelId(
-    @field:MappedProperty("label")
-    val label: String,
-    @field:MappedProperty("tenant_id")
-    val tenantId: Long
-) : Serializable
+import java.util.UUID
 
 @MappedEntity("view_labels")
 data class LabelDTO(
-    @field:EmbeddedId
-    val id: LabelId
+    @field:Id
+    @field:GeneratedValue
+    val id: UUID?,
+    val label: String,
+    val tenantId: Long
 )

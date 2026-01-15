@@ -181,8 +181,8 @@ class NetworkManager(
         }
     }
     
-    fun getLabels(userId: String, tenantId: Long): List<String> {
+    fun getLabels(userId: String, tenantId: Long): List<Label> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        return labelAccess.getLabels(tenantId).map { it.label }.sorted()
+        return labelAccess.getLabels(tenantId).sortedBy { it.label }
     }
 }

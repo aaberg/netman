@@ -2,7 +2,6 @@ package netman.access
 
 import jakarta.inject.Singleton
 import netman.access.repository.LabelDTO
-import netman.access.repository.LabelId
 import netman.access.repository.LabelRepository
 import netman.models.Label
 
@@ -16,15 +15,14 @@ class LabelAccess(
     }
     
     fun saveLabel(tenantId: Long, label: String) {
-        val labelId = LabelId(label, tenantId)
-        if (!labelRepository.existsById(labelId)) {
-            labelRepository.save(LabelDTO(labelId))
+        if (!labelRepository.existsByLabelAndTenantId(label, tenantId)) {
+            labelRepository.save(LabelDTO(id = null, label = label, tenantId = tenantId))
         }
     }
     
     fun getLabels(tenantId: Long): List<Label> {
-        return labelRepository.findByIdTenantId(tenantId).map { 
-            Label(it.id.label, it.id.tenantId) 
+        return labelRepository.findByTenantId(tenantId).map { 
+            Label(id = it.id!!, label = it.label, tenantId = it.tenantId) 
         }
     }
     

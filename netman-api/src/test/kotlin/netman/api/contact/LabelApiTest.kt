@@ -36,7 +36,7 @@ class LabelApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(200)
             .body("size()", equalTo(2))
-            .body("", hasItems("Home", "Work"))
+            .body("label", hasItems("Home", "Work"))
     }
 
     @Test
@@ -83,7 +83,7 @@ class LabelApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(200)
             .body("size()", equalTo(4))
-            .body("", hasItems("Home", "Work", "Personal", "Mobile"))
+            .body("label", hasItems("Home", "Work", "Personal", "Mobile"))
     }
 
     @Test
@@ -146,6 +146,6 @@ class LabelApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(200)
             .body("size()", equalTo(2))
-            .body("", hasItems("Home", "Work"))
+            .body("label", hasItems("Home", "Work"))
     }
 }

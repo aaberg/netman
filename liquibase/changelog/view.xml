@@ -27,6 +27,9 @@
 
     <changeSet id="2026-01-15-1" author="Lars Aaberg">
         <createTable tableName="view_labels">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_view_labels" />
+            </column>
             <column name="label" type="varchar(100)">
                 <constraints nullable="false" />
             </column>
@@ -34,14 +37,13 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
-        <addPrimaryKey tableName="view_labels" columnNames="label" constraintName="pk_view_labels"/>
+        <addUniqueConstraint tableName="view_labels" columnNames="label,tenant_id" constraintName="uk_view_labels_label_tenant"/>
         <createIndex tableName="view_labels" indexName="idx_view_labels_tenant_id">
             <column name="tenant_id"/>
         </createIndex>
     </changeSet>
     
     <changeSet id="2026-01-15-2" author="Lars Aaberg">
-        <dropPrimaryKey tableName="view_labels" constraintName="pk_view_labels"/>
-        <addPrimaryKey tableName="view_labels" columnNames="label,tenant_id" constraintName="pk_view_labels"/>
+        <sql>ALTER TABLE view_labels ALTER COLUMN id SET DEFAULT gen_random_uuid()</sql>
     </changeSet>
 </databaseChangeLog>

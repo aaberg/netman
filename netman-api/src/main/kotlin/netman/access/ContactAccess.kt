@@ -7,6 +7,8 @@ import netman.access.repository.*
 import netman.models.CDetail
 import netman.models.Contact2
 import netman.models.Contact2ListItem
+import netman.models.Email
+import netman.models.Phone
 import java.time.Instant
 import java.util.*
 
@@ -16,8 +18,8 @@ open class ContactAccess(
     private val contactDetailRepository: ContactDetailRepository,
     private val contact2Repository: Contact2Repository,
     private val viewContactListRepository: ViewContactListRepository,
-    private val objectMapper: ObjectMapper
-
+    private val objectMapper: ObjectMapper,
+    private val labelRepository: LabelRepository
 ) {
 
     @Serdeable
@@ -42,6 +44,9 @@ open class ContactAccess(
         }
         val savedContact = mapContact(savedContactDto)
         updateContactListViewProjection(savedContact, tenantId)
+        
+        extractAndSaveLabels(contact, tenantId)
+        
         return savedContact
     }
 
@@ -81,6 +86,24 @@ open class ContactAccess(
             contactDto.contactInfoIcon,
             contactDto.labels,
             contactDto.hasUpdates)
+    }
+    
+    private fun extractAndSaveLabels(contact: Contact2, tenantId: Long) {
+        contact.details.forEach { detail ->
+            when (detail) {
+                is Email -> {
+                    if (detail.label.isNotBlank()) {
+                        labelRepository.saveLabel(tenantId, detail.label)
+                    }
+                }
+                is Phone -> {
+                    if (detail.label.isNotBlank()) {
+                        labelRepository.saveLabel(tenantId, detail.label)
+                    }
+                }
+                else -> { /* Other detail types don't have labels */ }
+            }
+        }
     }
 
 

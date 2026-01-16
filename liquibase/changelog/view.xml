@@ -24,4 +24,22 @@
             <column name="tenant_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="2026-01-15-1" author="Lars Aaberg">
+        <createTable tableName="view_labels">
+            <column name="id" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_view_labels" />
+            </column>
+            <column name="label" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="tenant_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="view_labels" columnNames="label,tenant_id" constraintName="uk_view_labels_label_tenant"/>
+        <createIndex tableName="view_labels" indexName="idx_view_labels_tenant_id">
+            <column name="tenant_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

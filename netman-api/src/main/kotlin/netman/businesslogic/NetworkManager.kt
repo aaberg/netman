@@ -5,10 +5,12 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.TaskAccess
+import netman.access.repository.LabelRepository
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.ContactResourceMapper
 import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.LabelResource
 import netman.businesslogic.models.TaskResource
 import netman.businesslogic.models.TriggerResource
 import netman.models.*
@@ -21,7 +23,8 @@ class NetworkManager(
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val timeService: TimeService,
-    private val contactResourceMapper: ContactResourceMapper
+    private val contactResourceMapper: ContactResourceMapper,
+    private val labelRepository: LabelRepository
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
@@ -177,5 +180,12 @@ class NetworkManager(
             )
             taskAccess.saveTrigger(updatedTrigger)
         }
+    }
+    
+    fun getLabels(userId: String, tenantId: Long): List<LabelResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        return labelRepository.getLabels(tenantId)
+            .sortedBy { it.label }
+            .map { LabelResource(id = it.id, label = it.label, tenantId = it.tenantId) }
     }
 }

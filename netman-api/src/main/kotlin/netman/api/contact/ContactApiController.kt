@@ -8,6 +8,7 @@ import netman.api.getUserId
 import netman.businesslogic.NetworkManager
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.LabelResource
 import java.util.UUID
 
 @Controller("/api/tenants")
@@ -39,5 +40,13 @@ class ContactApiController(
     ): ContactResource {
         val user = getUserId(authentication)
         return networkManager.getContactWithDetails(user, tenantId, contactId)
+    }
+    
+    override fun getLabels(
+        authentication: Authentication,
+        tenantId: Long
+    ): List<LabelResource> {
+        val user = getUserId(authentication)
+        return networkManager.getLabels(user, tenantId)
     }
 }

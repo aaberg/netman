@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.LabelResource
 import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contact resources")
@@ -49,4 +50,14 @@ interface ContactApi {
         @Parameter(description = "ID of the tenant") tenantId: Long,
         @Parameter(description = "ID of the contact") contactId: UUID
     ) : ContactResource
+    
+    @Operation(
+        summary = "Get all labels for a tenant",
+        responses = [ApiResponse(responseCode = "200", description = "List of labels")]
+    )
+    @Get("/{tenantId}/labels")
+    fun getLabels(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") tenantId: Long
+    ) : List<LabelResource>
 }

@@ -19,7 +19,7 @@ open class ContactAccess(
     private val contact2Repository: Contact2Repository,
     private val viewContactListRepository: ViewContactListRepository,
     private val objectMapper: ObjectMapper,
-    private val labelAccess: LabelAccess
+    private val labelRepository: LabelRepository
 ) {
 
     @Serdeable
@@ -45,7 +45,6 @@ open class ContactAccess(
         val savedContact = mapContact(savedContactDto)
         updateContactListViewProjection(savedContact, tenantId)
         
-        // Extract and save labels from contact details
         extractAndSaveLabels(contact, tenantId)
         
         return savedContact
@@ -94,12 +93,12 @@ open class ContactAccess(
             when (detail) {
                 is Email -> {
                     if (detail.label.isNotBlank()) {
-                        labelAccess.saveLabel(tenantId, detail.label)
+                        labelRepository.saveLabel(tenantId, detail.label)
                     }
                 }
                 is Phone -> {
                     if (detail.label.isNotBlank()) {
-                        labelAccess.saveLabel(tenantId, detail.label)
+                        labelRepository.saveLabel(tenantId, detail.label)
                     }
                 }
                 else -> { /* Other detail types don't have labels */ }

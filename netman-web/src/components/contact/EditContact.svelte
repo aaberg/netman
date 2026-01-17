@@ -1,7 +1,13 @@
 <script lang="ts">
   import type { ContactWithDetails, Email, Note, Phone } from "$lib/contactModel"
+  import LabelCombobox from "./LabelCombobox.svelte"
 
-  let { contact = $bindable() }: { contact: ContactWithDetails } = $props()
+  interface Props {
+    contact: ContactWithDetails
+    availableLabels: string[]
+  }
+
+  let { contact = $bindable(), availableLabels }: Props = $props()
 
   // Ensure details array is initialized
   if (!contact.details) {
@@ -97,16 +103,9 @@
           />
           <span>Email address</span>
         </label>
-        <label class="floating-label w-28">
-          <input
-            type="text"
-            placeholder="Label"
-            bind:value={email.label}
-            class="input input-sm w-full"
-            autocomplete="off"
-          />
-          <span>Label</span>
-        </label>
+        <div class="w-28">
+          <LabelCombobox bind:label={email.label} {availableLabels} placeholder="Label" />
+        </div>
       </div>
 
       <div class="flex flex-row justify-between">
@@ -141,16 +140,9 @@
           />
           <span>Phone number</span>
         </label>
-        <label class="floating-label w-28">
-          <input
-            type="text"
-            placeholder="Label"
-            bind:value={phone.label}
-            class="input input-sm w-full"
-            autocomplete="off"
-          />
-          <span>Label</span>
-        </label>
+        <div class="w-28">
+          <LabelCombobox bind:label={phone.label} {availableLabels} placeholder="Label" />
+        </div>
       </div>
 
       <div class="flex flex-row justify-between">

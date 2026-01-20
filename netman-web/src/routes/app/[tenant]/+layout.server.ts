@@ -4,7 +4,6 @@ import { accessToken } from "$lib/server/common"
 import { redirect } from "@sveltejs/kit"
 
 export const load: LayoutServerLoad = async ({ params, cookies }) => {
-  console.log(`tenant layout: ${params.tenant}`)
 
   const profile = await getProfile(accessToken(cookies))
   if (profile == null) {

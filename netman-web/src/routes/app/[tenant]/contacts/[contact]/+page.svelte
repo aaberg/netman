@@ -5,7 +5,6 @@
   const { data }: PageProps = $props()
   const { tenant, contact } = data
   const details = (contact.details || []).sort(compareDetails)
-  console.log(details)
 
   // Type guards for discriminated rendering
   const isEmail = (d: Email | Phone | Note): d is Email =>

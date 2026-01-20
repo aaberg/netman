@@ -49,7 +49,12 @@ export async function getContactsById(
   tenantId: string,
   contactId: string
 ): Promise<ContactWithDetails> {
-  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts/${contactId}`)
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts/${contactId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
 
   if (!response.ok) {
     throw new Error(`Error fetching contact with id ${contactId} from tenant with id ${tenantId}.`)

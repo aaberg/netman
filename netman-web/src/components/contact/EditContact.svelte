@@ -31,8 +31,6 @@
       label: "",
       isPrimary: false
     })
-
-    console.log(contact)
   }
 
   function removeEmail(email: Email) {
@@ -47,8 +45,6 @@
       label: "",
       isPrimary: false
     })
-
-    console.log(contact)
   }
 
   function removePhone(phone: Phone) {

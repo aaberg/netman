@@ -17,7 +17,6 @@
   let serializedContact = $derived(JSON.stringify(contact))
   let isSubmitting = $state(false)
 
-  // Extract just the label strings from the labels array
   let availableLabels = $derived(labels.map((l) => l.label))
 </script>
 

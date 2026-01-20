@@ -5,7 +5,7 @@
   import EditContact from "../../../../../components/contact/EditContact.svelte"
 
   let { data }: PageProps = $props()
-  let { tenant } = data
+  let { tenant, labels } = data
 
   let contact: ContactWithDetails = $state({
     id: null,
@@ -16,11 +16,13 @@
 
   let serializedContact = $derived(JSON.stringify(contact))
   let isSubmitting = $state(false)
+
+  let availableLabels = $derived(labels.map((l) => l.label))
 </script>
 
 <h1 class="text-3xl">New contact</h1>
 
-<EditContact {contact} />
+<EditContact {contact} {availableLabels} />
 
 <form
   class="mt-4 flex w-full max-w-lg gap-2"

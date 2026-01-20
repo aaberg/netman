@@ -56,3 +56,23 @@ export async function getContactsById(
   }
   return (await response.json()) as ContactWithDetails
 }
+
+export async function getLabelsForTenant(
+  accessToken: string,
+  tenantId: string
+): Promise<{ id: string; label: string; tenantId: number }[]> {
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/labels`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Error fetching labels for tenant ${tenantId}. API responded with ${response.status} ${response.statusText}`
+    )
+  }
+
+  return (await response.json()) as { id: string; label: string; tenantId: number }[]
+}

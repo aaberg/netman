@@ -1,8 +1,14 @@
-import type { Actions } from "./$types"
+import type { Actions, PageServerLoad } from "./$types"
 import { redirect } from "@sveltejs/kit"
 import type { ContactWithDetails } from "$lib/contactModel"
-import { saveContact } from "$lib/server/contact"
+import { getLabelsForTenant, saveContact } from "$lib/server/contact"
 import { accessToken } from "$lib/server/common"
+
+export const load: PageServerLoad = async ({ cookies, params }) => {
+  const { tenant } = params
+  const labels = await getLabelsForTenant(accessToken(cookies), tenant)
+  return { labels }
+}
 
 export const actions = {
   default: async ({ request, cookies, params }) => {

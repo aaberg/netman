@@ -40,6 +40,7 @@
       <ul class="menu text-base-content">
         <li><a href="/app/{data.tenant}/dashboard">Dashboard</a></li>
         <li><a href="/app/{data.tenant}/contacts">Contact list</a></li>
+        <li><a href="/app/{data.tenant}/tasks">Follow-up hub</a></li>
         <li><a href="/app/{data.tenant}/settings">Settings</a></li>
       </ul>
       <div class="divider"></div>

@@ -31,7 +31,7 @@
 <div class="mt-4 w-full max-w-2xl">
   {#if data.contacts.length === 0}
     <h2 class="text-center text-xl">Welcome!</h2>
-    <div class="text-base-content/60 pt-8 text-center">Create some contacts to get started :)</div>
+    <div class="text-base-content/60 pt-8 text-center">Register a contact or two to get started :)</div>
   {:else if filtered.length === 0}
     <div class="text-base-content/60 pt-8 text-center">No contacts found</div>
   {:else}

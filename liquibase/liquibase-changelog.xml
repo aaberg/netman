@@ -7,7 +7,6 @@
 
     <include file="./changelog/tenant.xml" />
     <include file="./changelog/profile.xml" />
-    <include file="./changelog/events.xml" />
     <include file="./changelog/view.xml" />
     <include file="./changelog/task.xml" />
 

@@ -8,6 +8,7 @@
 
   let selectedContactId = $state("")
   let note = $state("")
+  let triggerTime = $state("")
   let isSubmitting = $state(false)
 
   let taskRequest: CreateFollowUpTaskRequest = $derived({
@@ -16,11 +17,17 @@
       contactId: selectedContactId,
       note: note
     },
-    status: "Pending"
+    status: "Pending",
+    trigger: triggerTime
+      ? {
+          triggerType: "time",
+          triggerTime: new Date(triggerTime).toISOString()
+        }
+      : undefined
   })
 
   let serializedTask = $derived(JSON.stringify(taskRequest))
-  let isValid = $derived(selectedContactId !== "" && note.trim() !== "")
+  let isValid = $derived(selectedContactId !== "" && note.trim() !== "" && triggerTime !== "")
 </script>
 
 <h1 class="text-3xl">Add follow-up task</h1>
@@ -48,6 +55,18 @@
       placeholder="Enter follow-up notes..."
       bind:value={note}
     ></textarea>
+  </div>
+
+  <div class="form-control mt-4">
+    <label class="label" for="triggerTime">
+      <span class="label-text">Trigger Time</span>
+    </label>
+    <input
+      id="triggerTime"
+      type="datetime-local"
+      class="input input-bordered w-full"
+      bind:value={triggerTime}
+    />
   </div>
 
   <form

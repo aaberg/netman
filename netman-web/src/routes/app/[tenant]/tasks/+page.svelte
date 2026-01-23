@@ -32,7 +32,7 @@
           <th>Status</th>
           <th>Note</th>
           <th>Contact ID</th>
-          <th>Created</th>
+          <th>Trigger Time</th>
         </tr>
       </thead>
       <tbody>
@@ -58,8 +58,8 @@
               </a>
             </td>
             <td class="text-sm">
-              {#if task.created}
-                {new Date(task.created).toLocaleDateString()}
+              {#if task.triggers && task.triggers.length > 0}
+                {new Date(task.triggers[0].triggerTime).toLocaleString()}
               {/if}
             </td>
           </tr>

@@ -32,7 +32,7 @@
     </label>
     <select id="contact" class="select select-bordered w-full" bind:value={selectedContactId}>
       <option value="" disabled>Select a contact</option>
-      {#each contacts as contact}
+      {#each contacts as contact (contact.id)}
         <option value={contact.id}>{contact.name}</option>
       {/each}
     </select>

@@ -58,7 +58,7 @@
               </a>
             </td>
             <td class="text-sm">
-              {#if task.triggers && task.triggers.length > 0}
+              {#if task.triggers && task.triggers.length > 0 && task.triggers[0].triggerTime}
                 {new Date(task.triggers[0].triggerTime).toLocaleString()}
               {/if}
             </td>

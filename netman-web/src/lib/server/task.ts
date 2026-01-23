@@ -34,7 +34,9 @@ export const createTask = async (
   })
 
   if (!response.ok) {
-    throw new Error(`Error creating task. body of request: ${body}`)
+    throw new Error(
+      `Error creating task. API responded with ${response.status} ${response.statusText}. body of request: ${body}`
+    )
   }
 
   const responseJson = await response.json()

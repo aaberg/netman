@@ -11,7 +11,7 @@
   </div>
 
   <div class="flex gap-2">
-    <a class="btn btn-neutral btn-sm" href="tasks/new">
+    <a class="btn btn-neutral btn-sm" href="/app/{tenant}/tasks/new">
       <span>+</span>
       <span class="sr-only sm:not-sr-only">Add follow-up task</span>
     </a>

@@ -13,7 +13,7 @@ export function validateSession() {
   })
 }
 
-export async function isAuthenticated(): Promise<Boolean> {
+export async function isAuthenticated(): Promise<boolean> {
   const hanko = new Hanko(hankoApiPath)
   return (await hanko.validateSession()).is_valid
 }

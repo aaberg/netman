@@ -1,8 +1,8 @@
 <script lang="ts">
   import { isAuthenticated } from "$lib/security"
-  import {onMount} from "svelte";
+  import { onMount } from "svelte";
 
-  let authenticated: Boolean = false;
+  let authenticated: boolean = false;
 
   onMount(async () => {
     authenticated = await isAuthenticated()
@@ -17,7 +17,7 @@
       <p class="py-6">The personal network manager that doesn't suck</p>
       <a class="btn btn-primary" href="/flow/authentication">
         {#if authenticated}
-          Go to dashboard
+          Go to my dashboard
         {:else}
           Login
         {/if}

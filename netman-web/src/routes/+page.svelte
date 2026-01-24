@@ -1,7 +1,13 @@
 <script lang="ts">
   import { isAuthenticated } from "$lib/security"
+  import { onMount } from "svelte";
 
-  const authenticated = isAuthenticated()
+  let authenticated: boolean = false;
+
+  onMount(async () => {
+    authenticated = await isAuthenticated()
+  })
+
 </script>
 
 <div class="hero bg-base-200 min-h-screen">
@@ -10,11 +16,11 @@
       <h1 class="text-5xl font-bold">Welcome to netman!</h1>
       <p class="py-6">The personal network manager that doesn't suck</p>
       <a class="btn btn-primary" href="/flow/authentication">
-        {#await authenticated}
+        {#if authenticated}
+          Go to my dashboard
+        {:else}
           Login
-        {:then value}
-          {value ? "Go to dashboard" : "Login"}
-        {/await}
+        {/if}
       </a>
     </div>
   </div>

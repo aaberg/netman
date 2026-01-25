@@ -6,4 +6,5 @@ import java.time.Instant
 @Singleton
 open class TimeService {
     open fun now(): Instant = Instant.now()
+
 }

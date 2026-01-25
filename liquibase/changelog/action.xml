@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="2026-01-24-1" author="Lars Aaberg">
+        <createTable tableName="action">
+            <column name="id" type="uuid"><constraints primaryKey="true" nullable="false" /></column>
+            <column name="tenant_id" type="int8"><constraints nullable="false" /></column>
+            <column name="status" type="varchar(20)"><constraints nullable="false" /></column>
+            <column name="created" type="timestamp"><constraints nullable="false" /></column>
+            <column name="trigger_time" type="timestamp"><constraints nullable="false" /></column>
+            <column name="frequency" type="varchar(20)"><constraints nullable="false" /></column>
+            <column name="command" type="jsonb"><constraints nullable="false" /></column>
+        </createTable>
+
+        <createTable tableName="follow_up">
+            <column name="id" type="uuid"><constraints primaryKey="true" nullable="false" /></column>
+            <column name="tenant_id" type="int8"><constraints nullable="false" /></column>
+            <column name="contact_id" type="uuid"><constraints nullable="false" /></column>
+            <column name="task_id" type="uuid"><constraints nullable="false" /></column>
+            <column name="status" type="varchar(20)"><constraints nullable="false" /></column>
+            <column name="created" type="timestamp"><constraints nullable="false" /></column>
+            <column name="note" type="text" />
+        </createTable>
+
+        <createIndex tableName="action" indexName="idx_action_tenant_status">
+            <column name="tenant_id" />
+            <column name="status" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

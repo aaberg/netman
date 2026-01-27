@@ -1,7 +1,7 @@
 package netman.models
 
+import java.time.Instant
 import java.util.UUID
-import kotlin.time.Instant
 
 data class FollowUp(
     val id: UUID,

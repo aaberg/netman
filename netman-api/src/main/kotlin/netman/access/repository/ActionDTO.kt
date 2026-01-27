@@ -13,6 +13,7 @@ data class ActionDTO(
     @field:Id
     val id: UUID,
     val tenantId: Long,
+    val type: String,
     val status: String,
     val created: Instant,
     @field:MappedProperty("trigger_time")

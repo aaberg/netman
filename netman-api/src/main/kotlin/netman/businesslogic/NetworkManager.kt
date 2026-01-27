@@ -1,18 +1,27 @@
 package netman.businesslogic
 
+import io.micronaut.data.model.Page
+import io.micronaut.data.model.Pageable
 import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
+import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.access.TaskAccess
 import netman.access.repository.LabelRepository
+import netman.access.repository.toContactListItemDto
+import netman.businesslogic.models.ActionScheduleResource
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.ContactResourceMapper
 import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.LabelResource
+import netman.businesslogic.models.PageResource
+import netman.businesslogic.models.PageableResource
 import netman.businesslogic.models.TaskResource
 import netman.businesslogic.models.TriggerResource
+import netman.businesslogic.models.mapToFollowUpActionResource
 import netman.models.*
 import java.util.*
 
@@ -24,7 +33,8 @@ class NetworkManager(
     private val validator: Validator,
     private val timeService: TimeService,
     private val contactResourceMapper: ContactResourceMapper,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val actionAccess: ActionAccess
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
@@ -54,6 +64,31 @@ class NetworkManager(
         requireNotNull(savedContact.id)
 
         return contactResourceMapper.map(savedContact)
+    }
+
+    fun registerScheduledFollowUp(userId: String, tenantId: Long, contactId: UUID, note: String, schedule: ActionScheduleResource) : FollowUpActionResource {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val contact = contactAccess.getContact(tenantId, contactId)
+        requireNotNull(contact.id)
+
+        val action = actionAccess.registerNewAction(tenantId, CreateFollowUpCommand(contactId, note), schedule.triggerTime, schedule.frequency)
+        val followUpActionResource = mapToFollowUpActionResource(tenantId, contactResourceMapper.map(contact), action, note)
+        return followUpActionResource
+    }
+
+    fun getPendingFollowUps(userId: String, tenantId: Long, pageable: PageableResource): PageResource<FollowUpActionResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val actions = actionAccess.getActions(tenantId, ActionStatus.Pending, COMMAND_TYPE_FOLLOWUP,
+            Pageable.from(pageable.page, pageable.pageSize))
+        val allTenantContacts = contactAccess.listContacts(tenantId).associateBy { it.contactId }
+        val followUpActionResources = actions.map { a ->
+            val followUpCommand = a.command as CreateFollowUpCommand
+            val contactResource = contactResourceMapper.map(allTenantContacts[followUpCommand.contactId])
+            mapToFollowUpActionResource(tenantId, followUpCommand.contactId)
+        }
+
     }
 
     /**

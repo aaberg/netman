@@ -8,6 +8,7 @@
             <column name="id" type="uuid"><constraints primaryKey="true" nullable="false" /></column>
             <column name="tenant_id" type="int8"><constraints nullable="false" /></column>
             <column name="status" type="varchar(20)"><constraints nullable="false" /></column>
+            <column name="type" type="varchar(20)"><constraints nullable="false" /></column>
             <column name="created" type="timestamp"><constraints nullable="false" /></column>
             <column name="trigger_time" type="timestamp"><constraints nullable="false" /></column>
             <column name="frequency" type="varchar(20)"><constraints nullable="false" /></column>
@@ -24,9 +25,10 @@
             <column name="note" type="text" />
         </createTable>
 
-        <createIndex tableName="action" indexName="idx_action_tenant_status">
+        <createIndex tableName="action" indexName="idx_action_tenant_status_type">
             <column name="tenant_id" />
             <column name="status" />
+            <column name="type" />
         </createIndex>
     </changeSet>
 </databaseChangeLog>

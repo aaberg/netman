@@ -58,6 +58,11 @@ open class ContactAccess(
         return mapContact(contactDto)
     }
 
+    fun getContacts(tenantId: Long) : List<Contact2> {
+        val contactDtoList = contact2Repository.findByTenantId(tenantId)
+        return contactDtoList.map { mapContact(it) }
+    }
+
     private fun mapContact(contactDto: Contact2DTO) : Contact2 {
         val contactData = objectMapper.readValue(contactDto.data, ContactData::class.java)
         return Contact2(contactDto.id, contactData.name, contactData.details)

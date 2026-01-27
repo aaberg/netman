@@ -9,6 +9,7 @@ import java.time.Instant
 data class Action(
     val id: UUID,
     val tenantId: Long,
+    val type: String,
     val status: ActionStatus,
     val created: Instant,
     val triggerTime: Instant,
@@ -40,3 +41,8 @@ data class CreateFollowUpCommand(
     val contactId: UUID,
     val note: String
 ) : Command()
+
+const val COMMAND_TYPE_FOLLOWUP = "followup"
+fun getCommandType(command: Command): String = when (command) {
+    is CreateFollowUpCommand -> COMMAND_TYPE_FOLLOWUP
+}

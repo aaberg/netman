@@ -31,7 +31,8 @@ class NetworkManager(
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
         val contacts = contactAccess.listContacts(tenantId)
-        return contacts.map { contactResourceMapper.map(it) }
+
+        return contacts.map { contactResourceMapper.mapToListItem(it) }
     }
 
     fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID): ContactResource {

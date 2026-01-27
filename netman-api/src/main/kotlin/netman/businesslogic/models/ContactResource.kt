@@ -6,6 +6,8 @@ import io.micronaut.serde.annotation.Serdeable
 import netman.models.CDetail
 import netman.models.Contact2
 import netman.models.Contact2ListItem
+import netman.models.Email
+import netman.models.Phone
 import java.util.*
 
 @Serdeable
@@ -42,5 +44,45 @@ abstract class ContactResourceMapper {
     @Mapper
     @Mapper.Mapping(to = "id", from = "contactId")
     abstract fun map(contactListItem: Contact2ListItem) : ContactListItemResource
+
+    fun mapToListItem(contact: Contact2) : ContactListItemResource {
+
+        val contactInfo: String
+        val contactInfoIcon: String
+
+        val primaryEmail = contact.details
+            .firstOrNull{c -> c is Email && c.isPrimary} as Email?
+
+        val otherEmail = contact.details
+            .filter { it is Email }
+            .firstOrNull { it != primaryEmail } as Email?
+
+        val fallbackPhone = contact.details
+            .firstOrNull { it is Phone } as Phone?
+
+        if (primaryEmail != null) {
+            contactInfo = primaryEmail.address
+            contactInfoIcon = "Email"
+        } else if (otherEmail != null) {
+            contactInfo = otherEmail.address
+            contactInfoIcon = "Email"
+        } else if (fallbackPhone != null) {
+            contactInfo = fallbackPhone.number
+            contactInfoIcon = "Phone"
+        } else {
+            contactInfo = ""
+            contactInfoIcon = ""
+        }
+
+        return ContactListItemResource(
+            contact.id!!,
+            contact.name,
+            contact.initials,
+            contactInfo,
+            contactInfoIcon,
+            "",
+            false
+        )
+    }
 }
 

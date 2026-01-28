@@ -47,6 +47,8 @@ abstract class ContactResourceMapper {
 
     fun mapToListItem(contact: Contact2) : ContactListItemResource {
 
+        requireNotNull(contact.id)
+
         val contactInfo: String
         val contactInfoIcon: String
 
@@ -75,7 +77,7 @@ abstract class ContactResourceMapper {
         }
 
         return ContactListItemResource(
-            contact.id!!,
+            contact.id,
             contact.name,
             contact.initials,
             contactInfo,

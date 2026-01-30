@@ -5,7 +5,7 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
-import netman.businesslogic.NetworkManager
+import netman.businesslogic.TaskManager
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
@@ -14,7 +14,7 @@ import netman.businesslogic.models.RegisterScheduledFollowUpRequest
 @Controller("/api/tenants/")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class TaskApiController(
-    private val networkManager: NetworkManager,
+    private val taskManager: TaskManager,
 ) : TaskApi {
 
     override fun registerScheduledFollowUp(
@@ -23,7 +23,7 @@ class TaskApiController(
         request: RegisterScheduledFollowUpRequest
     ): FollowUpActionResource {
         val userId = getUserId(authentication)
-        return networkManager.registerScheduledFollowUp(userId, tenantId, request)
+        return taskManager.registerScheduledFollowUp(userId, tenantId, request)
     }
 
     override fun getMyPendingFollowUps(
@@ -33,6 +33,6 @@ class TaskApiController(
         pageSize: Int?
     ): PageResource<FollowUpActionResource> {
         val userId = getUserId(authentication)
-        return networkManager.getPendingFollowUps(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
+        return taskManager.getPendingFollowUps(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
     }
 }

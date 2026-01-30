@@ -3,7 +3,7 @@ package netman.messaging
 import io.micronaut.nats.annotation.NatsListener
 import io.micronaut.nats.annotation.Subject
 import jakarta.inject.Singleton
-import netman.businesslogic.NetworkManager
+import netman.businesslogic.TaskManager
 import org.slf4j.LoggerFactory
 
 /**
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 @Singleton
 @NatsListener
 class TaskTriggerSubscriber(
-    private val networkManager: NetworkManager
+    private val taskManager: TaskManager
 ) {
     
     private val log = LoggerFactory.getLogger(TaskTriggerSubscriber::class.java)
@@ -32,7 +32,7 @@ class TaskTriggerSubscriber(
     fun onTaskTriggerDue() {
         log.info("Received task.trigger.due message, processing due actions")
         try {
-            networkManager.runPendingActions()
+            taskManager.runPendingActions()
             log.info("Successfully processed due actions")
         } catch (e: Exception) {
             log.error("Error processing due actions", e)

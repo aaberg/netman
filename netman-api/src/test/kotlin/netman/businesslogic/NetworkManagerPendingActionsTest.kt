@@ -19,6 +19,9 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
     lateinit var networkManager: NetworkManager
 
     @Inject
+    lateinit var taskManager: TaskManager
+
+    @Inject
     lateinit var actionAccess: ActionAccess
 
     @Inject
@@ -70,7 +73,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         assertThat(pendingAction?.triggerTime?.isBefore(Instant.now())).isTrue()
         
         // Act - run pending actions
-        networkManager.runPendingActions()
+        taskManager.runPendingActions()
         
         // Assert
         // Check that the action is now completed
@@ -121,7 +124,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         assertThat(pendingAction?.triggerTime?.isAfter(Instant.now())).isTrue()
         
         // Act - run pending actions
-        networkManager.runPendingActions()
+        taskManager.runPendingActions()
         
         // Assert
         // Check that the action is still pending (not processed)
@@ -166,7 +169,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         assertThat(pendingAction?.frequency).isEqualTo(Frequency.Weekly)
         
         // Act - run pending actions
-        networkManager.runPendingActions()
+        taskManager.runPendingActions()
         
         // Assert
         // Check that the original action is now completed

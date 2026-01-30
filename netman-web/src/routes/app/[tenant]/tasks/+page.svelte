@@ -3,10 +3,7 @@
 
   let { data }: PageProps = $props()
   let { tenant, followUpsPage } = data
-  console.log('Follow-up page:', followUpsPage)
   let followUps = followUpsPage.items
-
-  console.log('Follow-up tasks loaded:', followUps)
 </script>
 
 <div class="navbar shadow-sm">

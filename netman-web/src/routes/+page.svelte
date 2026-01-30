@@ -1,13 +1,12 @@
 <script lang="ts">
   import { isAuthenticated } from "$lib/security"
-  import { onMount } from "svelte";
+  import { onMount } from "svelte"
 
-  let authenticated: boolean = false;
+  let authenticated: boolean = false
 
   onMount(async () => {
     authenticated = await isAuthenticated()
   })
-
 </script>
 
 <div class="hero bg-base-200 min-h-screen">

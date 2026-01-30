@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms"
   import type { PageProps } from "./$types"
-  import type {RegisterFollowUpRequest} from "$lib/followUpModel";
+  import type { RegisterFollowUpRequest } from "$lib/followUpModel"
 
   let { data }: PageProps = $props()
   let { tenant, contacts } = data

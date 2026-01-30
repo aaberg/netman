@@ -50,15 +50,12 @@
             </td>
             <td>{f.note}</td>
             <td>
-              <a
-                href="/app/{tenant}/contacts/{f.contact.id}"
-                class="link link-hover text-sm"
-              >
+              <a href="/app/{tenant}/contacts/{f.contact.id}" class="link link-hover text-sm">
                 {f.contact.name}
               </a>
             </td>
             <td class="text-sm">
-                {new Date(f.triggerTime).toLocaleString()}
+              {new Date(f.triggerTime).toLocaleString()}
             </td>
           </tr>
         {/each}

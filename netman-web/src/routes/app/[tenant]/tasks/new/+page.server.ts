@@ -2,8 +2,8 @@ import type { Actions, PageServerLoad } from "./$types"
 import { redirect } from "@sveltejs/kit"
 import { accessToken } from "$lib/server/common"
 import { getContactsForTenant } from "$lib/server/contact"
-import type {RegisterFollowUpRequest} from "$lib/followUpModel";
-import {registerFollowUp} from "$lib/server/followUp";
+import type { RegisterFollowUpRequest } from "$lib/followUpModel"
+import { registerFollowUp } from "$lib/server/followUp"
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
   const { tenant } = params

@@ -1,6 +1,5 @@
 package netman.api.task
 
-import io.micronaut.data.annotation.Query
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import io.micronaut.security.authentication.Authentication
@@ -8,12 +7,9 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.PageResource
-import netman.businesslogic.models.PageableResource
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
-import netman.businesslogic.models.TaskResource
 
 @Tag(name = "Task", description = "API for managing task resources")
 interface TaskApi {

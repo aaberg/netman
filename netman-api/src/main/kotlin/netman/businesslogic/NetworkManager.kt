@@ -8,9 +8,13 @@ import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
-import netman.models.*
-import java.util.*
+import netman.models.ActionStatus
+import netman.models.COMMAND_TYPE_FOLLOWUP
+import netman.models.CreateFollowUpCommand
+import netman.models.Frequency
 import java.time.Instant
+import java.time.ZoneId
+import java.util.*
 
 @Singleton
 class NetworkManager(
@@ -146,15 +150,18 @@ class NetworkManager(
      * @return The next trigger time based on the frequency
      */
     private fun calculateNextTriggerTime(lastTriggerTime: Instant, frequency: Frequency, currentTime: Instant): Instant {
-        return when (frequency) {
-            Frequency.Weekly -> lastTriggerTime.plusSeconds(7 * 24 * 60 * 60)
-            Frequency.Biweekly -> lastTriggerTime.plusSeconds(14 * 24 * 60 * 60)
-            Frequency.Monthly -> lastTriggerTime.plusSeconds(30 * 24 * 60 * 60)
-            Frequency.Quarterly -> lastTriggerTime.plusSeconds(90 * 24 * 60 * 60)
-            Frequency.SemiAnnually -> lastTriggerTime.plusSeconds(180 * 24 * 60 * 60)
-            Frequency.Annually -> lastTriggerTime.plusSeconds(365 * 24 * 60 * 60)
-            Frequency.Single -> currentTime // Shouldn't happen, but handle gracefully
+        // Convert to zoned datetime to support adding weeks, months and years.
+        val t = lastTriggerTime.atZone(ZoneId.of("UTC"))
+        val resultTime = when (frequency) {
+            Frequency.Weekly -> t.plusWeeks(1)
+            Frequency.Biweekly -> t.plusWeeks(2)
+            Frequency.Monthly -> t.plusMonths(1)
+            Frequency.Quarterly -> t.plusMonths(3)
+            Frequency.SemiAnnually -> t.plusMonths(6)
+            Frequency.Annually -> t.plusYears(1)
+            Frequency.Single -> t // Shouldn't happen, but handle gracefully
         }
+        return resultTime.toInstant()
     }
     
     fun getLabels(userId: String, tenantId: Long): List<LabelResource> {

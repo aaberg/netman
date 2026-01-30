@@ -5,15 +5,11 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
-import netman.businesslogic.AuthorizationEngine
 import netman.businesslogic.NetworkManager
-import netman.businesslogic.TimeService
-import netman.businesslogic.models.CreateFollowUpTaskRequest
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
-import netman.businesslogic.models.TaskResource
 
 @Controller("/api/tenants/")
 @Secured(SecurityRule.IS_AUTHENTICATED)

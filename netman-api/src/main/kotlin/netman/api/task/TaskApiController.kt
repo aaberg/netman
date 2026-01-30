@@ -5,32 +5,38 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
+import netman.businesslogic.AuthorizationEngine
 import netman.businesslogic.NetworkManager
 import netman.businesslogic.TimeService
 import netman.businesslogic.models.CreateFollowUpTaskRequest
+import netman.businesslogic.models.FollowUpActionResource
+import netman.businesslogic.models.PageResource
+import netman.businesslogic.models.PageableResource
+import netman.businesslogic.models.RegisterScheduledFollowUpRequest
 import netman.businesslogic.models.TaskResource
 
 @Controller("/api/tenants/")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class TaskApiController(
     private val networkManager: NetworkManager,
-    private val timeService: TimeService
 ) : TaskApi {
 
-    override fun createTaskWithTrigger(
+    override fun registerScheduledFollowUp(
         authentication: Authentication,
         tenantId: Long,
-        request: CreateFollowUpTaskRequest
-    ): TaskResource {
+        request: RegisterScheduledFollowUpRequest
+    ): FollowUpActionResource {
         val userId = getUserId(authentication)
-        return networkManager.createTaskWithTrigger(userId, tenantId, request)
+        return networkManager.registerScheduledFollowUp(userId, tenantId, request)
     }
 
-    override fun listPendingAndDueTasks(
+    override fun getMyPendingFollowUps(
         authentication: Authentication,
-        tenantId: Long
-    ): List<TaskResource> {
+        tenantId: Long,
+        page: Int?,
+        pageSize: Int?
+    ): PageResource<FollowUpActionResource> {
         val userId = getUserId(authentication)
-        return networkManager.listPendingAndDueTasks(userId, tenantId)
+        return networkManager.getPendingFollowUps(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
     }
 }

@@ -3,6 +3,7 @@ package netman.access.repository
 import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
+import netman.models.COMMAND_TYPE_FOLLOWUP
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -31,7 +32,8 @@ class ActionRepositoryTest : DefaultTestProperties() {
             created = Instant.now(),
             triggerTime = Instant.now(),
             frequency = "DAILY",
-            command = "{\"key\": \"value\"}"
+            command = "{\"key\": \"value\"}",
+            type = COMMAND_TYPE_FOLLOWUP
         )
 
         // Act
@@ -119,7 +121,8 @@ class ActionRepositoryTest : DefaultTestProperties() {
             created = Instant.now(),
             triggerTime = Instant.now(),
             frequency = "DAILY",
-            command = "{\"key\": \"value\"}"
+            command = "{\"key\": \"value\"}",
+            type = COMMAND_TYPE_FOLLOWUP
         )
     }
 }

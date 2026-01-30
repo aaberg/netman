@@ -65,6 +65,14 @@ open class ActionAccess(
         }
         return mapAction(actionDto)
     }
+
+    open fun getAllDueActions() : List<Action> {
+        val dueActions = actionRepository.findByStatusAndTriggerTimeBefore(
+            ActionStatus.Pending.toString(),
+            timeService.now(),
+            Pageable.from(0, 100))
+        return dueActions.content.map { a -> mapAction(a) }
+    }
     
     open fun updateActionStatus(action: Action, newStatus: ActionStatus) : Action {
         val actionDto = actionRepository.getById(action.id) ?: throw IllegalArgumentException("Action with ID ${action.id} does not exist")

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from "$app/forms"
-  import type { CreateFollowUpTaskRequest } from "$lib/taskModel"
   import type { PageProps } from "./$types"
+  import type {RegisterFollowUpRequest} from "$lib/followUpModel";
 
   let { data }: PageProps = $props()
   let { tenant, contacts } = data
@@ -11,22 +11,14 @@
   let triggerTime = $state("")
   let isSubmitting = $state(false)
 
-  let taskRequest: CreateFollowUpTaskRequest = $derived({
-    data: {
-      type: "followup",
-      contactId: selectedContactId,
-      note: note
-    },
-    status: "Pending",
-    trigger: triggerTime
-      ? {
-          triggerType: "time",
-          triggerTime: new Date(triggerTime).toISOString()
-        }
-      : undefined
+  let followUpRequest: RegisterFollowUpRequest = $derived({
+    contactId: selectedContactId,
+    note: note,
+    frequency: "Single",
+    triggerTime: triggerTime !== "" ? new Date(triggerTime).toISOString() : ""
   })
 
-  let serializedTask = $derived(JSON.stringify(taskRequest))
+  let serializedTask = $derived(JSON.stringify(followUpRequest))
   let isValid = $derived(selectedContactId !== "" && note.trim() !== "" && triggerTime !== "")
 </script>
 

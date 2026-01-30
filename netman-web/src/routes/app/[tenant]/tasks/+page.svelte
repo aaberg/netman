@@ -2,7 +2,11 @@
   import type { PageProps } from "./$types"
 
   let { data }: PageProps = $props()
-  let { tenant } = data
+  let { tenant, followUpsPage } = data
+  console.log('Follow-up page:', followUpsPage)
+  let followUps = followUpsPage.items
+
+  console.log('Follow-up tasks loaded:', followUps)
 </script>
 
 <div class="navbar shadow-sm">
@@ -20,7 +24,7 @@
 
 <!-- Tasks list -->
 <div class="mt-4 w-full max-w-4xl">
-  {#if data.tasks.length === 0}
+  {#if followUps.length === 0}
     <h2 class="text-center text-xl">No tasks yet</h2>
     <div class="text-base-content/60 pt-8 text-center">
       Create some follow-up tasks to get started :)
@@ -31,36 +35,33 @@
         <tr>
           <th>Status</th>
           <th>Note</th>
-          <th>Contact ID</th>
+          <th>Contact</th>
           <th>Trigger Time</th>
         </tr>
       </thead>
       <tbody>
-        {#each data.tasks as task (task.id)}
+        {#each followUps as f (f.id)}
           <tr>
             <td>
               <span
                 class="badge"
-                class:badge-warning={task.status === "Pending"}
-                class:badge-error={task.status === "Due"}
-                class:badge-success={task.status === "Completed"}
+                class:badge-warning={f.status === "Pending"}
+                class:badge-success={f.status === "Completed"}
               >
-                {task.status}
+                {f.status}
               </span>
             </td>
-            <td>{task.data.note}</td>
+            <td>{f.note}</td>
             <td>
               <a
-                href="/app/{tenant}/contacts/{task.data.contactId}"
+                href="/app/{tenant}/contacts/{f.contact.id}"
                 class="link link-hover text-sm"
               >
-                {task.data.contactId}
+                {f.contact.name}
               </a>
             </td>
             <td class="text-sm">
-              {#if task.triggers && task.triggers.length > 0 && task.triggers[0].triggerTime}
-                {new Date(task.triggers[0].triggerTime).toLocaleString()}
-              {/if}
+                {new Date(f.triggerTime).toLocaleString()}
             </td>
           </tr>
         {/each}

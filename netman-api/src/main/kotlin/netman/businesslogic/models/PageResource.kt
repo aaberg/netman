@@ -1,5 +1,8 @@
 package netman.businesslogic.models
 
+import io.micronaut.serde.annotation.Serdeable
+
+@Serdeable
 data class PageResource<out T>(
     val page: Int,
     val pageSize: Int,

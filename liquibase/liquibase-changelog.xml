@@ -9,5 +9,6 @@
     <include file="./changelog/profile.xml" />
     <include file="./changelog/view.xml" />
     <include file="./changelog/task.xml" />
+    <include file="./changelog/action.xml" />
 
 </databaseChangeLog>

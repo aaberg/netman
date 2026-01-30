@@ -30,12 +30,12 @@ class TaskTriggerSubscriber(
      */
     @Subject(value = "task.trigger.due", queue = "task-trigger-processors")
     fun onTaskTriggerDue() {
-        log.info("Received task.trigger.due message, processing due triggers")
+        log.info("Received task.trigger.due message, processing due actions")
         try {
-            networkManager.triggerDueTriggers()
-            log.info("Successfully processed due triggers")
+            networkManager.runPendingActions()
+            log.info("Successfully processed due actions")
         } catch (e: Exception) {
-            log.error("Error processing due triggers", e)
+            log.error("Error processing due actions", e)
             throw e
         }
     }

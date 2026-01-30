@@ -1,12 +1,12 @@
 import type { PageServerLoad } from "./$types"
 import { accessToken } from "$lib/server/common"
-import { getTasks } from "$lib/server/task"
+import { getFollowUps } from "$lib/server/followUp"
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
   const { tenant } = params
   const token = accessToken(cookies)
 
-  const tasks = await getTasks(token, tenant)
+  const followUpsPage = await getFollowUps(token, tenant)
 
-  return { tasks }
+  return { followUpsPage }
 }

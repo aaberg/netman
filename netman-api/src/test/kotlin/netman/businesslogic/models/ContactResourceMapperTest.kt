@@ -205,9 +205,9 @@ class ContactResourceMapperTest {
         assertThat(result.id).isEqualTo(contact.id)
         assertThat(result.name).isEqualTo(contact.name)
         assertThat(result.initials).isEqualTo(contact.initials)
-        assertThat(result.contactInfo).isBlank
-        assertThat(result.contactInfoIcon).isBlank
-        assertThat(result.labels).isBlank
-        assertThat(result.hasUpdates).isFalse
+        assertThat(result.contactInfo).isBlank()
+        assertThat(result.contactInfoIcon).isBlank()
+        assertThat(result.labels).isBlank()
+        assertThat(result.hasUpdates).isFalse()
     }
 }

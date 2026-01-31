@@ -1,0 +1,6 @@
+applicationType: cli
+defaultPackage: netman
+testFramework: junit
+sourceLanguage: kotlin
+buildTool: gradle_kotlin
+features: [app-name, gradle, http-client-test, junit, kapt, kotlin, logback, micronaut-build, nats, picocli, picocli-junit, picocli-kotlin-application, properties, readme, serialization-jackson, shade]

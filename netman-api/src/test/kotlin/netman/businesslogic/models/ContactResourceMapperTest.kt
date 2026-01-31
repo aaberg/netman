@@ -3,8 +3,8 @@ package netman.businesslogic.models
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import netman.models.*
+import org.assertj.core.api.Assertions.assertThat
 import java.util.UUID
 
 @MicronautTest
@@ -30,13 +30,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("primary@example.com", result.contactInfo)
-        assertEquals("Email", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("primary@example.com")
+        assertThat(result.contactInfoIcon).isEqualTo("Email")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -55,13 +55,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("email1@example.com", result.contactInfo)
-        assertEquals("Email", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("email1@example.com")
+        assertThat(result.contactInfoIcon).isEqualTo("Email")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -80,13 +80,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("+1234567890", result.contactInfo)
-        assertEquals("Phone", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("+1234567890")
+        assertThat(result.contactInfoIcon).isEqualTo("Phone")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -105,13 +105,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("", result.contactInfo)
-        assertEquals("", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("")
+        assertThat(result.contactInfoIcon).isEqualTo("")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -131,13 +131,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("email2@example.com", result.contactInfo)
-        assertEquals("Email", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("email2@example.com")
+        assertThat(result.contactInfoIcon).isEqualTo("Email")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -157,13 +157,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("primary@example.com", result.contactInfo)
-        assertEquals("Email", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isEqualTo("primary@example.com")
+        assertThat(result.contactInfoIcon).isEqualTo("Email")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -180,13 +180,13 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then - Verify all fields are correctly mapped
-        assertEquals(specificId, result.id)
-        assertEquals("Test User", result.name)
-        assertEquals("TU", result.initials) // Initials should be generated from name
-        assertEquals("test@example.com", result.contactInfo)
-        assertEquals("Email", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(specificId)
+        assertThat(result.name).isEqualTo("Test User")
+        assertThat(result.initials).isEqualTo("TU") // Initials should be generated from name
+        assertThat(result.contactInfo).isEqualTo("test@example.com")
+        assertThat(result.contactInfoIcon).isEqualTo("Email")
+        assertThat(result.labels).isEqualTo("")
+        assertThat(result.hasUpdates).isFalse()
     }
 
     @Test
@@ -202,12 +202,12 @@ class ContactResourceMapperTest {
         val result = mapper.mapToListItem(contact)
 
         // Then
-        assertEquals(contact.id, result.id)
-        assertEquals(contact.name, result.name)
-        assertEquals(contact.initials, result.initials)
-        assertEquals("", result.contactInfo)
-        assertEquals("", result.contactInfoIcon)
-        assertEquals("", result.labels)
-        assertEquals(false, result.hasUpdates)
+        assertThat(result.id).isEqualTo(contact.id)
+        assertThat(result.name).isEqualTo(contact.name)
+        assertThat(result.initials).isEqualTo(contact.initials)
+        assertThat(result.contactInfo).isBlank
+        assertThat(result.contactInfoIcon).isBlank
+        assertThat(result.labels).isBlank
+        assertThat(result.hasUpdates).isFalse
     }
 }

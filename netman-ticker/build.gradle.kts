@@ -27,6 +27,8 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testImplementation("org.assertj:assertj-core:4.0.0-M1")
 }
 
 

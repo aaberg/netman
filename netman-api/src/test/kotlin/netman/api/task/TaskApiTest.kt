@@ -9,7 +9,10 @@ import netman.access.client.setupAuthenticationClientForSuccessfullAuthenticatio
 import netman.access.repository.DefaultTestProperties
 import netman.businesslogic.MembershipManager
 import netman.businesslogic.models.FollowUpActionResource
+import netman.businesslogic.models.FollowUpTimeSpecification
+import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
+import netman.businesslogic.models.TimeSpanType
 import netman.models.Frequency
 import org.hamcrest.CoreMatchers.*
 import org.junit.jupiter.api.Test
@@ -220,5 +223,117 @@ class TaskApiTest : DefaultTestProperties() {
             .log().all()
             .statusCode(201)
             .body("frequency", equalTo("Weekly"))
+    }
+
+
+
+    @Test
+    fun `register scheduled follow-up v2 with absolute time using RestAssured`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "V2 Absolute Contact",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register a follow-up using v2 endpoint with absolute time specification
+        val futureTime = Instant.now().plusSeconds(3600L) // 1 hour from now
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId",
+                      "note": "V2 Absolute time follow-up",
+                      "timeSpecification": {
+                        "type": "Absolute",
+                        "triggerTime": "$futureTime"
+                      },
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups/v2")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .body("note", equalTo("V2 Absolute time follow-up"))
+            .body("status", equalTo("Pending"))
+            .body("contact.id", equalTo(contactId.toString()))
+    }
+
+    @Test
+    fun `register scheduled follow-up v2 with relative time using RestAssured`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "V2 Relative Contact",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register a follow-up using v2 endpoint with relative time specification (7 days from now)
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId",
+                      "note": "V2 Relative time follow-up (7 days)",
+                      "timeSpecification": {
+                        "type": "Relative",
+                        "span": 7,
+                        "spanType": "DAYS"
+                      },
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups/v2")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .body("note", equalTo("V2 Relative time follow-up (7 days)"))
+            .body("status", equalTo("Pending"))
+            .body("contact.id", equalTo(contactId.toString()))
     }
 }

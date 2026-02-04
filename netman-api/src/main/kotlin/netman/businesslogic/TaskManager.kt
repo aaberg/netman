@@ -5,6 +5,11 @@ import jakarta.inject.Singleton
 import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.businesslogic.models.*
+import netman.businesslogic.models.FollowUpTimeSpecification
+import netman.businesslogic.models.RegisterFollowUpRequest
+import netman.businesslogic.models.RegisterScheduledFollowUpRequest
+import netman.businesslogic.models.RegisterScheduledFollowUpWithSpanRequest
+import netman.businesslogic.models.TimeSpanType
 import netman.models.ActionStatus
 import netman.models.COMMAND_TYPE_FOLLOWUP
 import netman.models.CreateFollowUpCommand
@@ -25,15 +30,42 @@ class TaskManager(
     private val timeService: TimeService
 ) {
 
-    fun registerScheduledFollowUp(userId: String, tenantId: Long, req: RegisterScheduledFollowUpRequest) : FollowUpActionResource {
+    /**
+     * Unified method for registering follow-up actions.
+     * Supports both absolute time specification and relative time specification (span-based).
+     */
+    fun registerFollowUp(userId: String, tenantId: Long, req: RegisterFollowUpRequest) : FollowUpActionResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
         val contact = contactAccess.getContact(tenantId, req.contactId)
         requireNotNull(contact.id)
 
-        val action = actionAccess.registerNewAction(tenantId, CreateFollowUpCommand(req.contactId, req.note), req.triggerTime, req.frequency)
+        // Calculate the trigger time based on the time specification
+        val triggerTime = when (req.timeSpecification) {
+            is FollowUpTimeSpecification.Absolute -> req.timeSpecification.triggerTime
+            is FollowUpTimeSpecification.Relative -> calculateTriggerTimeFromSpan(
+                req.timeSpecification.span,
+                req.timeSpecification.spanType
+            )
+        }
+
+        val action = actionAccess.registerNewAction(tenantId, CreateFollowUpCommand(req.contactId, req.note), triggerTime, req.frequency)
         val followUpActionResource = mapToFollowUpActionResource(tenantId, contactResourceMapper.map(contact), action, req.note)
         return followUpActionResource
+    }
+
+    /**
+     * Legacy method for registering follow-up actions with absolute time specification.
+     * Kept for backward compatibility.
+     */
+    fun registerScheduledFollowUp(userId: String, tenantId: Long, req: RegisterScheduledFollowUpRequest) : FollowUpActionResource {
+        val unifiedRequest = RegisterFollowUpRequest(
+            contactId = req.contactId,
+            note = req.note,
+            timeSpecification = FollowUpTimeSpecification.Absolute(req.triggerTime),
+            frequency = req.frequency
+        )
+        return registerFollowUp(userId, tenantId, unifiedRequest)
     }
 
     fun getPendingFollowUps(userId: String, tenantId: Long, pageable: PageableResource): PageResource<FollowUpActionResource> {
@@ -124,6 +156,27 @@ class TaskManager(
             Frequency.Annually -> t.plusYears(1)
             Frequency.Single -> t // Shouldn't happen, but handle gracefully
         }
+        return resultTime.toInstant()
+    }
+
+    /**
+     * Calculates the trigger time from a span (duration) and span type.
+     * 
+     * @param span The number of time units
+     * @param spanType The type of time unit (DAYS, WEEKS, MONTHS, YEARS)
+     * @return The calculated Instant representing the trigger time
+     */
+    private fun calculateTriggerTimeFromSpan(span: Int, spanType: TimeSpanType): Instant {
+        val now = timeService.now()
+        val zonedDateTime = now.atZone(ZoneId.of("UTC"))
+        
+        val resultTime = when (spanType) {
+            TimeSpanType.DAYS -> zonedDateTime.plusDays(span.toLong())
+            TimeSpanType.WEEKS -> zonedDateTime.plusWeeks(span.toLong())
+            TimeSpanType.MONTHS -> zonedDateTime.plusMonths(span.toLong())
+            TimeSpanType.YEARS -> zonedDateTime.plusYears(span.toLong())
+        }
+        
         return resultTime.toInstant()
     }
 }

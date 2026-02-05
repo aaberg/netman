@@ -228,7 +228,7 @@ class TaskApiTest : DefaultTestProperties() {
 
 
     @Test
-    fun `register scheduled follow-up v2 with absolute time using RestAssured`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+    fun `register scheduled follow-up v2 with absolute time`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
@@ -283,7 +283,7 @@ class TaskApiTest : DefaultTestProperties() {
     }
 
     @Test
-    fun `register scheduled follow-up v2 with relative time using RestAssured`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+    fun `register scheduled follow-up v2 with relative time`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
         val userId = UUID.randomUUID().toString()
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)

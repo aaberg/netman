@@ -4,17 +4,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.serde.annotation.Serdeable
-import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import netman.businesslogic.helper.InitialsGenerator
-import java.util.UUID
-
-//@Introspected
-//data class Contact(
-//    val id: Long? = null,
-//    @param:NotBlank val name: String,
-//    val initials: String? = null
-//)
+import java.util.*
 
 fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
     return Contact2(
@@ -35,19 +27,6 @@ data class Contact2 (
         get() = InitialsGenerator.generateInitials(name)
 }
 
-@Introspected
-data class Contact2ListItem(
-    val contactId: UUID,
-    val name: String,
-    val contactInfo: String,
-    val contactInfoIcon: String,
-    val labels: String,
-    val hasUpdates: Boolean,
-) {
-    val initials: String
-        get() = InitialsGenerator.generateInitials(name)
-}
-
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -62,12 +41,6 @@ data class Contact2ListItem(
 )
 @Serdeable(validate = false) @Introspected
 sealed class CDetail
-
-@Serdeable
-data class ContactDetail<out T : CDetail>(
-    val id: Long? = null,
-    val detail: T
-)
 
 @Serdeable
 data class Email(

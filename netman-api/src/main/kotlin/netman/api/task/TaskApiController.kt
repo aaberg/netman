@@ -9,6 +9,7 @@ import netman.businesslogic.TaskManager
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
+import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
 
 @Controller("/api/tenants/")
@@ -24,6 +25,15 @@ class TaskApiController(
     ): FollowUpActionResource {
         val userId = getUserId(authentication)
         return taskManager.registerScheduledFollowUp(userId, tenantId, request)
+    }
+
+    override fun registerFollowUpV2(
+        authentication: Authentication,
+        tenantId: Long,
+        request: RegisterFollowUpRequest
+    ): FollowUpActionResource {
+        val userId = getUserId(authentication)
+        return taskManager.registerFollowUp(userId, tenantId, request)
     }
 
     override fun getMyPendingFollowUps(

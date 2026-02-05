@@ -5,11 +5,6 @@ import jakarta.inject.Singleton
 import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.businesslogic.models.*
-import netman.businesslogic.models.FollowUpTimeSpecification
-import netman.businesslogic.models.RegisterFollowUpRequest
-import netman.businesslogic.models.RegisterScheduledFollowUpRequest
-import netman.businesslogic.models.RegisterScheduledFollowUpWithSpanRequest
-import netman.businesslogic.models.TimeSpanType
 import netman.models.ActionStatus
 import netman.models.COMMAND_TYPE_FOLLOWUP
 import netman.models.CreateFollowUpCommand

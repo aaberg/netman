@@ -1,6 +1,5 @@
 package netman.api.task
 
-import io.micronaut.core.version.annotation.Version
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import io.micronaut.security.authentication.Authentication
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.FollowUpActionResource
-import netman.businesslogic.models.FollowUpTimeSpecification
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest

@@ -1,5 +1,4 @@
-import
-  type { PageServerLoad } from "./$types"
+import type { PageServerLoad } from "./$types"
 import { accessToken } from "$lib/server/common"
 import { getFollowUps } from "$lib/server/followUp"
 

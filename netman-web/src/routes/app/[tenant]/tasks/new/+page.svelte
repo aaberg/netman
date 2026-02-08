@@ -104,6 +104,7 @@
           id="relativeSpan"
           type="number"
           min="1"
+          max="999"
           class="input input-bordered w-32"
           bind:value={relativeSpan}
         />

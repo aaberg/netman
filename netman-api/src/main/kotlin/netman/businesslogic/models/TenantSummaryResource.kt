@@ -1,7 +1,6 @@
 package netman.businesslogic.models
 
 import io.micronaut.serde.annotation.Serdeable
-import java.util.UUID
 
 /**
  * Summary resource containing key metrics and data for a tenant

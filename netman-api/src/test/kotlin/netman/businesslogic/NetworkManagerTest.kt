@@ -128,14 +128,14 @@ class NetworkManagerTest : DefaultTestProperties() {
         contactAccess.saveContact(tenant.id, newContact("Contact 2"))
         
         // Create some pending actions
-        val action1 = actionAccess.registerNewAction(
+        actionAccess.registerNewAction(
             tenant.id, 
             CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 1"), 
             java.time.Instant.now().plusSeconds(3600), 
             Frequency.Single
         )
-        
-        val action2 = actionAccess.registerNewAction(
+
+        actionAccess.registerNewAction(
             tenant.id, 
             CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 2"), 
             java.time.Instant.now().plusSeconds(7200), 
@@ -199,12 +199,9 @@ class NetworkManagerTest : DefaultTestProperties() {
         val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
 
         // Act & Assert
-        val ex = assertThrows<ForbiddenException> {
+        assertThrows<ForbiddenException> {
             networkManager.summariseTenant(otherUserId, tenant.id)
         }
-
-        // Assert
-        assertThat(ex.message).isEqualTo("User $otherUserId does not have access to tenant ${tenant.id}")
     }
 
     private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)

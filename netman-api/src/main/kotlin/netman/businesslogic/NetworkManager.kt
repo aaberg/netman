@@ -5,7 +5,12 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.repository.LabelRepository
-import netman.businesslogic.models.*
+import netman.businesslogic.models.ContactListItemResource
+import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.ContactResourceMapper
+import netman.businesslogic.models.FollowUpResource
+import netman.businesslogic.models.LabelResource
+import netman.businesslogic.models.TenantSummaryResource
 import java.util.*
 
 @Singleton

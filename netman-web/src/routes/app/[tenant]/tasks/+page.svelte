@@ -3,7 +3,7 @@
 
   let { data }: PageProps = $props()
   let { tenant, followUpsPage } = data
-  let followUps = followUpsPage.items
+  let followUps = followUpsPage.items ?? []
 </script>
 
 <div class="navbar shadow-sm">

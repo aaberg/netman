@@ -3,6 +3,7 @@ package netman.businesslogic
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import jakarta.validation.ValidationException
+import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
@@ -24,6 +25,9 @@ class NetworkManagerTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var tenantAccess: TenantAccess
+    
+    @Inject
+    private lateinit var actionAccess: ActionAccess
     
     @Inject
     private lateinit var membershipManager: MembershipManager
@@ -111,6 +115,93 @@ class NetworkManagerTest : DefaultTestProperties() {
         }
 
         println(validationException.message)
+    }
+
+    @Test
+    fun `summariseTenant should return correct summary for tenant`() {
+        // Arrange
+        val userId = "testuser_id"
+        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
+        
+        // Create some contacts
+        contactAccess.saveContact(tenant.id, newContact("Contact 1"))
+        contactAccess.saveContact(tenant.id, newContact("Contact 2"))
+        
+        // Create some pending actions
+        actionAccess.registerNewAction(
+            tenant.id, 
+            CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 1"), 
+            java.time.Instant.now().plusSeconds(3600), 
+            Frequency.Single
+        )
+
+        actionAccess.registerNewAction(
+            tenant.id, 
+            CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 2"), 
+            java.time.Instant.now().plusSeconds(7200), 
+            Frequency.Single
+        )
+        
+        // Create some pending follow-ups
+        val followUp1 = actionAccess.registerFollowUp(
+            tenant.id, 
+            java.util.UUID.randomUUID(), 
+            java.util.UUID.randomUUID(), 
+            "Follow up note 1"
+        )
+        
+        val followUp2 = actionAccess.registerFollowUp(
+            tenant.id, 
+            java.util.UUID.randomUUID(), 
+            java.util.UUID.randomUUID(), 
+            "Follow up note 2"
+        )
+
+        // Act
+        val summary = networkManager.summariseTenant(userId, tenant.id)
+
+        // Assert
+        assertThat(summary.tenantId).isEqualTo(tenant.id)
+        assertThat(summary.numberOfContacts).isEqualTo(2)
+        assertThat(summary.numberOfPendingActions).isEqualTo(2)
+        assertThat(summary.pendingFollowUps).hasSize(2)
+        assertThat(summary.pendingFollowUps).anySatisfy { 
+            assertThat(it.id).isEqualTo(followUp1.id)
+            assertThat(it.note).isEqualTo("Follow up note 1")
+        }
+        assertThat(summary.pendingFollowUps).anySatisfy { 
+            assertThat(it.id).isEqualTo(followUp2.id)
+            assertThat(it.note).isEqualTo("Follow up note 2")
+        }
+    }
+
+    @Test
+    fun `summariseTenant should return empty summary for new tenant`() {
+        // Arrange
+        val userId = "testuser_id"
+        val tenant = tenantAccess.registerNewTenant("emptytenant", TenantType.PERSONAL, userId)
+
+        // Act
+        val summary = networkManager.summariseTenant(userId, tenant.id)
+
+        // Assert
+        assertThat(summary.tenantId).isEqualTo(tenant.id)
+        assertThat(summary.numberOfContacts).isEqualTo(0)
+        assertThat(summary.numberOfPendingActions).isEqualTo(0)
+        assertThat(summary.pendingFollowUps).isEmpty()
+    }
+
+    @Test
+    fun `summariseTenant should throw when user has no access`() {
+        // Arrange
+        val userId = "testuser_id"
+        val otherUserId = "otheruser_id"
+        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
+
+        // Act & Assert
+        assertThrows<ForbiddenException> {
+            networkManager.summariseTenant(otherUserId, tenant.id)
+        }
     }
 
     private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)

@@ -8,7 +8,9 @@ import netman.access.repository.LabelRepository
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.ContactResourceMapper
+import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.LabelResource
+import netman.businesslogic.models.TenantSummaryResource
 import java.util.*
 
 @Singleton
@@ -17,7 +19,8 @@ class NetworkManager(
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val contactResourceMapper: ContactResourceMapper,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val actionAccess: netman.access.ActionAccess
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
@@ -55,5 +58,47 @@ class NetworkManager(
         return labelRepository.getLabels(tenantId)
             .sortedBy { it.label }
             .map { LabelResource(id = it.id, label = it.label, tenantId = it.tenantId) }
+    }
+
+    fun summariseTenant(userId: String, tenantId: Long): TenantSummaryResource {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        
+        // Get number of contacts
+        val contacts = contactAccess.listContacts(tenantId)
+        val numberOfContacts = contacts.size
+        
+        // Get number of pending actions (use small page size and totalSize for count)
+        val pendingActions = actionAccess.getActions(
+            tenantId,
+            netman.models.ActionStatus.Pending,
+            null,
+            io.micronaut.data.model.Pageable.from(0, 1)
+        )
+        val numberOfPendingActions = pendingActions.totalSize.toInt()
+        
+        // Get pending follow-ups (limit to first N items for summary)
+        val pendingFollowUps = actionAccess.getFollowUps(
+            tenantId,
+            netman.models.FollowUpStatus.Pending,
+            io.micronaut.data.model.Pageable.from(0, 10)
+        )
+        
+        // Map follow-ups to FollowUpResource
+        val followUpResources = pendingFollowUps.content.map { followUp ->
+            FollowUpResource(
+                id = followUp.id,
+                contactId = followUp.contactId,
+                taskId = followUp.taskId,
+                note = followUp.note,
+                created = followUp.created
+            )
+        }
+        
+        return TenantSummaryResource(
+            tenantId = tenantId,
+            numberOfContacts = numberOfContacts,
+            numberOfPendingActions = numberOfPendingActions,
+            pendingFollowUps = followUpResources
+        )
     }
 }

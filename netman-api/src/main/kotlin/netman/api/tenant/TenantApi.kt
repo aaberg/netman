@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.MemberTenantResource
+import netman.businesslogic.models.TenantSummaryResource
 
 @Tag(name = "Tenant", description = "API for managing tenant resources")
 interface TenantApi {
@@ -30,4 +31,14 @@ interface TenantApi {
 
     @Get("/default")
     fun getDefaultTenant(authentication: Authentication) : MemberTenantResource
+
+    @Operation(
+        summary = "Get summary for a specific tenant",
+        responses = [ApiResponse(responseCode = "200", description = "Tenant summary")]
+    )
+    @Get("/{tenantId}/summary")
+    fun getTenantSummary(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant to get summary for") tenantId: Long
+    ): TenantSummaryResource
 }

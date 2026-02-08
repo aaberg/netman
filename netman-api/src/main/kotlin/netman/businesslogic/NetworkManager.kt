@@ -67,20 +67,20 @@ class NetworkManager(
         val contacts = contactAccess.listContacts(tenantId)
         val numberOfContacts = contacts.size
         
-        // Get number of pending actions
+        // Get number of pending actions (use small page size and totalSize for count)
         val pendingActions = actionAccess.getActions(
-            tenantId, 
-            netman.models.ActionStatus.Pending, 
-            null, 
-            io.micronaut.data.model.Pageable.from(0, Int.MAX_VALUE)
+            tenantId,
+            netman.models.ActionStatus.Pending,
+            null,
+            io.micronaut.data.model.Pageable.from(0, 1)
         )
-        val numberOfPendingActions = pendingActions.content.size
+        val numberOfPendingActions = pendingActions.totalSize.toInt()
         
-        // Get pending follow-ups
+        // Get pending follow-ups (limit to first N items for summary)
         val pendingFollowUps = actionAccess.getFollowUps(
-            tenantId, 
-            netman.models.FollowUpStatus.Pending, 
-            io.micronaut.data.model.Pageable.from(0, Int.MAX_VALUE)
+            tenantId,
+            netman.models.FollowUpStatus.Pending,
+            io.micronaut.data.model.Pageable.from(0, 10)
         )
         
         // Map follow-ups to FollowUpResource

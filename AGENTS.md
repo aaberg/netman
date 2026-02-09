@@ -20,9 +20,9 @@ The NetMan project uses a specialized agent system to streamline development acr
 - Maintaining at least 80% code coverage
 
 **Technologies**:
-- Kotlin 2.3
-- Micronaut 4.6
-- PostgreSQL 17 with Micronaut Data JDBC
+- Kotlin 2.x
+- Micronaut 4.x
+- PostgreSQL (with Micronaut Data JDBC)
 - JUnit 5, WireMock, RestAssured
 - OpenAPI/Swagger
 

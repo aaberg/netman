@@ -4,13 +4,13 @@ export interface MemberTenant {
 }
 
 export interface Tenant {
-  id: bigint
+  id: string
   name: string
   tenantType: string
 }
 
 export interface TenantSummary {
-  tenantId: bigint
+  tenantId: string
   numberOfContacts: number
   numberOfPendingActions: number
   pendingFollowUps: FollowUpResource[]

@@ -3,7 +3,7 @@ import { basePath } from "$lib/server/common"
 
 export const getTenantSummary = async (
   accessToken: string,
-  tenantId: bigint
+  tenantId: string
 ): Promise<TenantSummary> => {
   const response = await fetch(`${basePath()}/api/tenants/${tenantId}/summary`, {
     method: "GET",

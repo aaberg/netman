@@ -1,9 +1,22 @@
 import type { ContactWithDetails } from "$lib/contactModel"
 
+export type TimeSpanType = "DAYS" | "WEEKS" | "MONTHS" | "YEARS"
+
+export type FollowUpTimeSpecification =
+  | {
+      type: "Absolute"
+      triggerTime: string
+    }
+  | {
+      type: "Relative"
+      span: number
+      spanType: TimeSpanType
+    }
+
 export interface RegisterFollowUpRequest {
   contactId: string
   note: string
-  triggerTime: string
+  timeSpecification: FollowUpTimeSpecification
   frequency:
     | "Single"
     | "Weekly"

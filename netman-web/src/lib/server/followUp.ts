@@ -7,7 +7,7 @@ export const registerFollowUp = async (
   tenantId: string,
   followUpRequest: RegisterFollowUpRequest
 ): Promise<FollowUpActionResource> => {
-  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/scheduled-follow-ups`, {
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/scheduled-follow-ups/v2`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

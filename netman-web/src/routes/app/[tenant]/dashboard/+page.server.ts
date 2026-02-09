@@ -5,7 +5,7 @@ import { error } from "@sveltejs/kit"
 
 export const load: PageServerLoad = async ({ params, cookies }) => {
   try {
-    const tenantId = BigInt(params.tenant)
+    const tenantId = params.tenant
     const summary = await getTenantSummary(accessToken(cookies), tenantId)
     return { summary }
   } catch (e) {

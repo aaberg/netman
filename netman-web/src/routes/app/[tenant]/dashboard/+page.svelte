@@ -4,7 +4,7 @@
   import type { PageProps } from "./$types"
 
   let { data }: PageProps = $props()
-  const pendingFollowUps = $derived(() => data.summary?.pendingFollowUps ?? [])
+  const pendingFollowUps = $derived(data.summary?.pendingFollowUps ?? [])
 
   onMount(() => {
     validateSession()

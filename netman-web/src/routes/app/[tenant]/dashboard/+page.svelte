@@ -28,10 +28,26 @@
     <!-- Contacts Card -->
     <a
       href="/app/{tenant}/contacts"
-      class="card bg-base-100 border shadow-sm transition-shadow hover:shadow-md"
+      class="card bg-base-100 cursor-pointer border shadow-sm transition-shadow hover:shadow-md"
     >
       <div class="card-body">
-        <h2 class="card-title text-lg">Contacts</h2>
+        <div class="flex items-start justify-between">
+          <h2 class="card-title text-lg">Contacts</h2>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
         <div class="text-primary text-3xl font-bold">{data.summary.numberOfContacts}</div>
         <p class="text-sm text-gray-500">Total contacts in this tenant</p>
       </div>
@@ -40,10 +56,26 @@
     <!-- Pending Actions Card -->
     <a
       href="/app/{tenant}/tasks"
-      class="card bg-base-100 border shadow-sm transition-shadow hover:shadow-md"
+      class="card bg-base-100 cursor-pointer border shadow-sm transition-shadow hover:shadow-md"
     >
       <div class="card-body">
-        <h2 class="card-title text-lg">Pending Actions</h2>
+        <div class="flex items-start justify-between">
+          <h2 class="card-title text-lg">Pending Actions</h2>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
         <div class="text-secondary text-3xl font-bold">{data.summary.numberOfPendingActions}</div>
         <p class="text-sm text-gray-500">Follow-ups needing attention</p>
       </div>

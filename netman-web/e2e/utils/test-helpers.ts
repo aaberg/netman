@@ -31,17 +31,26 @@ export function generateContactName(): string {
  * Wait for Hanko authentication element to be ready
  */
 export async function waitForHankoAuth(page: Page): Promise<void> {
-  await page.waitForSelector("hanko-auth", { timeout: 10000 })
-  // Wait for Shadow DOM to be ready by checking if input exists
-  await page.waitForFunction(
-    () => {
-      const hankoAuth = document.querySelector("hanko-auth")
-      if (!hankoAuth || !hankoAuth.shadowRoot) return false
-      const emailInput = hankoAuth.shadowRoot.querySelector('input[name="email"]')
-      return emailInput !== null
-    },
-    { timeout: 10000 }
-  )
+  try {
+    await page.waitForSelector("hanko-auth", { timeout: 10000 })
+    // Wait for Shadow DOM to be ready by checking if input exists
+    await page.waitForFunction(
+      () => {
+        const hankoAuth = document.querySelector("hanko-auth")
+        if (!hankoAuth || !hankoAuth.shadowRoot) return false
+        const emailInput = hankoAuth.shadowRoot.querySelector('input[name="email"]')
+        return emailInput !== null
+      },
+      { timeout: 10000 }
+    )
+  } catch (error) {
+    throw new Error(
+      "Hanko authentication component failed to load. " +
+        "This usually means the Hanko service is not running. " +
+        "Make sure to start the full Docker stack with 'docker compose up -d --build' " +
+        "before running E2E tests."
+    )
+  }
 }
 
 /**

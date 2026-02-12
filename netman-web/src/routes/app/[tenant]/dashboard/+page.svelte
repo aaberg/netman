@@ -28,14 +28,14 @@
     <!-- Contacts Card -->
     <a
       href="/app/{tenant}/contacts"
-      class="card bg-base-100 cursor-pointer border shadow-sm transition-shadow hover:shadow-md"
+      class="group card bg-base-100 border-base-300 hover:border-primary hover:bg-base-200 border shadow-sm transition-all hover:shadow-lg"
     >
       <div class="card-body">
         <div class="flex items-start justify-between">
           <h2 class="card-title text-lg">Contacts</h2>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-gray-400"
+            class="text-primary h-6 w-6 transition-transform group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -50,20 +50,21 @@
         </div>
         <div class="text-primary text-3xl font-bold">{data.summary.numberOfContacts}</div>
         <p class="text-sm text-gray-500">Total contacts in this tenant</p>
+        <div class="text-primary mt-2 text-sm font-medium">View all contacts →</div>
       </div>
     </a>
 
     <!-- Pending Actions Card -->
     <a
       href="/app/{tenant}/tasks"
-      class="card bg-base-100 cursor-pointer border shadow-sm transition-shadow hover:shadow-md"
+      class="group card bg-base-100 border-base-300 hover:border-secondary hover:bg-base-200 border shadow-sm transition-all hover:shadow-lg"
     >
       <div class="card-body">
         <div class="flex items-start justify-between">
           <h2 class="card-title text-lg">Pending Actions</h2>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-gray-400"
+            class="text-secondary h-6 w-6 transition-transform group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -78,6 +79,7 @@
         </div>
         <div class="text-secondary text-3xl font-bold">{data.summary.numberOfPendingActions}</div>
         <p class="text-sm text-gray-500">Follow-ups needing attention</p>
+        <div class="text-secondary mt-2 text-sm font-medium">View follow-up hub →</div>
       </div>
     </a>
 

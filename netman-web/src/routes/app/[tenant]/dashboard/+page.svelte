@@ -5,6 +5,7 @@
 
   let { data }: PageProps = $props()
   const pendingFollowUps = $derived(data.summary?.pendingFollowUps ?? [])
+  const { tenant } = data
 
   onMount(() => {
     validateSession()
@@ -25,22 +26,28 @@
 {#if data.summary}
   <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
     <!-- Contacts Card -->
-    <div class="card bg-base-100 border shadow-sm">
+    <a
+      href="/app/{tenant}/contacts"
+      class="card bg-base-100 border shadow-sm transition-shadow hover:shadow-md"
+    >
       <div class="card-body">
         <h2 class="card-title text-lg">Contacts</h2>
         <div class="text-primary text-3xl font-bold">{data.summary.numberOfContacts}</div>
         <p class="text-sm text-gray-500">Total contacts in this tenant</p>
       </div>
-    </div>
+    </a>
 
     <!-- Pending Actions Card -->
-    <div class="card bg-base-100 border shadow-sm">
+    <a
+      href="/app/{tenant}/tasks"
+      class="card bg-base-100 border shadow-sm transition-shadow hover:shadow-md"
+    >
       <div class="card-body">
         <h2 class="card-title text-lg">Pending Actions</h2>
         <div class="text-secondary text-3xl font-bold">{data.summary.numberOfPendingActions}</div>
         <p class="text-sm text-gray-500">Follow-ups needing attention</p>
       </div>
-    </div>
+    </a>
 
     <!-- Quick Stats Card -->
     <div class="card bg-base-100 border shadow-sm">
@@ -94,8 +101,18 @@
     </div>
   {:else}
     <div role="alert" class="alert alert-success alert-soft">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
       <span>No pending follow-ups found. All caught up!</span>
     </div>

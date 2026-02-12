@@ -56,17 +56,17 @@ test.describe("Follow-ups", () => {
     await expect(page.locator("h1")).toContainText("Add follow-up task")
 
     // Select a contact
-    await page.selectOption('select#contact', { index: 1 })
+    await page.selectOption("select#contact", { index: 1 })
 
     // Fill in note
     const followUpNote = "Call this contact to discuss the project"
-    await page.fill('textarea#note', followUpNote)
+    await page.fill("textarea#note", followUpNote)
 
     // Verify relative time is selected by default
     await expect(page.locator('input[value="relative"]')).toBeChecked()
 
     // Set relative time (7 days is default)
-    await page.fill('input#relativeSpan', "7")
+    await page.fill("input#relativeSpan", "7")
 
     // Create the task
     await page.click('button[type="submit"]:has-text("Create Task")')
@@ -86,11 +86,11 @@ test.describe("Follow-ups", () => {
     await page.goto(`/app/${tenant}/tasks/new`)
 
     // Select a contact
-    await page.selectOption('select#contact', { index: 1 })
+    await page.selectOption("select#contact", { index: 1 })
 
     // Fill in note
     const followUpNote = "Send follow-up email about meeting"
-    await page.fill('textarea#note', followUpNote)
+    await page.fill("textarea#note", followUpNote)
 
     // Select absolute time
     await page.click('input[value="absolute"]')
@@ -100,7 +100,7 @@ test.describe("Follow-ups", () => {
     tomorrow.setDate(tomorrow.getDate() + 1)
     tomorrow.setHours(10, 0, 0, 0)
     const dateTimeString = tomorrow.toISOString().slice(0, 16) // Format: YYYY-MM-DDTHH:MM
-    await page.fill('input#triggerTime', dateTimeString)
+    await page.fill("input#triggerTime", dateTimeString)
 
     // Create the task
     await page.click('button[type="submit"]:has-text("Create Task")')
@@ -117,8 +117,8 @@ test.describe("Follow-ups", () => {
 
     // Create a follow-up task first
     await page.goto(`/app/${tenant}/tasks/new`)
-    await page.selectOption('select#contact', { index: 1 })
-    await page.fill('textarea#note', "Test follow-up task")
+    await page.selectOption("select#contact", { index: 1 })
+    await page.fill("textarea#note", "Test follow-up task")
     await page.click('button[type="submit"]:has-text("Create Task")')
     await waitForNavigation(page, /\/app\/.*\/tasks$/)
 
@@ -145,11 +145,11 @@ test.describe("Follow-ups", () => {
     await expect(submitButton).toBeDisabled()
 
     // Fill contact
-    await page.selectOption('select#contact', { index: 1 })
+    await page.selectOption("select#contact", { index: 1 })
     await expect(submitButton).toBeDisabled()
 
     // Fill note
-    await page.fill('textarea#note', "Valid note")
+    await page.fill("textarea#note", "Valid note")
 
     // Now button should be enabled
     await expect(submitButton).toBeEnabled()

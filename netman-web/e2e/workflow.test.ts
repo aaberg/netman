@@ -70,13 +70,13 @@ test.describe("End-to-End Workflow", () => {
     await page.goto(`/app/${tenant}/tasks/new`)
 
     // Find and select our contact
-    await page.selectOption('select#contact', { label: contactName })
+    await page.selectOption("select#contact", { label: contactName })
 
     const followUpNote = "Discuss project timeline and deliverables"
-    await page.fill('textarea#note', followUpNote)
+    await page.fill("textarea#note", followUpNote)
 
     // Use relative time (7 days)
-    await page.fill('input#relativeSpan', "7")
+    await page.fill("input#relativeSpan", "7")
 
     await page.click('button[type="submit"]:has-text("Create Task")')
     await waitForNavigation(page, /\/app\/.*\/tasks$/)
@@ -85,7 +85,9 @@ test.describe("End-to-End Workflow", () => {
     await expect(page.locator("text=" + followUpNote)).toBeVisible()
 
     // Verify task is linked to the correct contact
-    await expect(page.locator(`a[href*="${tenant}/contacts"]:has-text("${contactName}")`)).toBeVisible()
+    await expect(
+      page.locator(`a[href*="${tenant}/contacts"]:has-text("${contactName}")`)
+    ).toBeVisible()
 
     // Step 5: Navigate back to dashboard
     await page.goto(`/app/${tenant}/dashboard`)
@@ -180,9 +182,9 @@ test.describe("End-to-End Workflow", () => {
     // Create follow-ups for each contact
     for (let i = 0; i < contacts.length; i++) {
       await page.goto(`/app/${tenant}/tasks/new`)
-      await page.selectOption('select#contact', { label: contacts[i].name })
-      await page.fill('textarea#note', `Follow-up task ${i + 1} for ${contacts[i].name}`)
-      await page.fill('input#relativeSpan', String((i + 1) * 7)) // 7, 14, 21 days
+      await page.selectOption("select#contact", { label: contacts[i].name })
+      await page.fill("textarea#note", `Follow-up task ${i + 1} for ${contacts[i].name}`)
+      await page.fill("input#relativeSpan", String((i + 1) * 7)) // 7, 14, 21 days
       await page.click('button[type="submit"]:has-text("Create Task")')
       await waitForNavigation(page, /\/app\/.*\/tasks$/)
     }

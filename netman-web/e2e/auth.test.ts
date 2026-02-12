@@ -6,6 +6,7 @@ import {
   generateTestEmail,
   generateTestName,
   waitForHankoAuth,
+  waitForHankoPasswordField,
   waitForNavigation
 } from "./utils/test-helpers"
 
@@ -27,8 +28,8 @@ test.describe("Authentication", () => {
     // Click continue button
     await clickHankoButton(page, "Continue")
 
-    // Wait a bit for the next step
-    await page.waitForTimeout(1000)
+    // Wait for Hanko to show password input
+    await waitForHankoPasswordField(page)
 
     // Fill in password (for new account, this should create a passcode)
     await fillHankoPassword(page, password)
@@ -62,7 +63,7 @@ test.describe("Authentication", () => {
     await waitForHankoAuth(page)
     await fillHankoEmail(page, email)
     await clickHankoButton(page, "Continue")
-    await page.waitForTimeout(1000)
+    await waitForHankoPasswordField(page)
     await fillHankoPassword(page, password)
     await clickHankoButton(page, "Continue")
     await waitForNavigation(page, /\/auth\/newprofile/)
@@ -78,7 +79,7 @@ test.describe("Authentication", () => {
     await waitForHankoAuth(page)
     await fillHankoEmail(page, email)
     await clickHankoButton(page, "Continue")
-    await page.waitForTimeout(1000)
+    await waitForHankoPasswordField(page)
     await fillHankoPassword(page, password)
     await clickHankoButton(page, "Continue")
 

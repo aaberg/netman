@@ -32,8 +32,31 @@ export function generateContactName(): string {
  */
 export async function waitForHankoAuth(page: Page): Promise<void> {
   await page.waitForSelector("hanko-auth", { timeout: 10000 })
-  // Wait a bit for the shadow DOM to be ready
-  await page.waitForTimeout(1000)
+  // Wait for Shadow DOM to be ready by checking if input exists
+  await page.waitForFunction(
+    () => {
+      const hankoAuth = document.querySelector("hanko-auth")
+      if (!hankoAuth || !hankoAuth.shadowRoot) return false
+      const emailInput = hankoAuth.shadowRoot.querySelector('input[name="email"]')
+      return emailInput !== null
+    },
+    { timeout: 10000 }
+  )
+}
+
+/**
+ * Wait for Hanko password field to appear
+ * Called after clicking Continue on the email step
+ */
+export async function waitForHankoPasswordField(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const hankoAuth = document.querySelector("hanko-auth")
+      if (!hankoAuth || !hankoAuth.shadowRoot) return false
+      return hankoAuth.shadowRoot.querySelector('input[name="password"]') !== null
+    },
+    { timeout: 5000 }
+  )
 }
 
 /**

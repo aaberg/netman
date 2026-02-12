@@ -8,6 +8,7 @@ import {
   generateTestName,
   getTenantFromUrl,
   waitForHankoAuth,
+  waitForHankoPasswordField,
   waitForNavigation
 } from "./utils/test-helpers"
 
@@ -22,7 +23,7 @@ test.describe("Contacts", () => {
     await waitForHankoAuth(page)
     await fillHankoEmail(page, email)
     await clickHankoButton(page, "Continue")
-    await page.waitForTimeout(1000)
+    await waitForHankoPasswordField(page)
     await fillHankoPassword(page, password)
     await clickHankoButton(page, "Continue")
     await waitForNavigation(page, /\/auth\/newprofile/)

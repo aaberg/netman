@@ -13,7 +13,6 @@ export async function registerAccount(page: Page, context: BrowserContext) {
   await expect(page.locator("h1")).toHaveText("Create account")
 
   const email = generateUniqueEmail()
-  // await page.waitForTimeout(1000)
   await page.locator("input[name=email]").isVisible()
   await page.locator("input[type=email]").fill(email)
   await page.waitForTimeout(500)
@@ -22,7 +21,6 @@ export async function registerAccount(page: Page, context: BrowserContext) {
 
   await expect(page.locator("h1")).toHaveText("Enter passcode")
   const otc = await getOneTimeCodeFromMailSlurper(email)
-  console.log(`OTC for ${email}: ${otc}`)
 
   // add otc to clipboard
 

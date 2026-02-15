@@ -49,15 +49,7 @@ jobs:
       - name: Start Docker Compose services
         run: docker compose -f compose.deps.yml up -d --wait
         timeout-minutes: 10
-      
-      # Wait for services to be healthy and ready
-      #- name: Verify services are healthy
-      #  run: |
-      #    echo "Checking service health..."
-      #    docker compose ps
-      #    echo "Waiting for database to be fully ready..."
-      #    sleep 5
-      
+
       # Run backend tests with Gradle
       - name: Run backend tests
         working-directory: ./netman-api

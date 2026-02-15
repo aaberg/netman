@@ -9,7 +9,6 @@ export async function getOneTimeCodeFromMailSlurper(email: string): Promise<stri
   const allEmails = (await emailsResponse.json()).mailItems
   const theEmail = allEmails.find((e) => e.toAddresses.includes(email))
   const matches = theEmail.subject.match(/passcode (\d{6})/)
-  console.log(matches)
   return matches?.[1] ?? ""
 }
 

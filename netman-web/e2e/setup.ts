@@ -7,7 +7,7 @@ async function globalSetup() {
     const page = await browser.newPage();
 
     await registerAccount(page, page.context())
-    await page.context().storageState({ path: "storage-state.json" })
+    await page.context().storageState({ path: "./playwright/.auth/storage-state.json" })
     await browser.close()
 }
 

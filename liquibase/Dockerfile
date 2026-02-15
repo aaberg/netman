@@ -16,4 +16,4 @@ ENV LIQUIBASE_SEARCH_PATH=/liquibase/changelog
 
 # The entrypoint from the base image will be used
 # Command will run the liquibase update with the changelog file
-CMD ["--changelog-file=liquibase-changelog.xml", "update"]
+CMD ["update", "--changelog-file=liquibase-changelog.xml"]

@@ -15,7 +15,7 @@
 
 <div class="navbar shadow-sm">
   <div class="flex-1">
-    <div class="text-2xl">Contact list</div>
+    <h1 class="text-2xl">Contact list</h1>
   </div>
 
   <div class="flex gap-2">

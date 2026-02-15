@@ -1,4 +1,3 @@
-objectMapper.readValue(actionDto.command, Command::class.java)
 <script lang="ts">
   import type { ContactWithDetails, Email, Note, Phone } from "$lib/contactModel"
   import LabelCombobox from "./LabelCombobox.svelte"
@@ -66,6 +65,7 @@ objectMapper.readValue(actionDto.command, Command::class.java)
   }
 </script>
 
+objectMapper.readValue(actionDto.command, Command::class.java)
 <div class="m-4 w-full max-w-lg">
   <label class="floating-label">
     <input

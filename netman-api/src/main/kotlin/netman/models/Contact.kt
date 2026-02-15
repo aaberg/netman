@@ -47,7 +47,7 @@ data class Email(
     @param:jakarta.validation.constraints.Email @param:NotBlank
     val address: String,
     val isPrimary: Boolean,
-    val label: String,
+    val label: String = "",
 ) : CDetail()
 
 @Serdeable

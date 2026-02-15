@@ -5,7 +5,7 @@
     placeholder?: string
   }
 
-  let { label = $bindable(""), availableLabels, placeholder = "Label" }: Props = $props()
+  let { label = $bindable(), availableLabels, placeholder = "Label" }: Props = $props()
 
   let isOpen = $state(false)
   let searchTerm = $state("")

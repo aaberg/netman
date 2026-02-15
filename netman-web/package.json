@@ -19,7 +19,7 @@
   "devDependencies": {
     "@eslint/compat": "^1.2.5",
     "@eslint/js": "^9.18.0",
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.58.2",
     "@sveltejs/adapter-node": "^5.4.0",
     "@sveltejs/kit": "^2.49.2",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -28,6 +28,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.2.4",
     "daisyui": "^5.1.26",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^3.0.0",

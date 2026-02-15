@@ -1,0 +1,32 @@
+include:
+  - compose.deps.yml
+
+services:
+  api:
+    build:
+      context: ./netman-api
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+      nats:
+        condition: service_started
+    ports:
+      - "8081:8080"  # Map host 8081 to container 8080 to avoid conflicts with local development
+    environment:
+      NETMAN_PORT: 8080
+      NETMAN_JDBC_URL: jdbc:postgresql://db:5432/netman
+      NETMAN_JDBC_USER: netman
+      NETMAN_JDBC_PASSWORD: netman123
+      NETMAN_NATS_URL: nats://nats:4222
+      NETMAN_HANKO_BASE_URL: http://hanko:8000
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s

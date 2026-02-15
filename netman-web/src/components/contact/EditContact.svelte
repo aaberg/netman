@@ -1,3 +1,4 @@
+objectMapper.readValue(actionDto.command, Command::class.java)
 <script lang="ts">
   import type { ContactWithDetails, Email, Note, Phone } from "$lib/contactModel"
   import LabelCombobox from "./LabelCombobox.svelte"

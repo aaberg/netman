@@ -1,10 +1,13 @@
 import type { CreateProfileRequest, UserProfile } from "$lib/profile"
 import { basePath } from "./common"
 
-export const getProfile = async (accessToken: String): Promise<UserProfile | null> => {
-  const response = await fetch(`${basePath()}/api/membership/profile`, {
+export const getProfile = async (accessToken: string): Promise<UserProfile | null> => {
+  const path = `${basePath()}/api/membership/profile`
+  const response = await fetch(path, {
     method: "GET",
-    headers: [["Authorization", `Bearer ${accessToken}`]]
+    headers: [
+        ["Authorization", `Bearer ${accessToken}`]
+    ]
   })
 
   if (response.status == 404) {
@@ -20,7 +23,7 @@ export const getProfile = async (accessToken: String): Promise<UserProfile | nul
 }
 
 export const createProfile = async (
-  accessToken: String,
+  accessToken: string,
   profile: CreateProfileRequest
 ): Promise<void> => {
   const response = await fetch(`${basePath()}/api/membership/profile`, {

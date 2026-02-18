@@ -2,6 +2,26 @@ include:
   - compose.deps.yml
 
 services:
+  traefik:
+    image: "traefik:v3.6.8"
+    container_name: "traefik"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=default"
+      - "--entryPoints.webEntry.address=:80"
+      - "--api.insecure=true"
+    ports:
+      - "80:80"
+      - "8088:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
   api:
     build:
       context: ./netman-api
@@ -25,7 +45,7 @@ services:
     networks:
       - default
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health" ]
       interval: 10s
       timeout: 5s
       retries: 5

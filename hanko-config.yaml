@@ -22,6 +22,7 @@ webauthn:
       - "http://localhost:4173"
       - "http://localhost:3000"
       - "http://localhost:8080"
+      - "http://localhost"
 session:
   cookie:
     secure: false # is needed for safari, because safari does not store secure cookies on localhost
@@ -34,3 +35,4 @@ server:
         - "http://localhost:4173"
         - "http://localhost:3000"
         - "http://localhost:8090"
+        - "http://localhost"

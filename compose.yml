@@ -1,47 +1,20 @@
 include:
-  - compose.deps.yml
+  - compose.backend.yml
 
 services:
-  api:
-    build:
-      context: ./netman-api
-      dockerfile: Dockerfile
-    depends_on:
-      db:
-        condition: service_healthy
-      liquibase:
-        condition: service_completed_successfully
-      nats:
-        condition: service_started
-    ports:
-      - "8081:8080"  # Map host 8081 to container 8080 to avoid conflicts with local development
-    environment:
-      NETMAN_PORT: 8080
-      NETMAN_JDBC_URL: jdbc:postgresql://db:5432/netman
-      NETMAN_JDBC_USER: netman
-      NETMAN_JDBC_PASSWORD: netman123
-      NETMAN_NATS_URL: nats://nats:4222
-      NETMAN_HANKO_BASE_URL: http://hanko:8000
-    networks:
-      - default
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
 
   web:
     build:
       context: ./netman-web
       dockerfile: Dockerfile
-    depends_on:
-      api:
-        condition: service_healthy
-      hanko:
-        condition: service_started
-    ports:
-      - "3000:3000"  # Different from local dev port 5173
+    restart: unless-stopped
+#    depends_on:
+#      api:
+#        condition: service_healthy
+#      hanko:
+#        condition: service_started
+#    ports:
+#      - "3000:3000"  # Different from local dev port 5173
     environment:
       NETMAN_API_URL: http://api:8080
       PUBLIC_HANKO_API_URL: http://localhost:8000
@@ -49,7 +22,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       HOST: 0.0.0.0
-      ORIGIN: http://localhost:3000
+      ORIGIN: http://localhost
       # OpenTelemetry - disabled by default, set to true and provide connection string to enable
       OTEL_EXPORTER_AZUREMONITOR_ENABLED: ${OTEL_EXPORTER_AZUREMONITOR_ENABLED:-false}
       OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING: ${OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING:-}
@@ -57,3 +30,8 @@ services:
       OTEL_SAMPLING_RATIO: ${OTEL_SAMPLING_RATIO:-0.1}
     networks:
       - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`localhost`)"
+      - "traefik.http.routers.web.entrypoints=webEntry"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"

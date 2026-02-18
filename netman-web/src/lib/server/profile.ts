@@ -6,8 +6,7 @@ export const getProfile = async (accessToken: string): Promise<UserProfile | nul
   const response = await fetch(path, {
     method: "GET",
     headers: [
-        ["Authorization", `Bearer ${accessToken}`],
-        ["Host", "api.localhost"]
+        ["Authorization", `Bearer ${accessToken}`]
     ]
   })
 

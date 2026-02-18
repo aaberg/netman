@@ -8,13 +8,6 @@ services:
       context: ./netman-web
       dockerfile: Dockerfile
     restart: unless-stopped
-#    depends_on:
-#      api:
-#        condition: service_healthy
-#      hanko:
-#        condition: service_started
-#    ports:
-#      - "3000:3000"  # Different from local dev port 5173
     environment:
       NETMAN_API_URL: http://api:8080
       PUBLIC_HANKO_API_URL: http://localhost:8000

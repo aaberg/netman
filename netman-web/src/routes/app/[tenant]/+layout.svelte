@@ -25,7 +25,7 @@
     </label>
   </div>
   <div class="flex-1">
-    <div>Netman</div>
+    <div>Netværke</div>
   </div>
 </div>
 

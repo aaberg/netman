@@ -1,6 +1,6 @@
-# NetMan Web (Svelte/SvelteKit)
+# Netvaerke Web (Svelte/SvelteKit)
 
-This folder contains the Svelte/SvelteKit frontend for NetMan.
+This folder contains the Svelte/SvelteKit frontend for Netvaerke.
 
 Looking for setup and project-wide instructions? See the repository root README:
 
@@ -30,7 +30,7 @@ OpenTelemetry can be configured using the following environment variables:
 
 - `OTEL_EXPORTER_AZUREMONITOR_ENABLED`: Set to `"true"` to enable Azure Monitor exporter (default: `false`)
 - `OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING`: Azure Application Insights connection string (required when enabled)
-- `OTEL_SERVICE_NAME`: Service name for telemetry (default: `"netman-web"`)
+- `OTEL_SERVICE_NAME`: Service name for telemetry (default: `"netvaerke-web"`)
 - `OTEL_SAMPLING_RATIO`: Sampling ratio 0-1 (default: `0.1` for 10% sampling to reduce telemetry volume)
 
 ### Example
@@ -42,7 +42,7 @@ To enable OpenTelemetry with Azure Monitor:
    ```bash
    export OTEL_EXPORTER_AZUREMONITOR_ENABLED=true
    export OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING="InstrumentationKey=your-key;..."
-   export OTEL_SERVICE_NAME=netman-web
+   export OTEL_SERVICE_NAME=netvaerke-web
    export OTEL_SAMPLING_RATIO=0.1  # Sample 10% of requests (optional)
    ```
 
@@ -51,7 +51,7 @@ To enable OpenTelemetry with Azure Monitor:
    ```
    OTEL_EXPORTER_AZUREMONITOR_ENABLED=true
    OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING=InstrumentationKey=your-key;...
-   OTEL_SERVICE_NAME=netman-web
+   OTEL_SERVICE_NAME=netvaerke-web
    ```
 
 3. When using Docker Compose, set the environment variables before running:

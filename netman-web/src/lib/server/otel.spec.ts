@@ -114,7 +114,7 @@ describe("OpenTelemetry Configuration", () => {
     initializeOpenTelemetry()
 
     expect(consoleSpy.log).toHaveBeenCalledWith(
-      "Initializing OpenTelemetry with Azure Monitor for service: netman-web"
+      "Initializing OpenTelemetry with Azure Monitor for service: netvaerke-web"
     )
   })
 

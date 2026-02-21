@@ -10,7 +10,7 @@ import {
  * Configuration is controlled via environment variables:
  * - OTEL_EXPORTER_AZUREMONITOR_ENABLED: Set to "true" to enable (disabled by default)
  * - OTEL_EXPORTER_AZUREMONITOR_CONNECTION_STRING: Azure Application Insights connection string
- * - OTEL_SERVICE_NAME: Service name for telemetry (defaults to "netman-web")
+ * - OTEL_SERVICE_NAME: Service name for telemetry (defaults to "netvaerke-web")
  * - OTEL_SAMPLING_RATIO: Sampling ratio 0-1 (defaults to 0.1 for 10% sampling)
  */
 export function initializeOpenTelemetry(): void {
@@ -30,7 +30,7 @@ export function initializeOpenTelemetry(): void {
     return
   }
 
-  const serviceName = process.env.OTEL_SERVICE_NAME || "netman-web"
+  const serviceName = process.env.OTEL_SERVICE_NAME || "netvaerke-web"
 
   console.log(`Initializing OpenTelemetry with Azure Monitor for service: ${serviceName}`)
 

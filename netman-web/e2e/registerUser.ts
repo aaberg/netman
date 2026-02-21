@@ -5,8 +5,8 @@ export async function registerAccount(page: Page, context: BrowserContext) {
   await context.grantPermissions(["clipboard-read", "clipboard-write"])
   await context.clearCookies()
   await page.goto("http://localhost:4173/")
-  await expect(page.locator("a")).toHaveText("Login")
-  await page.getByText("Login").click()
+  await expect(page.getByRole('link', { name: 'Login' })).toBeVisible()
+  await page.getByRole('link', { name: 'Login' }).click()
   await expect(page.locator("h1")).toHaveText("Sign in")
 
   await page.getByText("Don't have an account?").click()

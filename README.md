@@ -1,6 +1,6 @@
-# NetMan
+# Netvaerke
 
-NetMan is a modern contact management and networking application built with Micronaut and SvelteKit.
+Netvaerke is a modern contact management and networking application built with Micronaut and SvelteKit.
 
 ## Architecture
 

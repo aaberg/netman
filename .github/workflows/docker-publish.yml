@@ -13,6 +13,7 @@ on:
 env:
   REGISTRY: ghcr.io
   API_IMAGE_NAME: ${{ github.repository }}/api
+  TICKER_IMAGE_NAME: ${{ github.repository }}/ticker
   WEB_IMAGE_NAME: ${{ github.repository }}/web
   MIGRATE_IMAGE_NAME: ${{ github.repository }}/migrate
 
@@ -65,6 +66,17 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ]; then
             docker tag ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ steps.get_version.outputs.version }} ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest
             docker push ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest
+          fi
+
+      - name: Build and push Ticker Docker native image
+        working-directory: ./netman-ticker
+        run: |
+          ./gradlew dockerBuildNative --no-daemon --no-configuration-cache
+          docker tag netman-api:latest ${{ env.REGISTRY }}/${{ env.TICKER_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
+          docker push ${{ env.REGISTRY }}/${{ env.TICKER_IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
+          if [ "${{ github.event_name }}" = "release" ]; then
+            docker tag ${{ env.REGISTRY }}/${{ env.TICKER_IMAGE_NAME }}:${{ steps.get_version.outputs.version }} ${{ env.REGISTRY }}/${{ env.TICKER_IMAGE_NAME }}:latest
+            docker push ${{ env.REGISTRY }}/${{ env.TICKER_IMAGE_NAME }}:latest
           fi
 
       - name: Set up Docker Buildx

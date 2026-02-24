@@ -55,14 +55,9 @@ jobs:
         working-directory: ./netman-api
         run: ./gradlew test
 
-      # Start backend server for e2e tests
-      - name: Start backend
-        run: ./gradlew run & && ./wait-for-it.sh -p 8080
-
-
       # Upgrade docker compose environment for e2e tests
-      #- name: Start Backend Docker Compose services
-      #  run: docker compose -f compose.backend.yml up -d --build --wait
+      - name: Start Backend Docker Compose services
+        run: docker compose -f ci/compose.ci-backend.yml up -d --build --wait
       
       # Run frontend unit tests
       - name: Run frontend unit tests

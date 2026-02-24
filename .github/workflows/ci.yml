@@ -57,7 +57,7 @@ jobs:
 
       # Upgrade docker compose environment for e2e tests
       - name: Start Backend Docker Compose services
-        run: docker compose -f ci/compose.ci-backend.yml up -d --build --wait
+        run: docker compose -f compose.ci-backend.yml up -d --build --wait
       
       # Run frontend unit tests
       - name: Run frontend unit tests

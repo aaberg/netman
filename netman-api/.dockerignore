@@ -5,6 +5,8 @@
 # Build artifacts
 target/
 out/
+build/
+!build/libs/*-all.jar
 .gradle/
 .micronaut/
 

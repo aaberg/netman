@@ -58,6 +58,8 @@ services:
     depends_on:
       nats:
         condition: service_started
+      api:
+        condition: service_healthy
     environment:
       NETMAN_NATS_URL: nats://nats:4222
     command: [ "task.trigger.due"]

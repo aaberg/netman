@@ -6,7 +6,7 @@ services:
   api:
     build:
       context: ./netman-api
-      dockerfile: Dockerfile
+      dockerfile: prebuild.Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -31,18 +31,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-
-  ticker:
-    build:
-      context: ./netman-ticker
-      dockerfile: Dockerfile
-    depends_on:
-      nats:
-        condition: service_started
-      api:
-        condition: service_healthy
-    environment:
-      NETMAN_NATS_URL: nats://nats:4222
-    command: [ "task.trigger.due"]
-    networks:
-      - default

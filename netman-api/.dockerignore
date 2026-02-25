@@ -3,9 +3,10 @@
 .gitignore
 
 # Build artifacts
-build/
 target/
 out/
+build/
+!build/libs/*-all.jar
 .gradle/
 .micronaut/
 

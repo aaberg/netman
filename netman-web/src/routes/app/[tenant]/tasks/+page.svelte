@@ -22,7 +22,7 @@
 <!-- Tasks list -->
 <div class="mt-4 w-full max-w-4xl">
   {#if followUps.length === 0}
-    <h2 class="text-center text-xl">No tasks yet</h2>
+    <h2 class="text-center text-xl">No scheduled tasks here</h2>
     <div class="text-base-content/60 pt-8 text-center">
       Create some follow-up tasks to get started :)
     </div>

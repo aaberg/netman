@@ -103,9 +103,8 @@
             <thead>
               <tr>
                 <th>Created</th>
+                <th>Contact</th>
                 <th>Note</th>
-                <th>Contact ID</th>
-                <th>Task ID</th>
               </tr>
             </thead>
             <tbody>
@@ -115,6 +114,7 @@
                     <div class="text-sm">{formatDate(followUp.created)}</div>
                     <div class="text-xs text-gray-500">{formatTime(followUp.created)}</div>
                   </td>
+                  <td class="font-mono text-sm">{followUp.contactName}</td>
                   <td>
                     {#if followUp.note}
                       <div class="tooltip" data-tip={followUp.note}>
@@ -124,8 +124,6 @@
                       <span class="text-gray-400">No note</span>
                     {/if}
                   </td>
-                  <td class="font-mono text-sm">{followUp.contactId}</td>
-                  <td class="font-mono text-sm">{followUp.taskId}</td>
                 </tr>
               {/each}
             </tbody>

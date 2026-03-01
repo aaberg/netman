@@ -88,6 +88,7 @@ class NetworkManager(
             FollowUpResource(
                 id = followUp.id,
                 contactId = followUp.contactId,
+                contactName = contacts.find { it.id == followUp.contactId }?.name ?: "Unknown",
                 taskId = followUp.taskId,
                 note = followUp.note,
                 created = followUp.created

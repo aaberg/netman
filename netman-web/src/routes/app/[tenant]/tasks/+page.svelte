@@ -1,9 +1,11 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
+  import PendingFollowUps from "../../../../components/PendingFollowUps.svelte"
 
   let { data }: PageProps = $props()
-  let { tenant, followUpsPage } = data
+  let { tenant, followUpsPage, summary } = data
   let followUps = followUpsPage.items ?? []
+  let pendingFollowUps = summary?.pendingFollowUps ?? []
 </script>
 
 <div class="navbar shadow-sm">
@@ -18,6 +20,9 @@
     </a>
   </div>
 </div>
+
+<!-- Pending Follow-ups Section -->
+<PendingFollowUps followUps={pendingFollowUps} />
 
 <!-- Tasks list -->
 <div class="mt-4 w-full max-w-4xl">

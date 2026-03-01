@@ -5,9 +5,7 @@ export const getProfile = async (accessToken: string): Promise<UserProfile | nul
   const path = `${basePath()}/api/membership/profile`
   const response = await fetch(path, {
     method: "GET",
-    headers: [
-        ["Authorization", `Bearer ${accessToken}`]
-    ]
+    headers: [["Authorization", `Bearer ${accessToken}`]]
   })
 
   if (response.status == 404) {

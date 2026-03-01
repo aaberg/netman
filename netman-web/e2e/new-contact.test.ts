@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test"
 
 test("can register a new contact", async ({ page }) => {
   await page.goto("/")
-  await expect(page.getByRole('navigation').getByRole('link', { name: 'Go to Dashboard' })).toBeVisible()
-  await page.getByRole('navigation').getByRole('link', { name: 'Go to Dashboard' }).click()
+  await expect(
+    page.getByRole("navigation").getByRole("link", { name: "Go to Dashboard" })
+  ).toBeVisible()
+  await page.getByRole("navigation").getByRole("link", { name: "Go to Dashboard" }).click()
 
   await expect(page.locator("h1")).toHaveText("Dashboard")
 

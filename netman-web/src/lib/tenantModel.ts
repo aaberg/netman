@@ -19,6 +19,7 @@ export interface TenantSummary {
 export interface FollowUpResource {
   id: string
   contactId: string
+  contactName: string
   taskId: string
   note: string | null
   created: string

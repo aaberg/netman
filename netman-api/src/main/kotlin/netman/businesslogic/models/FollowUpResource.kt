@@ -11,6 +11,7 @@ import java.util.UUID
 data class FollowUpResource(
     val id: UUID,
     val contactId: UUID,
+    val contactName: String,
     val taskId: UUID,
     val note: String?,
     val created: Instant

@@ -1,6 +1,7 @@
 <script lang="ts">
-  export let followUps: any[] = []
+  import type { FollowUpResource } from '$lib/tenantModel'
 
+  export let followUps: ReadonlyArray<FollowUpResource> = []
   function formatDate(isoString: string): string {
     return new Date(isoString).toLocaleDateString()
   }

@@ -1,9 +1,9 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.3.0"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.3.0"
-    id("com.google.devtools.ksp") version "2.3.4"
+    id("org.jetbrains.kotlin.jvm") version "2.3.10"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.3.10"
+    id("com.google.devtools.ksp") version "2.3.6"
     id("io.micronaut.application") version "4.6.1"
-    id("com.gradleup.shadow") version "9.3.0"
+    id("com.gradleup.shadow") version "9.3.2"
     id("io.micronaut.aot") version "4.6.1"
 }
 
@@ -54,8 +54,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.assertj:assertj-core:4.0.0-M1")
     testImplementation("com.marcinziolo:kotlin-wiremock:2.1.1")
-    testImplementation("org.wiremock:wiremock-standalone:3.13.1")
-    testImplementation("commons-codec:commons-codec:1.19.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.13.2")
+    testImplementation("commons-codec:commons-codec:1.21.0")
 
 }
 

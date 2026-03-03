@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.ActionResource
 import netman.businesslogic.models.FollowUpActionResource
+import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
@@ -64,4 +65,17 @@ interface TaskApi {
         @Parameter(description = "Page", required = false) @QueryValue page: Int?,
         @Parameter(description = "PageSize", required = false) @QueryValue pageSize: Int?
     ) : PageResource<ActionResource>
+
+    @Operation(
+        summary = "Get list of follow-ups for a tenant",
+        responses = [ApiResponse(responseCode = "200", description = "List of follow-ups")]
+    )
+    @Get("/{tenantId}/followups")
+    fun getFollowUps(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
+        @Parameter(description = "Status filter (Pending or Done)", required = false) @QueryValue status: String?,
+        @Parameter(description = "Page", required = false) @QueryValue page: Int?,
+        @Parameter(description = "PageSize", required = false) @QueryValue pageSize: Int?
+    ) : PageResource<FollowUpResource>
 }

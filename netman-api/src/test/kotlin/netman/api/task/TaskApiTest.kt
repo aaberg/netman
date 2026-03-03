@@ -398,4 +398,72 @@ class TaskApiTest : DefaultTestProperties() {
             .body("items[0].status", equalTo("Pending"))
             .body("items[0].frequency", equalTo("Single"))
     }
+
+    @Test
+    fun `get follow-ups for tenant with default status`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Follow-up Test Contact",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Since we need to test fetching follow-ups, we need to first run actions to create follow-ups
+        // For now, let's just test the endpoint with no follow-ups (should return empty list)
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tenants/${tenant.id}/followups")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("items.size()", equalTo(0))
+    }
+
+    @Test
+    fun `get follow-ups for tenant with status filter`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Test with explicit status parameter
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .queryParam("status", "Pending")
+            .get("/api/tenants/${tenant.id}/followups")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("items.size()", equalTo(0))
+
+        // Test with Done status
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .queryParam("status", "Done")
+            .get("/api/tenants/${tenant.id}/followups")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("items.size()", equalTo(0))
+    }
 }

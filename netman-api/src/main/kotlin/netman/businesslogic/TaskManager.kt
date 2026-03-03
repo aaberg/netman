@@ -94,6 +94,40 @@ class TaskManager(
         return PageResource(actions.pageNumber, actions.size, actions.totalPages, actionResources.content)
     }
 
+    fun getFollowUps(userId: String, tenantId: Long, status: String?, pageable: PageableResource): PageResource<FollowUpResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val followUpStatus = if (status != null) {
+            try {
+                netman.models.FollowUpStatus.valueOf(status)
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("Invalid status: $status. Valid values are: Pending, Done")
+            }
+        } else {
+            netman.models.FollowUpStatus.Pending // Default to Pending if no status specified
+        }
+
+        val followUps = actionAccess.getFollowUps(tenantId, followUpStatus, Pageable.from(pageable.page, pageable.pageSize))
+        val allTenantContacts = contactAccess.listContacts(tenantId).associateBy { it.id }
+        
+        val followUpResources = followUps.map { followUp ->
+            val contact = allTenantContacts[followUp.contactId]
+            if (contact == null) {
+                throw IllegalStateException("Contact with ID ${followUp.contactId} not found in tenant $tenantId")
+            }
+            FollowUpResource(
+                id = followUp.id,
+                contactId = followUp.contactId,
+                contactName = contact.name,
+                taskId = followUp.taskId,
+                note = followUp.note,
+                created = followUp.created
+            )
+        }
+
+        return PageResource(followUps.pageNumber, followUps.size, followUps.totalPages, followUpResources.content)
+    }
+
     /**
      * Processes pending actions for a specific tenant whose trigger time has passed.
      * For each overdue action:

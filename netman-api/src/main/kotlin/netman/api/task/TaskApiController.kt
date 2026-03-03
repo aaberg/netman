@@ -8,6 +8,7 @@ import netman.api.getUserId
 import netman.businesslogic.TaskManager
 import netman.businesslogic.models.ActionResource
 import netman.businesslogic.models.FollowUpActionResource
+import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
 import netman.businesslogic.models.RegisterFollowUpRequest
@@ -55,5 +56,16 @@ class TaskApiController(
     ): PageResource<ActionResource> {
         val userId = getUserId(authentication)
         return taskManager.getActions(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
+    }
+
+    override fun getFollowUps(
+        authentication: Authentication,
+        tenantId: Long,
+        status: String?,
+        page: Int?,
+        pageSize: Int?
+    ): PageResource<FollowUpResource> {
+        val userId = getUserId(authentication)
+        return taskManager.getFollowUps(userId, tenantId, status, PageableResource(page ?: 0, pageSize ?: 10))
     }
 }

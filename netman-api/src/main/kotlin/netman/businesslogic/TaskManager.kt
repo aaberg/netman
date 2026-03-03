@@ -125,7 +125,7 @@ class TaskManager(
             )
         }
 
-        return PageResource(followUps.pageNumber, followUps.size, followUps.totalPages, followUpResources.content)
+        return PageResource(followUps.pageNumber, followUps.size, followUps.totalSize.toInt(), followUpResources.content)
     }
 
     /**

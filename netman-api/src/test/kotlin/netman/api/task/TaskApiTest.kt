@@ -336,4 +336,66 @@ class TaskApiTest : DefaultTestProperties() {
             .body("status", equalTo("Pending"))
             .body("contact.id", equalTo(contactId.toString()))
     }
+
+    @Test
+    fun `get actions for tenant`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Action Test Contact",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register a scheduled follow-up to create an action
+        val futureTime = Instant.now().plusSeconds(3600L) // 1 hour from now
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId",
+                      "note": "Test action",
+                      "triggerTime": "$futureTime",
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups")
+            .then()
+            .log().all()
+            .statusCode(201)
+
+        // Get actions
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tenants/${tenant.id}/actions")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .body("items.size()", equalTo(1))
+            .body("items[0].type", equalTo("followup"))
+            .body("items[0].status", equalTo("Pending"))
+            .body("items[0].frequency", equalTo("Single"))
+    }
 }

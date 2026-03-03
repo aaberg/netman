@@ -84,6 +84,16 @@ class TaskManager(
         return PageResource(actions.pageNumber, actions.size, actions.totalPages, followUpActionResources.content)
     }
 
+    fun getActions(userId: String, tenantId: Long, pageable: PageableResource): PageResource<ActionResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val actions = actionAccess.getActions(tenantId, ActionStatus.Pending, null,
+            Pageable.from(pageable.page, pageable.pageSize))
+        val actionResources = actions.map { action -> mapToActionResource(action) }
+
+        return PageResource(actions.pageNumber, actions.size, actions.totalPages, actionResources.content)
+    }
+
     /**
      * Processes pending actions for a specific tenant whose trigger time has passed.
      * For each overdue action:

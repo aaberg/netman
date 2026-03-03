@@ -6,6 +6,7 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.TaskManager
+import netman.businesslogic.models.ActionResource
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
@@ -44,5 +45,15 @@ class TaskApiController(
     ): PageResource<FollowUpActionResource> {
         val userId = getUserId(authentication)
         return taskManager.getPendingFollowUps(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
+    }
+
+    override fun getActions(
+        authentication: Authentication,
+        tenantId: Long,
+        page: Int?,
+        pageSize: Int?
+    ): PageResource<ActionResource> {
+        val userId = getUserId(authentication)
+        return taskManager.getActions(userId, tenantId, PageableResource(page ?: 0, pageSize ?: 10))
     }
 }

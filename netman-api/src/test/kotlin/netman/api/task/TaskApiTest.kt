@@ -405,27 +405,6 @@ class TaskApiTest : DefaultTestProperties() {
         val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
 
-        // Create a contact
-        val contactId: UUID = spec.`when`()
-            .log().all()
-            .auth().oauth2("dummy")
-            .contentType("application/json")
-            .body(
-                """
-                    {
-                      "name": "Follow-up Test Contact",
-                      "details": []
-                    }
-                """.trimIndent()
-            )
-            .post("/api/tenants/${tenant.id}/contacts")
-            .then()
-            .log().all()
-            .statusCode(201)
-            .extract()
-            .jsonPath()
-            .getUUID("id")
-
         // Test the endpoint - should return empty list since no follow-ups exist yet
         val response = spec.`when`()
             .log().all()
@@ -437,8 +416,7 @@ class TaskApiTest : DefaultTestProperties() {
             .extract()
             .response()
         
-        // Verify page structure        
-        println("Response body: ${response.body.asString()}")
+        // Verify page structure
         val page = response.jsonPath().getInt("page")
         val pageSize = response.jsonPath().getInt("pageSize")
         val total = response.jsonPath().getInt("total")
@@ -446,9 +424,8 @@ class TaskApiTest : DefaultTestProperties() {
         assertThat(pageSize).isEqualTo(10)
         assertThat(total).isEqualTo(0)
         
-        // Check if items exists
+        // Verify items field exists
         val itemsStr = response.jsonPath().getString("items")
-        println("Items field: $itemsStr")
         assertThat(itemsStr).isNotNull()
     }
 

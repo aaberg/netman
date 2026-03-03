@@ -121,6 +121,7 @@ class TaskManager(
                 contactName = contact.name,
                 taskId = followUp.taskId,
                 note = followUp.note,
+                status = followUp.status,
                 created = followUp.created
             )
         }

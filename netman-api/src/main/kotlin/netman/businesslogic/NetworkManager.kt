@@ -91,6 +91,7 @@ class NetworkManager(
                 contactName = contacts.find { it.id == followUp.contactId }?.name ?: "Unknown",
                 taskId = followUp.taskId,
                 note = followUp.note,
+                status = followUp.status,
                 created = followUp.created
             )
         }

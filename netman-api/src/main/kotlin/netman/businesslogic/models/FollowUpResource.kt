@@ -1,6 +1,7 @@
 package netman.businesslogic.models
 
 import io.micronaut.serde.annotation.Serdeable
+import netman.models.FollowUpStatus
 import java.time.Instant
 import java.util.UUID
 
@@ -14,5 +15,6 @@ data class FollowUpResource(
     val contactName: String,
     val taskId: UUID,
     val note: String?,
+    val status: FollowUpStatus,
     val created: Instant
 )

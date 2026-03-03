@@ -13,6 +13,7 @@ import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
+import netman.models.FollowUpStatus
 
 @Tag(name = "Task", description = "API for managing task resources")
 interface TaskApi {
@@ -74,7 +75,7 @@ interface TaskApi {
     fun getFollowUps(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
-        @Parameter(description = "Status filter (Pending or Done)", required = false) @QueryValue status: String?,
+        @Parameter(description = "Status filter (Pending or Done)", required = false) @QueryValue status: FollowUpStatus?,
         @Parameter(description = "Page", required = false) @QueryValue page: Int?,
         @Parameter(description = "PageSize", required = false) @QueryValue pageSize: Int?
     ) : PageResource<FollowUpResource>

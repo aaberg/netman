@@ -13,6 +13,7 @@ import netman.businesslogic.models.PageResource
 import netman.businesslogic.models.PageableResource
 import netman.businesslogic.models.RegisterFollowUpRequest
 import netman.businesslogic.models.RegisterScheduledFollowUpRequest
+import netman.models.FollowUpStatus
 
 @Controller("/api/tenants/")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -61,7 +62,7 @@ class TaskApiController(
     override fun getFollowUps(
         authentication: Authentication,
         tenantId: Long,
-        status: String?,
+        status: FollowUpStatus?,
         page: Int?,
         pageSize: Int?
     ): PageResource<FollowUpResource> {

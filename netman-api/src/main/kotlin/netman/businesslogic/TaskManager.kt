@@ -8,6 +8,7 @@ import netman.businesslogic.models.*
 import netman.models.ActionStatus
 import netman.models.COMMAND_TYPE_FOLLOWUP
 import netman.models.CreateFollowUpCommand
+import netman.models.FollowUpStatus
 import netman.models.Frequency
 import java.time.Instant
 import java.time.ZoneId
@@ -94,18 +95,10 @@ class TaskManager(
         return PageResource(actions.pageNumber, actions.size, actions.totalPages, actionResources.content)
     }
 
-    fun getFollowUps(userId: String, tenantId: Long, status: String?, pageable: PageableResource): PageResource<FollowUpResource> {
+    fun getFollowUps(userId: String, tenantId: Long, status: FollowUpStatus?, pageable: PageableResource): PageResource<FollowUpResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
 
-        val followUpStatus = if (status != null) {
-            try {
-                netman.models.FollowUpStatus.valueOf(status)
-            } catch (e: IllegalArgumentException) {
-                throw IllegalArgumentException("Invalid status: $status. Valid values are: Pending, Done")
-            }
-        } else {
-            netman.models.FollowUpStatus.Pending // Default to Pending if no status specified
-        }
+        val followUpStatus = status ?: FollowUpStatus.Pending
 
         val followUps = actionAccess.getFollowUps(tenantId, followUpStatus, Pageable.from(pageable.page, pageable.pageSize))
         val allTenantContacts = contactAccess.listContacts(tenantId).associateBy { it.id }

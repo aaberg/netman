@@ -2,12 +2,15 @@ package netman.api.task
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.specification.RequestSpecification
 import jakarta.inject.Inject
 import netman.access.client.setupAuthenticationClientForSuccessfullAuthentication
 import netman.access.repository.DefaultTestProperties
+import netman.access.repository.FollowUpRepository
 import netman.businesslogic.MembershipManager
+import netman.businesslogic.TaskManager
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.FollowUpTimeSpecification
 import netman.businesslogic.models.RegisterFollowUpRequest
@@ -30,10 +33,10 @@ class TaskApiTest : DefaultTestProperties() {
     private lateinit var membershipManager: MembershipManager
     
     @Inject
-    private lateinit var taskManager: netman.businesslogic.TaskManager
+    private lateinit var taskManager: TaskManager
     
     @Inject
-    private lateinit var followUpRepository: netman.access.repository.FollowUpRepository
+    private lateinit var followUpRepository: FollowUpRepository
 
     @Test
     fun `get pending follow-ups for tenant`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
@@ -653,7 +656,7 @@ class TaskApiTest : DefaultTestProperties() {
         taskManager.runPendingActions()
 
         // Find the created follow-up and update its status to Done
-        val followUps = followUpRepository.findByTenantIdAndStatus(tenant.id, "Pending", io.micronaut.data.model.Pageable.from(0, 10))
+        val followUps = followUpRepository.findByTenantIdAndStatus(tenant.id, "Pending", Pageable.from(0, 10))
         assertThat(followUps.content).isNotEmpty
         val followUp = followUps.content[0]
         val updatedFollowUp = followUp.copy(status = "Done")

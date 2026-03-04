@@ -2,12 +2,15 @@ package netman.api.task
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo
 import com.github.tomakehurst.wiremock.junit5.WireMockTest
+import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.specification.RequestSpecification
 import jakarta.inject.Inject
 import netman.access.client.setupAuthenticationClientForSuccessfullAuthentication
 import netman.access.repository.DefaultTestProperties
+import netman.access.repository.FollowUpRepository
 import netman.businesslogic.MembershipManager
+import netman.businesslogic.TaskManager
 import netman.businesslogic.models.FollowUpActionResource
 import netman.businesslogic.models.FollowUpTimeSpecification
 import netman.businesslogic.models.RegisterFollowUpRequest
@@ -28,6 +31,12 @@ class TaskApiTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var membershipManager: MembershipManager
+    
+    @Inject
+    private lateinit var taskManager: TaskManager
+    
+    @Inject
+    private lateinit var followUpRepository: FollowUpRepository
 
     @Test
     fun `get pending follow-ups for tenant`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
@@ -397,5 +406,282 @@ class TaskApiTest : DefaultTestProperties() {
             .body("items[0].type", equalTo("followup"))
             .body("items[0].status", equalTo("Pending"))
             .body("items[0].frequency", equalTo("Single"))
+    }
+
+    @Test
+    fun `get follow-ups for tenant with default status`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Jane Smith",
+                      "details": [
+                        {
+                          "type": "email",
+                          "address": "jane.smith@example.com",
+                          "isPrimary": true,
+                          "label": "Work"
+                        }
+                      ]
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register a scheduled follow-up with trigger time in the past
+        val pastTime = Instant.now().minusSeconds(3600L) // 1 hour ago
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId",
+                      "note": "Discuss contract renewal",
+                      "triggerTime": "$pastTime",
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups")
+            .then()
+            .log().all()
+            .statusCode(201)
+
+        // Process actions to create follow-ups
+        taskManager.runPendingActions()
+
+        // Test the endpoint - should return 1 pending follow-up
+        val response = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .get("/api/tenants/${tenant.id}/followups")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .extract()
+            .response()
+        
+        // Verify page structure
+        val page = response.jsonPath().getInt("page")
+        val pageSize = response.jsonPath().getInt("pageSize")
+        val total = response.jsonPath().getInt("total")
+        assertThat(page).isEqualTo(0)
+        assertThat(pageSize).isEqualTo(10)
+        assertThat(total).isEqualTo(1)
+        
+        // Verify items
+        val items = response.jsonPath().getList<Map<String, Any>>("items")
+        assertThat(items).hasSize(1)
+        assertThat(items[0]["contactName"]).isEqualTo("Jane Smith")
+        assertThat(items[0]["note"]).isEqualTo("Discuss contract renewal")
+        assertThat(items[0]["status"]).isEqualTo("Pending")
+    }
+
+    @Test
+    fun `get follow-ups for tenant with status filter`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create two contacts
+        val contactId1: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Alice Johnson",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        val contactId2: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Bob Wilson",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register two scheduled follow-ups with trigger time in the past
+        val pastTime = Instant.now().minusSeconds(3600L)
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId1",
+                      "note": "First follow-up",
+                      "triggerTime": "$pastTime",
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups")
+            .then()
+            .log().all()
+            .statusCode(201)
+
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId2",
+                      "note": "Second follow-up",
+                      "triggerTime": "$pastTime",
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups")
+            .then()
+            .log().all()
+            .statusCode(201)
+
+        // Process actions to create follow-ups
+        taskManager.runPendingActions()
+
+        // Test with explicit Pending status parameter
+        val response = spec.given()
+            .log().all()
+            .auth().oauth2("dummy")
+            .queryParam("status", "Pending")
+        .`when`()
+            .get("/api/tenants/${tenant.id}/followups")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .extract()
+            .response()
+
+        // Verify we got 2 pending follow-ups
+        val total = response.jsonPath().getInt("total")
+        assertThat(total).isEqualTo(2)
+        val items = response.jsonPath().getList<Map<String, Any>>("items")
+        assertThat(items).hasSize(2)
+        assertThat(items.map { it["status"] }).allMatch { it == "Pending" }
+    }
+    
+    @Test
+    fun `get follow-ups for tenant with Done status`(wmRuntimeInfo: WireMockRuntimeInfo, spec: RequestSpecification) {
+        val userId = UUID.randomUUID().toString()
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        // Create a contact
+        val contactId: UUID = spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "name": "Charlie Brown",
+                      "details": []
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+            .log().all()
+            .statusCode(201)
+            .extract()
+            .jsonPath()
+            .getUUID("id")
+
+        // Register a scheduled follow-up with trigger time in the past
+        val pastTime = Instant.now().minusSeconds(3600L)
+        spec.`when`()
+            .log().all()
+            .auth().oauth2("dummy")
+            .contentType("application/json")
+            .body(
+                """
+                    {
+                      "contactId": "$contactId",
+                      "note": "Completed follow-up",
+                      "triggerTime": "$pastTime",
+                      "frequency": "Single"
+                    }
+                """.trimIndent()
+            )
+            .post("/api/tenants/${tenant.id}/scheduled-follow-ups")
+            .then()
+            .log().all()
+            .statusCode(201)
+
+        // Process actions to create follow-ups
+        taskManager.runPendingActions()
+
+        // Find the created follow-up and update its status to Done
+        val followUps = followUpRepository.findByTenantIdAndStatus(tenant.id, "Pending", Pageable.from(0, 10))
+        assertThat(followUps.content).isNotEmpty
+        val followUp = followUps.content[0]
+        val updatedFollowUp = followUp.copy(status = "Done")
+        followUpRepository.update(updatedFollowUp)
+
+        // Test with Done status
+        val response = spec.given()
+            .log().all()
+            .auth().oauth2("dummy")
+            .queryParam("status", "Done")
+        .`when`()
+            .get("/api/tenants/${tenant.id}/followups")
+        .then()
+            .log().all()
+            .statusCode(200)
+            .extract()
+            .response()
+
+        // Verify we got 1 done follow-up
+        val total = response.jsonPath().getInt("total")
+        assertThat(total).isEqualTo(1)
+        val items = response.jsonPath().getList<Map<String, Any>>("items")
+        assertThat(items).hasSize(1)
+        assertThat(items[0]["status"]).isEqualTo("Done")
+        assertThat(items[0]["contactName"]).isEqualTo("Charlie Brown")
+        assertThat(items[0]["note"]).isEqualTo("Completed follow-up")
     }
 }

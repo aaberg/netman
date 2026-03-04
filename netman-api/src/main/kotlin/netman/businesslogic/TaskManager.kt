@@ -8,6 +8,7 @@ import netman.businesslogic.models.*
 import netman.models.ActionStatus
 import netman.models.COMMAND_TYPE_FOLLOWUP
 import netman.models.CreateFollowUpCommand
+import netman.models.FollowUpStatus
 import netman.models.Frequency
 import java.time.Instant
 import java.time.ZoneId
@@ -92,6 +93,33 @@ class TaskManager(
         val actionResources = actions.map { action -> mapToActionResource(action) }
 
         return PageResource(actions.pageNumber, actions.size, actions.totalPages, actionResources.content)
+    }
+
+    fun getFollowUps(userId: String, tenantId: Long, status: FollowUpStatus?, pageable: PageableResource): PageResource<FollowUpResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val followUpStatus = status ?: FollowUpStatus.Pending
+
+        val followUps = actionAccess.getFollowUps(tenantId, followUpStatus, Pageable.from(pageable.page, pageable.pageSize))
+        val allTenantContacts = contactAccess.listContacts(tenantId).associateBy { it.id }
+        
+        val followUpResources = followUps.map { followUp ->
+            val contact = allTenantContacts[followUp.contactId]
+            if (contact == null) {
+                throw IllegalStateException("Contact with ID ${followUp.contactId} not found in tenant $tenantId")
+            }
+            FollowUpResource(
+                id = followUp.id,
+                contactId = followUp.contactId,
+                contactName = contact.name,
+                taskId = followUp.taskId,
+                note = followUp.note,
+                status = followUp.status,
+                created = followUp.created
+            )
+        }
+
+        return PageResource(followUps.pageNumber, followUps.size, followUps.totalSize.toInt(), followUpResources.content)
     }
 
     /**

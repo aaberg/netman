@@ -102,7 +102,13 @@ open class ContactAccess(
     
     private fun mapCommunication(dto: CommunicationDTO): Communication {
         val metadata = if (dto.metadata != null) {
-            objectMapper.readValue(dto.metadata, Map::class.java) as Map<String, String>
+            try {
+                val parsedMap = objectMapper.readValue(dto.metadata, Map::class.java)
+                // Safe conversion with validation
+                parsedMap.entries.associate { (k, v) -> k.toString() to v.toString() }
+            } catch (e: Exception) {
+                emptyMap()
+            }
         } else {
             emptyMap()
         }

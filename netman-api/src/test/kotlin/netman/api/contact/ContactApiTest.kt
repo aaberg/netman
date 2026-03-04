@@ -317,10 +317,11 @@ class ContactApiTest : DefaultTestProperties() {
             .then()
             .log().all()
             .statusCode(200)
-            .body("size()", equalTo(2))
-            .body("[0].communication.contactId", equalTo(contactId.toString()))
-            .body("[0].contact.id", equalTo(contactId.toString()))
-            .body("[0].contact.name", equalTo("Jane Smith"))
+            .body("contact.id", equalTo(contactId.toString()))
+            .body("contact.name", equalTo("Jane Smith"))
+            .body("communications.size()", equalTo(2))
+            .body("communications[0].contactId", equalTo(contactId.toString()))
+            .body("communications[1].contactId", equalTo(contactId.toString()))
     }
     
     @Test

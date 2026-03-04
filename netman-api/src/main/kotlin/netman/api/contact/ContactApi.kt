@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationWithContactResource
+import netman.businesslogic.models.CommunicationsWithContactResource
 import netman.businesslogic.models.LabelResource
 import netman.businesslogic.models.RegisterCommunicationResource
 import java.util.UUID
@@ -79,12 +79,12 @@ interface ContactApi {
     
     @Operation(
         summary = "Get all communications for a contact",
-        responses = [ApiResponse(responseCode = "200", description = "List of communications")]
+        responses = [ApiResponse(responseCode = "200", description = "Communications with contact details")]
     )
     @Get("/{tenantId}/contacts/{contactId}/communications")
     fun getCommunications(
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long,
         @Parameter(description = "ID of the contact") contactId: UUID
-    ) : List<CommunicationWithContactResource>
+    ) : CommunicationsWithContactResource
 }

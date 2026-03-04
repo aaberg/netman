@@ -9,7 +9,7 @@ import netman.businesslogic.NetworkManager
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationWithContactResource
+import netman.businesslogic.models.CommunicationsWithContactResource
 import netman.businesslogic.models.LabelResource
 import netman.businesslogic.models.RegisterCommunicationResource
 import java.util.UUID
@@ -76,7 +76,7 @@ class ContactApiController(
         authentication: Authentication,
         tenantId: Long,
         contactId: UUID
-    ): List<CommunicationWithContactResource> {
+    ): CommunicationsWithContactResource {
         val userId = getUserId(authentication)
         return networkManager.getCommunications(userId, tenantId, contactId)
     }

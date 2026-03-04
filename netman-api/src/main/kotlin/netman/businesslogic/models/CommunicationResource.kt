@@ -27,8 +27,12 @@ data class RegisterCommunicationResource(
     val metadata: Map<String, String> = emptyMap()
 )
 
+/**
+ * Resource bundling multiple communications with their associated contact.
+ * Used for GET endpoint to return all communications for a single contact.
+ */
 @Serdeable
-data class CommunicationWithContactResource(
-    val communication: CommunicationResource,
-    val contact: ContactResource
+data class CommunicationsWithContactResource(
+    val contact: ContactResource,
+    val communications: List<CommunicationResource>
 )

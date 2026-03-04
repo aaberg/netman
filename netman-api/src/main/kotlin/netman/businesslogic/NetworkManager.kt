@@ -9,7 +9,7 @@ import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.ContactResourceMapper
 import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationWithContactResource
+import netman.businesslogic.models.CommunicationsWithContactResource
 import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.LabelResource
 import netman.businesslogic.models.TenantSummaryResource
@@ -135,7 +135,7 @@ class NetworkManager(
         )
     }
     
-    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationWithContactResource> {
+    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): CommunicationsWithContactResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         
         // Verify the contact belongs to this tenant
@@ -144,18 +144,20 @@ class NetworkManager(
         
         val communications = contactAccess.getCommunications(contactId)
         
-        return communications.map { communication ->
-            CommunicationWithContactResource(
-                communication = CommunicationResource(
-                    id = communication.id,
-                    contactId = communication.contactId,
-                    type = communication.type,
-                    content = communication.content,
-                    timestamp = communication.timestamp,
-                    metadata = communication.metadata
-                ),
-                contact = contactResource
+        val communicationResources = communications.map { communication ->
+            CommunicationResource(
+                id = communication.id,
+                contactId = communication.contactId,
+                type = communication.type,
+                content = communication.content,
+                timestamp = communication.timestamp,
+                metadata = communication.metadata
             )
         }
+        
+        return CommunicationsWithContactResource(
+            contact = contactResource,
+            communications = communicationResources
+        )
     }
 }

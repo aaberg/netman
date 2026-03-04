@@ -16,6 +16,14 @@ data class CommunicationResource(
 )
 
 @Serdeable
+data class RegisterCommunicationResource(
+    val type: CommunicationType,
+    val content: String,
+    val timestamp: Instant,
+    val metadata: Map<String, String> = emptyMap()
+)
+
+@Serdeable
 data class CommunicationWithContactResource(
     val communication: CommunicationResource,
     val contact: ContactResource

@@ -236,7 +236,6 @@ class ContactApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contactId": "$contactId",
                       "type": "EMAIL",
                       "content": "Sent project proposal via email",
                       "timestamp": "2026-03-04T10:00:00Z",
@@ -282,7 +281,6 @@ class ContactApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contactId": "$contactId",
                       "type": "EMAIL",
                       "content": "First email",
                       "timestamp": "2026-03-04T10:00:00Z",
@@ -300,7 +298,6 @@ class ContactApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contactId": "$contactId",
                       "type": "CALL",
                       "content": "Discussed project timeline",
                       "timestamp": "2026-03-04T11:00:00Z",
@@ -352,7 +349,6 @@ class ContactApiTest : DefaultTestProperties() {
             .body(
                 """
                     {
-                      "contactId": "$contactId",
                       "type": "TEXT_MESSAGE",
                       "content": "Quick update via SMS",
                       "timestamp": "2026-03-04T12:00:00Z",

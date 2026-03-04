@@ -16,6 +16,7 @@ import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.CommunicationResource
 import netman.businesslogic.models.CommunicationWithContactResource
 import netman.businesslogic.models.LabelResource
+import netman.businesslogic.models.RegisterCommunicationResource
 import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contact resources")
@@ -73,7 +74,7 @@ interface ContactApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
         @Parameter(description = "ID of the contact") @PathVariable contactId: UUID,
-        @Parameter(description = "Communication details") @Body communication: CommunicationResource
+        @Parameter(description = "Communication details") @Body communication: RegisterCommunicationResource
     ) : CommunicationResource
     
     @Operation(

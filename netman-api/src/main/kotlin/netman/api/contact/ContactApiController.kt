@@ -11,6 +11,7 @@ import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.CommunicationResource
 import netman.businesslogic.models.CommunicationWithContactResource
 import netman.businesslogic.models.LabelResource
+import netman.businesslogic.models.RegisterCommunicationResource
 import java.util.UUID
 
 @Controller("/api/tenants")
@@ -56,12 +57,19 @@ class ContactApiController(
         authentication: Authentication,
         tenantId: Long,
         contactId: UUID,
-        communication: CommunicationResource
+        communication: RegisterCommunicationResource
     ): CommunicationResource {
         val userId = getUserId(authentication)
-        // Ensure the contactId in the path matches the one in the body
-        val communicationWithContactId = communication.copy(contactId = contactId)
-        return networkManager.saveCommunication(userId, tenantId, communicationWithContactId)
+        // Construct full CommunicationResource from RegisterCommunicationResource with contactId from path
+        val communicationResource = CommunicationResource(
+            id = null,
+            contactId = contactId,
+            type = communication.type,
+            content = communication.content,
+            timestamp = communication.timestamp,
+            metadata = communication.metadata
+        )
+        return networkManager.saveCommunication(userId, tenantId, communicationResource)
     }
     
     override fun getCommunications(

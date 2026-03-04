@@ -35,6 +35,12 @@ netman-api/
 
 ## Development Commands
 
+Before running tests, make sure to set up dependencies by running 
+```bash
+# Setup dependencies (db, liquibase migrations, nats, etc)
+docker-compose -f compose.deps.yml up -d
+```
+
 ```bash
 # Build the project
 ./gradlew build
@@ -51,6 +57,13 @@ netman-api/
 # Check code quality
 ./gradlew check
 ```
+
+## Agent Development Instructions
+- Start dependencies (deps.compose.yml)
+- Run all existing tests before writing any code (gradlew test)
+- Write code and tests for the code
+- Run all tests again to verify new code and that nothing is broken
+- Check code quality (gradlew check)
 
 ## Kotlin Code Style
 

@@ -1,4 +1,4 @@
-import type { FollowUpActionResource, RegisterFollowUpRequest } from "$lib/followUpModel"
+import type { FollowUpActionResource, RegisterFollowUpRequest, FollowUpResource, ActionResource } from "$lib/followUpModel"
 import { basePath } from "$lib/server/common"
 import type { Page } from "$lib/page"
 
@@ -26,9 +26,19 @@ export const registerFollowUp = async (
 
 export const getFollowUps = async (
   accessToken: string,
-  tenantId: string
-): Promise<Page<FollowUpActionResource>> => {
-  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/scheduled-follow-ups`, {
+  tenantId: string,
+  status?: string
+): Promise<Page<FollowUpResource>> => {
+  let url = `${basePath()}/api/tenants/${tenantId}/followups`
+  const params = new URLSearchParams()
+  if (status) {
+    params.append('status', status)
+  }
+  if (params.toString()) {
+    url += '?' + params.toString()
+  }
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -37,9 +47,29 @@ export const getFollowUps = async (
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch pending follow-ups from API: ${response.status} ${response.statusText}`
+      `Failed to fetch follow-ups from API: ${response.status} ${response.statusText}`
     )
   }
 
-  return (await response.json()) as Page<FollowUpActionResource>
+  return (await response.json()) as Page<FollowUpResource>
+}
+
+export const getActions = async (
+  accessToken: string,
+  tenantId: string
+): Promise<Page<ActionResource>> => {
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/actions`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch actions from API: ${response.status} ${response.statusText}`
+    )
+  }
+
+  return (await response.json()) as Page<ActionResource>
 }

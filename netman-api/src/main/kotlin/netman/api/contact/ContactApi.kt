@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.CommunicationResource
+import netman.businesslogic.models.CommunicationWithContactResource
 import netman.businesslogic.models.LabelResource
 import java.util.UUID
 
@@ -60,4 +62,28 @@ interface ContactApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long
     ) : List<LabelResource>
+    
+    @Operation(
+        summary = "Register a new communication for a contact",
+        responses = [ApiResponse(responseCode = "201", description = "Communication registered successfully")]
+    )
+    @Post("/{tenantId}/contacts/{contactId}/communications")
+    @Status(HttpStatus.CREATED)
+    fun registerCommunication(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
+        @Parameter(description = "ID of the contact") @PathVariable contactId: UUID,
+        @Parameter(description = "Communication details") @Body communication: CommunicationResource
+    ) : CommunicationResource
+    
+    @Operation(
+        summary = "Get all communications for a contact",
+        responses = [ApiResponse(responseCode = "200", description = "List of communications")]
+    )
+    @Get("/{tenantId}/contacts/{contactId}/communications")
+    fun getCommunications(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") tenantId: Long,
+        @Parameter(description = "ID of the contact") contactId: UUID
+    ) : List<CommunicationWithContactResource>
 }

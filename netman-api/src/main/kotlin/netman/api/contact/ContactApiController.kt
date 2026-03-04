@@ -8,6 +8,8 @@ import netman.api.getUserId
 import netman.businesslogic.NetworkManager
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.CommunicationResource
+import netman.businesslogic.models.CommunicationWithContactResource
 import netman.businesslogic.models.LabelResource
 import java.util.UUID
 
@@ -48,5 +50,26 @@ class ContactApiController(
     ): List<LabelResource> {
         val user = getUserId(authentication)
         return networkManager.getLabels(user, tenantId)
+    }
+    
+    override fun registerCommunication(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        communication: CommunicationResource
+    ): CommunicationResource {
+        val userId = getUserId(authentication)
+        // Ensure the contactId in the path matches the one in the body
+        val communicationWithContactId = communication.copy(contactId = contactId)
+        return networkManager.saveCommunication(userId, tenantId, communicationWithContactId)
+    }
+    
+    override fun getCommunications(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID
+    ): List<CommunicationWithContactResource> {
+        val userId = getUserId(authentication)
+        return networkManager.getCommunications(userId, tenantId, contactId)
     }
 }

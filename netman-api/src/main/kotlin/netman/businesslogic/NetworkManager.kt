@@ -8,9 +8,12 @@ import netman.access.repository.LabelRepository
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactResource
 import netman.businesslogic.models.ContactResourceMapper
+import netman.businesslogic.models.CommunicationResource
+import netman.businesslogic.models.CommunicationWithContactResource
 import netman.businesslogic.models.FollowUpResource
 import netman.businesslogic.models.LabelResource
 import netman.businesslogic.models.TenantSummaryResource
+import netman.models.Communication
 import java.util.*
 
 @Singleton
@@ -102,5 +105,57 @@ class NetworkManager(
             numberOfPendingActions = numberOfPendingActions,
             pendingFollowUps = followUpResources
         )
+    }
+    
+    fun saveCommunication(userId: String, tenantId: Long, communicationResource: CommunicationResource): CommunicationResource {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        
+        // Verify the contact belongs to this tenant
+        val contact = contactAccess.getContact(tenantId, communicationResource.contactId)
+        requireNotNull(contact.id)
+        
+        val communication = Communication(
+            id = communicationResource.id,
+            contactId = communicationResource.contactId,
+            type = communicationResource.type,
+            content = communicationResource.content,
+            timestamp = communicationResource.timestamp,
+            metadata = communicationResource.metadata
+        )
+        
+        val savedCommunication = contactAccess.saveCommunication(communication)
+        
+        return CommunicationResource(
+            id = savedCommunication.id,
+            contactId = savedCommunication.contactId,
+            type = savedCommunication.type,
+            content = savedCommunication.content,
+            timestamp = savedCommunication.timestamp,
+            metadata = savedCommunication.metadata
+        )
+    }
+    
+    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationWithContactResource> {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        
+        // Verify the contact belongs to this tenant
+        val contact = contactAccess.getContact(tenantId, contactId)
+        val contactResource = contactResourceMapper.map(contact)
+        
+        val communications = contactAccess.getCommunications(contactId)
+        
+        return communications.map { communication ->
+            CommunicationWithContactResource(
+                communication = CommunicationResource(
+                    id = communication.id,
+                    contactId = communication.contactId,
+                    type = communication.type,
+                    content = communication.content,
+                    timestamp = communication.timestamp,
+                    metadata = communication.metadata
+                ),
+                contact = contactResource
+            )
+        }
     }
 }

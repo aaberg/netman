@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="2026-03-04-1" author="Lars Aaberg">
+        <createTable tableName="communication">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_communication"/>
+            </column>
+            <column name="contact_id" type="uuid">
+                <constraints nullable="false" 
+                             referencedTableName="contact2" 
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_communication_contact"/>
+            </column>
+            <column name="type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metadata" type="jsonb"/>
+        </createTable>
+        
+        <createIndex tableName="communication" indexName="idx_communication_contact_id">
+            <column name="contact_id"/>
+        </createIndex>
+        
+        <createIndex tableName="communication" indexName="idx_communication_timestamp">
+            <column name="timestamp"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

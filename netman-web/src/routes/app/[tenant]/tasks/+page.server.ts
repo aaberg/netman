@@ -9,5 +9,5 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
   const followUpsPage = await getFollowUps(token, tenant)
   const actionsPage = await getActions(token, tenant)
 
-  return { followUpsPage, actionsPage }
+  return { tenant, followUpsPage, actionsPage }
 }

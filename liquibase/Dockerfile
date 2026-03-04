@@ -1,7 +1,7 @@
 FROM liquibase/liquibase:5.0.1
 
-# Install the PostgreSQL driver
-RUN lpm add postgresql --global
+# Download and install the PostgreSQL driver manually
+RUN curl -L --insecure -o /liquibase/lib/postgresql.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.4/postgresql-42.7.4.jar
 
 # Copy liquibase changelog files into the container
 COPY liquibase-changelog.xml /liquibase/changelog/liquibase-changelog.xml

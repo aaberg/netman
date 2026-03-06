@@ -97,7 +97,7 @@ open class ContactAccess(
     }
     
     fun getCommunications(contactId: UUID): List<Communication> {
-        return communicationRepository.findByContactId(contactId).map { mapCommunication(it) }
+        return communicationRepository.findByContactIdOrderByTimestampDesc(contactId).map { mapCommunication(it) }
     }
     
     private fun mapCommunication(dto: CommunicationDTO): Communication {

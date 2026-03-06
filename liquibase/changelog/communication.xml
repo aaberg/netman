@@ -30,10 +30,7 @@
         
         <createIndex tableName="communication" indexName="idx_communication_contact_id">
             <column name="contact_id"/>
-        </createIndex>
-        
-        <createIndex tableName="communication" indexName="idx_communication_timestamp">
-            <column name="timestamp"/>
+            <column name="timestamp" type="desc"/>
         </createIndex>
     </changeSet>
 </databaseChangeLog>

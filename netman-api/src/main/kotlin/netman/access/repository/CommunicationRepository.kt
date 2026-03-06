@@ -8,6 +8,6 @@ import java.util.*
 @JdbcRepository(dialect = Dialect.POSTGRES)
 interface CommunicationRepository : GenericRepository<CommunicationDTO, UUID> {
     fun save(communication: CommunicationDTO): CommunicationDTO
-    fun findByContactId(contactId: UUID): List<CommunicationDTO>
+    fun findByContactIdOrderByTimestampDesc(contactId: UUID): List<CommunicationDTO>
     fun findById(id: UUID): CommunicationDTO?
 }

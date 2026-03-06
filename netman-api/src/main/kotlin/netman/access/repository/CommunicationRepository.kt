@@ -9,5 +9,4 @@ import java.util.*
 interface CommunicationRepository : GenericRepository<CommunicationDTO, UUID> {
     fun save(communication: CommunicationDTO): CommunicationDTO
     fun findByContactIdOrderByTimestampDesc(contactId: UUID): List<CommunicationDTO>
-    fun findById(id: UUID): CommunicationDTO?
 }

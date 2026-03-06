@@ -6,13 +6,8 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
-import netman.businesslogic.models.ContactListItemResource
-import netman.businesslogic.models.ContactResource
-import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationsWithContactResource
-import netman.businesslogic.models.LabelResource
-import netman.businesslogic.models.RegisterCommunicationResource
-import java.util.UUID
+import netman.businesslogic.models.*
+import java.util.*
 
 @Controller("/api/tenants")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -76,7 +71,7 @@ class ContactApiController(
         authentication: Authentication,
         tenantId: Long,
         contactId: UUID
-    ): CommunicationsWithContactResource {
+    ): List<CommunicationResource> {
         val userId = getUserId(authentication)
         return networkManager.getCommunications(userId, tenantId, contactId)
     }

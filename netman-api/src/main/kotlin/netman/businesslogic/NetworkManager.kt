@@ -5,14 +5,7 @@ import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.repository.LabelRepository
-import netman.businesslogic.models.ContactListItemResource
-import netman.businesslogic.models.ContactResource
-import netman.businesslogic.models.ContactResourceMapper
-import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationsWithContactResource
-import netman.businesslogic.models.FollowUpResource
-import netman.businesslogic.models.LabelResource
-import netman.businesslogic.models.TenantSummaryResource
+import netman.businesslogic.models.*
 import netman.models.Communication
 import java.util.*
 
@@ -135,16 +128,12 @@ class NetworkManager(
         )
     }
     
-    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): CommunicationsWithContactResource {
+    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        
-        // Verify the contact belongs to this tenant
-        val contact = contactAccess.getContact(tenantId, contactId)
-        val contactResource = contactResourceMapper.map(contact)
-        
+
         val communications = contactAccess.getCommunications(contactId)
         
-        val communicationResources = communications.map { communication ->
+        return communications.map { communication ->
             CommunicationResource(
                 id = communication.id,
                 contactId = communication.contactId,
@@ -154,10 +143,5 @@ class NetworkManager(
                 metadata = communication.metadata
             )
         }
-        
-        return CommunicationsWithContactResource(
-            contact = contactResource,
-            communications = communicationResources
-        )
     }
 }

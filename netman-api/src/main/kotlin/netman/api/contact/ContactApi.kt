@@ -1,23 +1,14 @@
 package netman.api.contact
 
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.annotation.Status
+import io.micronaut.http.annotation.*
 import io.micronaut.security.authentication.Authentication
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import netman.businesslogic.models.ContactListItemResource
-import netman.businesslogic.models.ContactResource
-import netman.businesslogic.models.CommunicationResource
-import netman.businesslogic.models.CommunicationsWithContactResource
-import netman.businesslogic.models.LabelResource
-import netman.businesslogic.models.RegisterCommunicationResource
-import java.util.UUID
+import netman.businesslogic.models.*
+import java.util.*
 
 @Tag(name = "Contact", description = "API for managing contact resources")
 interface ContactApi {
@@ -86,5 +77,5 @@ interface ContactApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long,
         @Parameter(description = "ID of the contact") contactId: UUID
-    ) : CommunicationsWithContactResource
+    ) : List<CommunicationResource>
 }

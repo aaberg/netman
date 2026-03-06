@@ -10,5 +10,6 @@
     <include file="./changelog/view.xml" />
     <include file="./changelog/task.xml" />
     <include file="./changelog/action.xml" />
+    <include file="./changelog/communication.xml" />
 
 </databaseChangeLog>

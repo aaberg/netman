@@ -4,6 +4,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.DefaultTestProperties
 import netman.models.Contact2
+import netman.models.Communication
+import netman.models.CommunicationType
 import netman.models.Email
 import netman.models.Note
 import netman.models.Phone
@@ -11,6 +13,7 @@ import netman.models.TenantType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.time.Instant
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -60,6 +63,96 @@ class ContactAccessTest : DefaultTestProperties() {
         assertThat(contactList).hasSize(2)
         assertThat(contactList).anySatisfy { c -> assertThat(c.name).isEqualTo("Ola Normann") }
         assertThat(contactList).anySatisfy { c -> assertThat(c.name).isEqualTo("Kari Normann") }
+    }
+    
+    @Test fun `save communication and check that it gets assigned an ID`() {
+        // Arrange
+        val user1 = "user-id-1234"
+        val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
+        val contact = contactAccess.saveContact(tenant.id, Contact2(name = "John Doe", details = listOf()))
+        requireNotNull(contact.id)
+        
+        val communication = Communication(
+            contactId = contact.id,
+            type = CommunicationType.EMAIL,
+            content = "Sent an email regarding the project",
+            timestamp = Instant.now(),
+            metadata = mapOf("subject" to "Project Update")
+        )
+
+        // Act
+        val savedCommunication = contactAccess.saveCommunication(communication)
+
+        // Assert
+        assertThat(savedCommunication.id).isNotNull
+        assertThat(savedCommunication.contactId).isEqualTo(contact.id)
+        assertThat(savedCommunication.type).isEqualTo(CommunicationType.EMAIL)
+        assertThat(savedCommunication.content).isEqualTo("Sent an email regarding the project")
+        assertThat(savedCommunication.metadata).containsEntry("subject", "Project Update")
+    }
+    
+    @Test fun `save and retrieve multiple communications for a contact`() {
+        // Arrange
+        val user = "abc-123"
+        val tenant = tenantAccess.registerNewTenant("atenant", TenantType.PERSONAL, user)
+        val contact = contactAccess.saveContact(tenant.id, Contact2(name = "Jane Doe", details = listOf()))
+        requireNotNull(contact.id)
+        
+        val communication1 = Communication(
+            contactId = contact.id,
+            type = CommunicationType.EMAIL,
+            content = "First email",
+            timestamp = Instant.now(),
+            metadata = mapOf("subject" to "Hello")
+        )
+        
+        val communication2 = Communication(
+            contactId = contact.id,
+            type = CommunicationType.CALL,
+            content = "Discussed project details",
+            timestamp = Instant.now(),
+            metadata = mapOf("duration" to "15 minutes")
+        )
+
+        // Act
+        contactAccess.saveCommunication(communication1)
+        contactAccess.saveCommunication(communication2)
+        
+        val communications = contactAccess.getCommunications(contact.id)
+
+        // Assert
+        assertThat(communications).hasSize(2)
+        assertThat(communications).anySatisfy { c -> 
+            assertThat(c.type).isEqualTo(CommunicationType.EMAIL)
+            assertThat(c.content).isEqualTo("First email")
+        }
+        assertThat(communications).anySatisfy { c -> 
+            assertThat(c.type).isEqualTo(CommunicationType.CALL)
+            assertThat(c.content).isEqualTo("Discussed project details")
+        }
+    }
+    
+    @Test fun `save communication with empty metadata`() {
+        // Arrange
+        val user = "user-id-999"
+        val tenant = tenantAccess.registerNewTenant("tenant-999", TenantType.PERSONAL, user)
+        val contact = contactAccess.saveContact(tenant.id, Contact2(name = "Bob Smith", details = listOf()))
+        requireNotNull(contact.id)
+        
+        val communication = Communication(
+            contactId = contact.id,
+            type = CommunicationType.TEXT_MESSAGE,
+            content = "Quick text message",
+            timestamp = Instant.now(),
+            metadata = emptyMap()
+        )
+
+        // Act
+        val savedCommunication = contactAccess.saveCommunication(communication)
+
+        // Assert
+        assertThat(savedCommunication.id).isNotNull
+        assertThat(savedCommunication.metadata).isEmpty()
     }
 
 //    @Test

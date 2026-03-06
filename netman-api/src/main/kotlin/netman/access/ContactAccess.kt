@@ -5,6 +5,8 @@ import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Singleton
 import netman.access.repository.*
 import netman.models.CDetail
+import netman.models.Communication
+import netman.models.CommunicationType
 import netman.models.Contact2
 import netman.models.Email
 import netman.models.Phone
@@ -15,7 +17,8 @@ import java.util.*
 open class ContactAccess(
     private val contact2Repository: Contact2Repository,
     private val objectMapper: ObjectMapper,
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val communicationRepository: CommunicationRepository
 ) {
 
     @Serdeable
@@ -78,5 +81,44 @@ open class ContactAccess(
                 else -> { /* Other detail types don't have labels */ }
             }
         }
+    }
+    
+    fun saveCommunication(communication: Communication): Communication {
+        val communicationDto = CommunicationDTO(
+            id = communication.id ?: UUID.randomUUID(),
+            contactId = communication.contactId,
+            type = communication.type.name,
+            content = communication.content,
+            timestamp = communication.timestamp,
+            metadata = if (communication.metadata.isEmpty()) null else objectMapper.writeValueAsString(communication.metadata)
+        )
+        val savedDto = communicationRepository.save(communicationDto)
+        return mapCommunication(savedDto)
+    }
+    
+    fun getCommunications(contactId: UUID): List<Communication> {
+        return communicationRepository.findByContactIdOrderByTimestampDesc(contactId).map { mapCommunication(it) }
+    }
+    
+    private fun mapCommunication(dto: CommunicationDTO): Communication {
+        val metadata = if (dto.metadata != null) {
+            try {
+                val parsedMap = objectMapper.readValue(dto.metadata, Map::class.java)
+                // Safe conversion with validation
+                parsedMap.entries.associate { (k, v) -> k.toString() to v.toString() }
+            } catch (e: Exception) {
+                emptyMap()
+            }
+        } else {
+            emptyMap()
+        }
+        return Communication(
+            id = dto.id,
+            contactId = dto.contactId,
+            type = CommunicationType.valueOf(dto.type),
+            content = dto.content,
+            timestamp = dto.timestamp,
+            metadata = metadata
+        )
     }
 }

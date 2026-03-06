@@ -6,10 +6,8 @@ import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
-import netman.businesslogic.models.ContactListItemResource
-import netman.businesslogic.models.ContactResource
-import netman.businesslogic.models.LabelResource
-import java.util.UUID
+import netman.businesslogic.models.*
+import java.util.*
 
 @Controller("/api/tenants")
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -48,5 +46,33 @@ class ContactApiController(
     ): List<LabelResource> {
         val user = getUserId(authentication)
         return networkManager.getLabels(user, tenantId)
+    }
+    
+    override fun registerCommunication(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        communication: RegisterCommunicationResource
+    ): CommunicationResource {
+        val userId = getUserId(authentication)
+        // Construct full CommunicationResource from RegisterCommunicationResource with contactId from path
+        val communicationResource = CommunicationResource(
+            id = null,
+            contactId = contactId,
+            type = communication.type,
+            content = communication.content,
+            timestamp = communication.timestamp,
+            metadata = communication.metadata
+        )
+        return networkManager.saveCommunication(userId, tenantId, communicationResource)
+    }
+    
+    override fun getCommunications(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID
+    ): List<CommunicationResource> {
+        val userId = getUserId(authentication)
+        return networkManager.getCommunications(userId, tenantId, contactId)
     }
 }

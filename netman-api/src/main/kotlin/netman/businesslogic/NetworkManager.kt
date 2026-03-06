@@ -130,6 +130,10 @@ class NetworkManager(
     
     fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        
+        // Verify the contact belongs to this tenant before fetching communications
+        val contact = contactAccess.getContact(tenantId, contactId)
+        requireNotNull(contact.id)
 
         val communications = contactAccess.getCommunications(contactId)
         

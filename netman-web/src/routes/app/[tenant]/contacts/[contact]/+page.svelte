@@ -3,7 +3,7 @@
   import { compareDetails, type Email, type Note, type Phone } from "$lib/contactModel"
 
   const { data }: PageProps = $props()
-  const { tenant, contact } = data
+  const { tenant, contact, communications } = data
   const details = (contact.details || []).sort(compareDetails)
 
   // Type guards for discriminated rendering
@@ -174,4 +174,10 @@
       </div>
     {/if}
   </div>
+
+  <dic class="divider"></dic>
+  <ul class="list bg-base-200 rounded-box shadow-md">
+    <li class="p-4 pb-2 text-s opacity-60 tracking-wide">Previous communcations with this contact</li>
+    <!-- List of communications -->
+  </ul>
 </div>

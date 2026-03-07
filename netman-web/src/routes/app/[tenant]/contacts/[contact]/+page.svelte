@@ -175,9 +175,71 @@
     {/if}
   </div>
 
-  <dic class="divider"></dic>
+  <div class="divider"></div>
   <ul class="list bg-base-200 rounded-box shadow-md">
     <li class="p-4 pb-2 text-s opacity-60 tracking-wide">Previous communcations with this contact</li>
     <!-- List of communications -->
+    {#if communications.length === 0}
+      <li class="p-4">
+        <div class="">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-info h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+          </svg>
+          <span>No communications yet.</span>
+        </div>
+      </li>
+    {:else}
+      {#each communications as comm (comm.id)}
+        <li class="list-row">
+          <div class="flex items-start gap-3">
+            <!-- Communication type icon -->
+            {#if comm.type === 'EMAIL'}
+              <div class="avatar">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="-4 -4 34 34" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+            {:else if comm.type === 'CALL'}
+              <div class="avatar">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="-4 -4 34 34" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+              </div>
+            {:else if comm.type === 'TEXT_MESSAGE'}
+              <div class="avatar">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="-4 -4 34 34" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+              </div>
+            {/if}
+            
+            <div class="flex-1">
+              <!-- Communication type badge -->
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs text-base-content/60">{new Date(comm.timestamp).toLocaleString()}</span>
+              </div>
+              
+              <!-- Communication content -->
+              <p class="text-sm leading-relaxed whitespace-pre-wrap">{comm.content}</p>
+              
+               Metadata if available
+              {#if comm.metadata !== undefined && Object.keys(comm.metadata).length > 0}
+                <div class="mt-2 text-xs text-base-content/70">
+                  {#each Object.entries(comm.metadata) as [key, value] (key)}
+                    <div><strong>{key}:</strong> {value}</div>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          </div>
+        </li>
+      {/each}
+    {/if}
   </ul>
 </div>

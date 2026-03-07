@@ -36,7 +36,7 @@
     </a>
   </div>
   <!-- Header card -->
-  <div class="card bg-base-100 border-base-200 border shadow-xl">
+  <div class="card bg-base-300 border-base-200 border shadow-xl">
     <div class="card-body">
       <div class="flex items-center justify-between gap-4">
         <div class="flex gap-4">
@@ -81,9 +81,9 @@
 
   <!-- Details section -->
   <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-    {#each details as d}
+    {#each details as d, index (index)}
       {#if isEmail(d)}
-        <div class="card bg-base-100 border-base-200 border shadow-sm">
+        <div class="card bg-base-200 border-base-200 border shadow-sm">
           <div class="card-body">
             <div class="flex items-start gap-3">
               <div class="badge badge-primary badge-outline" aria-hidden="true">Email</div>
@@ -116,7 +116,7 @@
           </div>
         </div>
       {:else if isPhone(d)}
-        <div class="card bg-base-100 border-base-200 border shadow-sm">
+        <div class="card bg-base-200 border-base-200 border shadow-sm">
           <div class="card-body">
             <div class="badge badge-info badge-outline w-fit" aria-hidden="true">Phone</div>
             <div class="mt-2 flex items-center gap-2">
@@ -144,7 +144,7 @@
           </div>
         </div>
       {:else if isNote(d)}
-        <div class="card bg-base-100 border-base-200 border shadow-sm md:col-span-3">
+        <div class="card bg-base-200 border-base-200 border shadow-sm md:col-span-3">
           <div class="card-body">
             <div class="badge badge-secondary badge-outline w-fit" aria-hidden="true">Note</div>
             <p class="mt-2 leading-relaxed whitespace-pre-wrap">{d.note}</p>

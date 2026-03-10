@@ -75,4 +75,24 @@ class ContactApiController(
         val userId = getUserId(authentication)
         return networkManager.getCommunications(userId, tenantId, contactId)
     }
+
+    override fun updateCommunication(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        communicationId: UUID,
+        communication: RegisterCommunicationResource
+    ): CommunicationResource {
+        val userId = getUserId(authentication)
+        // Construct full CommunicationResource from RegisterCommunicationResource with IDs
+        val communicationResource = CommunicationResource(
+            id = communicationId,
+            contactId = contactId,
+            type = communication.type,
+            content = communication.content,
+            timestamp = communication.timestamp,
+            metadata = communication.metadata
+        )
+        return networkManager.saveCommunication(userId, tenantId, communicationResource)
+    }
 }

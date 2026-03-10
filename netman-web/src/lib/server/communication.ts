@@ -42,3 +42,27 @@ export const registerCommunication = async (
 
   return (await response.json()) as CommunicationResource
 }
+
+export const updateCommunication = async (
+  accessToken: string,
+  tenantId: string,
+  contactId: string,
+  communicationId: string,
+  communication: RegisterCommunicationResource
+): Promise<CommunicationResource> => {
+  const body = JSON.stringify(communication)
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts/${contactId}/communications/${communicationId}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body
+  })
+
+  if (!response.ok) {
+    throw new Error(`Error updating communication. Body of request: ${body}`)
+  }
+
+  return (await response.json()) as CommunicationResource
+}

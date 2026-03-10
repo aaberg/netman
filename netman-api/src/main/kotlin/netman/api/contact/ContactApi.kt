@@ -78,4 +78,17 @@ interface ContactApi {
         @Parameter(description = "ID of the tenant") tenantId: Long,
         @Parameter(description = "ID of the contact") contactId: UUID
     ) : List<CommunicationResource>
+
+    @Operation(
+        summary = "Update an existing communication",
+        responses = [ApiResponse(responseCode = "200", description = "Communication updated successfully")]
+    )
+    @Put("/{tenantId}/contacts/{contactId}/communications/{communicationId}")
+    fun updateCommunication(
+        authentication: Authentication,
+        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
+        @Parameter(description = "ID of the contact") @PathVariable contactId: UUID,
+        @Parameter(description = "ID of the communication") @PathVariable communicationId: UUID,
+        @Parameter(description = "Updated communication details") @Body communication: RegisterCommunicationResource
+    ) : CommunicationResource
 }

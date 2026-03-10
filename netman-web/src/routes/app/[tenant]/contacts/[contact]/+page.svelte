@@ -74,6 +74,24 @@
             </svg>
             <span class="hidden sm:inline">Edit</span>
           </a>
+          <a
+            class="btn btn-secondary btn-outline"
+            aria-label="Register communication"
+            title="Register communication"
+            href="/app/{tenant}/contacts/{contact.id}/communications/new"
+          >
+            <!-- plus icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="h-5 w-5"
+            >
+              <path d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span class="hidden sm:inline">Register Communication</span>
+            <span class="sm:hidden">Add</span>
+          </a>
         </div>
       </div>
     </div>
@@ -221,8 +239,21 @@
             
             <div class="flex-1">
               <!-- Communication type badge -->
-              <div class="flex items-center gap-2 mb-1">
+              <div class="flex items-center justify-between gap-2 mb-1">
                 <span class="text-xs text-base-content/60">{new Date(comm.timestamp).toLocaleString()}</span>
+                <div class="flex items-center gap-2">
+                  <a
+                    class="btn btn-xs btn-ghost"
+                    aria-label="Edit communication"
+                    title="Edit communication"
+                    href="/app/{tenant}/contacts/{contact.id}/communications/{comm.id}/edit"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-3 w-3">
+                      <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712z"/>
+                      <path d="M3 17.25V21h3.75L19.061 8.689l-3.712-3.712L3 17.25z"/>
+                    </svg>
+                  </a>
+                </div>
               </div>
               
               <!-- Communication content -->

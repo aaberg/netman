@@ -64,7 +64,7 @@ class ContactApiController(
             timestamp = communication.timestamp,
             metadata = communication.metadata
         )
-        return networkManager.saveCommunication(userId, tenantId, communicationResource)
+        return networkManager.registerCommunication(userId, tenantId, communicationResource)
     }
     
     override fun getCommunications(

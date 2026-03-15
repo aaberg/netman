@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.Instant
+import java.util.*
 
 @MicronautTest(startApplication = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -153,6 +154,72 @@ class ContactAccessTest : DefaultTestProperties() {
         // Assert
         assertThat(savedCommunication.id).isNotNull
         assertThat(savedCommunication.metadata).isEmpty()
+    }
+
+    @Test fun `saveCommunication should update existing communication`() {
+        // Arrange
+        val user = "user-update-1"
+        val tenant = tenantAccess.registerNewTenant("tenant-update", TenantType.PERSONAL, user)
+        val contact = contactAccess.saveContact(tenant.id, Contact2(name = "Update Test", details = listOf()))
+        requireNotNull(contact.id)
+
+        val initialCommunication = Communication(
+            contactId = contact.id,
+            type = CommunicationType.EMAIL,
+            content = "Initial content",
+            timestamp = Instant.now(),
+            metadata = mapOf("key" to "value")
+        )
+
+        val savedCommunication = contactAccess.saveCommunication(initialCommunication)
+        val originalId = savedCommunication.id
+        requireNotNull(originalId)
+
+        val updatedCommunication = savedCommunication.copy(
+            content = "Updated content",
+            metadata = mapOf("key" to "new value", "other" to "new item")
+        )
+
+        // Act
+        val result = contactAccess.saveCommunication(updatedCommunication)
+
+        // Assert
+        assertThat(result.id).isEqualTo(originalId)
+        assertThat(result.content).isEqualTo("Updated content")
+        assertThat(result.metadata).containsEntry("key", "new value")
+        assertThat(result.metadata).containsEntry("other", "new item")
+
+        // Verify retrieval
+        val retrieved = contactAccess.getCommunications(contact.id).first { it.id == originalId }
+        assertThat(retrieved.content).isEqualTo("Updated content")
+        assertThat(retrieved.metadata).containsEntry("key", "new value")
+    }
+
+    @Test fun `saveCommunication should save new communication with provided ID`() {
+        // Arrange
+        val user = "user-provided-id"
+        val tenant = tenantAccess.registerNewTenant("tenant-provided-id", TenantType.PERSONAL, user)
+        val contact = contactAccess.saveContact(tenant.id, Contact2(name = "ID Test", details = listOf()))
+        requireNotNull(contact.id)
+
+        val providedId = UUID.randomUUID()
+        val communication = Communication(
+            id = providedId,
+            contactId = contact.id,
+            type = CommunicationType.CALL,
+            content = "Provided ID content",
+            timestamp = Instant.now()
+        )
+
+        // Act
+        val result = contactAccess.saveCommunication(communication)
+
+        // Assert
+        assertThat(result.id).isEqualTo(providedId)
+        
+        // Verify retrieval
+        val retrieved = contactAccess.getCommunications(contact.id).first { it.id == providedId }
+        assertThat(retrieved.content).isEqualTo("Provided ID content")
     }
 
 //    @Test

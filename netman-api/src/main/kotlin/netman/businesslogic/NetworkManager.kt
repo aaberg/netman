@@ -100,7 +100,7 @@ class NetworkManager(
         )
     }
     
-    fun saveCommunication(userId: String, tenantId: Long, communicationResource: CommunicationResource): CommunicationResource {
+    fun registerCommunication(userId: String, tenantId: Long, communicationResource: CommunicationResource): CommunicationResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         
         // Verify the contact belongs to this tenant
@@ -127,7 +127,55 @@ class NetworkManager(
             metadata = savedCommunication.metadata
         )
     }
-    
+
+    fun updateCommunication(
+        userId: String,
+        tenantId: Long,
+        communicationId: UUID,
+        communicationResource: CommunicationResource
+    ): CommunicationResource {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        // Verify the contact belongs to this tenant
+        val contact = contactAccess.getContact(tenantId, communicationResource.contactId)
+        requireNotNull(contact.id)
+
+        val communication = Communication(
+            id = communicationId,
+            contactId = communicationResource.contactId,
+            type = communicationResource.type,
+            content = communicationResource.content,
+            timestamp = communicationResource.timestamp,
+            metadata = communicationResource.metadata
+        )
+
+        val savedCommunication = contactAccess.saveCommunication(communication)
+
+        return CommunicationResource(
+            id = savedCommunication.id,
+            contactId = savedCommunication.contactId,
+            type = savedCommunication.type,
+            content = savedCommunication.content,
+            timestamp = savedCommunication.timestamp,
+            metadata = savedCommunication.metadata
+        )
+    }
+
+    fun deleteCommunication(userId: String, tenantId: Long, contactId: UUID, communicationId: UUID) {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        // Verify the contact belongs to this tenant
+        val contact = contactAccess.getContact(tenantId, contactId)
+        requireNotNull(contact.id)
+
+        // Verify the communication belongs to the contact
+        val communication = contactAccess.getCommunication(communicationId) ?: throw IllegalArgumentException("Communication not found")
+        require(communication.contactId == contactId) { "Communication does not belong to the specified contact" }
+
+        contactAccess.deleteCommunication(communicationId)
+    }
+
+
     fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         

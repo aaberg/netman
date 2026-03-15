@@ -16,6 +16,8 @@ services:
       start_period: 30s
     networks:
       - default
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   liquibase:
     build:
@@ -47,6 +49,8 @@ services:
       start_period: 30s
     networks:
       - default
+    volumes:
+      - hanko_data:/var/lib/postgresql/data
 
   hanko-migrate:
     image: ghcr.io/teamhanko/hanko:latest
@@ -106,3 +110,7 @@ services:
 networks:
   default:
     name: netman-network
+
+volumes:
+  db_data:
+  hanko_data:

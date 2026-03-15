@@ -84,22 +84,39 @@ open class ContactAccess(
     }
     
     fun saveCommunication(communication: Communication): Communication {
+        val id = communication.id ?: UUID.randomUUID()
+        val exists = communication.id != null && communicationRepository.existsById(communication.id)
+        
         val communicationDto = CommunicationDTO(
-            id = communication.id ?: UUID.randomUUID(),
+            id = id,
             contactId = communication.contactId,
             type = communication.type.name,
             content = communication.content,
             timestamp = communication.timestamp,
             metadata = if (communication.metadata.isEmpty()) null else objectMapper.writeValueAsString(communication.metadata)
         )
-        val savedDto = communicationRepository.save(communicationDto)
+
+        val savedDto = if (exists) {
+            communicationRepository.update(communicationDto)
+        } else {
+            communicationRepository.save(communicationDto)
+        }
         return mapCommunication(savedDto)
     }
     
     fun getCommunications(contactId: UUID): List<Communication> {
         return communicationRepository.findByContactIdOrderByTimestampDesc(contactId).map { mapCommunication(it) }
     }
-    
+
+    fun getCommunication(communicationId: UUID): Communication? {
+        val dto = communicationRepository.getById(communicationId) ?: return null
+        return mapCommunication(dto)
+    }
+
+    fun deleteCommunication(communicationId: UUID) {
+        communicationRepository.deleteById(communicationId)
+    }
+
     private fun mapCommunication(dto: CommunicationDTO): Communication {
         val metadata = if (dto.metadata != null) {
             try {

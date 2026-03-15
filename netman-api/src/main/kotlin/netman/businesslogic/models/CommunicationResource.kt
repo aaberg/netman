@@ -24,5 +24,12 @@ data class RegisterCommunicationResource(
     val type: CommunicationType,
     val content: String,
     val timestamp: Instant,
+    val metadata: Map<String, String> = emptyMap(),
+    val followUpId: UUID? = null
+)
+
+@Serdeable
+data class SetCommunicationPropertiesResource(
+    val content: String,
     val metadata: Map<String, String> = emptyMap()
 )

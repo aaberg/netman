@@ -27,9 +27,6 @@ dependencies {
     implementation("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("io.opentelemetry.instrumentation:opentelemetry-jdbc")
 
-    // Azure insights
-    implementation("com.azure:azure-monitor-opentelemetry-autoconfigure:1.4.0")
-
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")

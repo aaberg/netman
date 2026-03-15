@@ -54,28 +54,4 @@ interface ContactApi {
         authentication: Authentication,
         @Parameter(description = "ID of the tenant") tenantId: Long
     ) : List<LabelResource>
-    
-    @Operation(
-        summary = "Register a new communication for a contact",
-        responses = [ApiResponse(responseCode = "201", description = "Communication registered successfully")]
-    )
-    @Post("/{tenantId}/contacts/{contactId}/communications")
-    @Status(HttpStatus.CREATED)
-    fun registerCommunication(
-        authentication: Authentication,
-        @Parameter(description = "ID of the tenant") @PathVariable tenantId: Long,
-        @Parameter(description = "ID of the contact") @PathVariable contactId: UUID,
-        @Parameter(description = "Communication details") @Body communication: RegisterCommunicationResource
-    ) : CommunicationResource
-    
-    @Operation(
-        summary = "Get all communications for a contact",
-        responses = [ApiResponse(responseCode = "200", description = "Communications with contact details")]
-    )
-    @Get("/{tenantId}/contacts/{contactId}/communications")
-    fun getCommunications(
-        authentication: Authentication,
-        @Parameter(description = "ID of the tenant") tenantId: Long,
-        @Parameter(description = "ID of the contact") contactId: UUID
-    ) : List<CommunicationResource>
 }

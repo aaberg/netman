@@ -1,5 +1,6 @@
 package netman.businesslogic
 
+import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import jakarta.validation.ValidationException
@@ -7,10 +8,7 @@ import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
-import netman.businesslogic.models.CommunicationResource
 import netman.businesslogic.models.ContactResource
-import netman.businesslogic.models.CreateFollowUpTaskRequest
-import netman.businesslogic.models.CreateTriggerRequest
 import netman.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -207,158 +205,6 @@ class NetworkManagerTest : DefaultTestProperties() {
         }
     }
 
-    @Test
-    fun `updateCommunication should throw when user has no access to tenant`() {
-        // Arrange
-        val userId = "testuser_id"
-        val otherUserId = "otheruser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        val contact = contactAccess.saveContact(tenant.id, newContact("Test Contact"))
-        requireNotNull(contact.id)
-        
-        val communication = Communication(
-            contactId = contact.id,
-            type = CommunicationType.EMAIL,
-            content = "Test email",
-            timestamp = Instant.now()
-        )
-        val savedCommunication = contactAccess.saveCommunication(communication)
-        requireNotNull(savedCommunication.id)
-        
-        val updateResource = CommunicationResource(
-            id = savedCommunication.id,
-            contactId = contact.id,
-            type = CommunicationType.EMAIL,
-            content = "Updated email",
-            timestamp = Instant.now()
-        )
-        
-        // Act & Assert
-        assertThrows<ForbiddenException> {
-            networkManager.updateCommunication(
-                otherUserId, tenant.id, savedCommunication.id, updateResource
-            )
-        }
-    }
-
-    @Test
-    fun `updateCommunication should throw when contact does not exist`() {
-        // Arrange
-        val userId = "testuser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        
-        // Create a contact first
-        val contact = contactAccess.saveContact(tenant.id, newContact("Test Contact"))
-        requireNotNull(contact.id)
-        
-        // Create communication with this contact
-        val communication = Communication(
-            id = UUID.randomUUID(),
-            contactId = contact.id,
-            type = CommunicationType.EMAIL,
-            content = "Test email",
-            timestamp = Instant.now()
-        )
-        val savedCommunication = contactAccess.saveCommunication(communication)
-        requireNotNull(savedCommunication.id)
-        
-        // Now try to update with a non-existent contact ID
-        val nonExistentContactId = UUID.randomUUID()
-        val updateResource = CommunicationResource(
-            id = savedCommunication.id,
-            contactId = nonExistentContactId,  // This contact doesn't exist
-            type = CommunicationType.EMAIL,
-            content = "Updated email",
-            timestamp = Instant.now()
-        )
-        
-        // Act & Assert - This should throw IllegalArgumentException when contact doesn't exist
-        assertThrows<IllegalArgumentException> {
-            networkManager.updateCommunication(
-                userId, tenant.id, savedCommunication.id, updateResource
-            )
-        }
-    }
-
-    @Test
-    fun `deleteCommunication should successfully delete existing communication`() {
-        // Arrange
-        val userId = "testuser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        val contact = contactAccess.saveContact(tenant.id, newContact("Test Contact"))
-        requireNotNull(contact.id)
-        
-        // Create communication to delete
-        val communication = Communication(
-            contactId = contact.id,
-            type = CommunicationType.EMAIL,
-            content = "Test email to delete",
-            timestamp = Instant.now()
-        )
-        val savedCommunication = contactAccess.saveCommunication(communication)
-        requireNotNull(savedCommunication.id)
-        
-        // Verify it exists
-        val communicationsBefore = contactAccess.getCommunications(contact.id)
-        assertThat(communicationsBefore).hasSize(1)
-        
-        // Act
-        networkManager.deleteCommunication(userId, tenant.id, contact.id, savedCommunication.id)
-        
-        // Assert - Verify deletion
-        val communicationsAfter = contactAccess.getCommunications(contact.id)
-        assertThat(communicationsAfter).isEmpty()
-    }
-
-    @Test
-    fun `deleteCommunication should throw when user has no access to tenant`() {
-        // Arrange
-        val userId = "testuser_id"
-        val otherUserId = "otheruser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        val contact = contactAccess.saveContact(tenant.id, newContact("Test Contact"))
-        requireNotNull(contact.id)
-        
-        val communication = Communication(
-            contactId = contact.id,
-            type = CommunicationType.EMAIL,
-            content = "Test email",
-            timestamp = Instant.now()
-        )
-        val savedCommunication = contactAccess.saveCommunication(communication)
-        requireNotNull(savedCommunication.id)
-        
-        // Act & Assert
-        assertThrows<ForbiddenException> {
-            networkManager.deleteCommunication(
-                otherUserId, tenant.id, contact.id, savedCommunication.id
-            )
-        }
-    }
-
-    @Test
-    fun `deleteCommunication should throw when contact does not exist`() {
-        // Arrange
-        val userId = "testuser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        val nonExistentContactId = UUID.randomUUID()
-        
-        // Act & Assert
-        assertThrows<IllegalArgumentException> {
-            networkManager.deleteCommunication(
-                userId, tenant.id, nonExistentContactId, UUID.randomUUID()
-            )
-        }
-    }
-
-    private data class TestUserData(val userId: java.util.UUID, val tenantId: Long)
-
-    private fun createTestUser(): TestUserData {
-        val userId = java.util.UUID.randomUUID().toString()
-        val tenant = membershipManager.registerUserWithPrivateTenant(userId, "Test User")
-        return TestUserData(java.util.UUID.fromString(userId), tenant.id)
-    }
-
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {
         val tenant = tenantAccess.registerNewTenant("test", TenantType.PERSONAL, userId)
         val contact1 = contactAccess.saveContact(tenant.id, newContact("Ola Normann"))
@@ -366,5 +212,5 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         return TenantContactTuple(listOf(contact1, contact2), tenant)
     }
-    data class TenantContactTuple(val contacts: List<Contact2>, val tenant: Tenant)
+    data class TenantContactTuple(val contacts: List<Contact>, val tenant: Tenant)
 }

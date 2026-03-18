@@ -3,7 +3,6 @@ package netman.businesslogic.models
 import io.micronaut.serde.annotation.Serdeable
 import netman.models.Action
 import netman.models.ActionStatus
-import netman.models.Contact2
 import netman.models.Frequency
 import java.time.Instant
 import java.util.*

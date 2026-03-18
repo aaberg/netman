@@ -47,7 +47,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         val testUser = createTestUser()
         
         // Create a contact
-        val contact = Contact2(
+        val contact = Contact(
             id = UUID.randomUUID(),
             name = "John Doe",
             details = listOf(
@@ -98,7 +98,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         val testUser = createTestUser()
         
         // Create a contact
-        val contact = Contact2(
+        val contact = Contact(
             id = UUID.randomUUID(),
             name = "Jane Smith",
             details = listOf(
@@ -143,7 +143,7 @@ class NetworkManagerPendingActionsTest : DefaultTestProperties() {
         val testUser = createTestUser()
         
         // Create a contact
-        val contact = Contact2(
+        val contact = Contact(
             id = UUID.randomUUID(),
             name = "Recurring Contact",
             details = listOf(

@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Mapper
 import io.micronaut.serde.annotation.Serdeable
 import netman.models.CDetail
-import netman.models.Contact2
+import netman.models.Contact
 import netman.models.Email
 import netman.models.Phone
 import java.util.*
@@ -31,12 +31,12 @@ data class ContactListItemResource(
 @Bean
 abstract class ContactResourceMapper {
     @Mapper
-    abstract fun map(contact: Contact2) : ContactResource
+    abstract fun map(contact: Contact) : ContactResource
 
     @Mapper
-    abstract fun map(contactResource: ContactResource) : Contact2
+    abstract fun map(contactResource: ContactResource) : Contact
 
-    fun mapToListItem(contact: Contact2) : ContactListItemResource {
+    fun mapToListItem(contact: Contact) : ContactListItemResource {
 
         requireNotNull(contact.id)
 

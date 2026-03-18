@@ -71,7 +71,7 @@ class TenantApiTest : DefaultTestProperties() {
         setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
         
         // Create some test data
-        contactAccess.saveContact(tenant.id, netman.models.Contact2(
+        contactAccess.saveContact(tenant.id, netman.models.Contact(
             id = UUID.randomUUID(),
             name = "Test Contact",
             details = listOf()

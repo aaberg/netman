@@ -103,6 +103,11 @@ open class ActionAccess(
         return followUpDtos.map { f -> mapFollowUp(f) }
     }
 
+    open fun markFollowUpAsDone(followUpId: UUID) {
+        val followUpDto = followupRepository.getById(followUpId) ?: throw IllegalArgumentException("Follow-up with ID $followUpId does not exist")
+        followupRepository.update(followUpDto.copy(status = FollowUpStatus.Done.toString()))
+    }
+
     private fun mapAction(actionDto: ActionDTO): Action {
         return Action(
             actionDto.id,

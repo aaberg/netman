@@ -1,12 +1,13 @@
 package netman.businesslogic
 
+import io.micronaut.data.model.Pageable
 import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
-import netman.models.Communication
+import netman.models.Interaction
 import java.util.*
 
 @Singleton
@@ -98,102 +99,5 @@ class NetworkManager(
             numberOfPendingActions = numberOfPendingActions,
             pendingFollowUps = followUpResources
         )
-    }
-    
-    fun registerCommunication(userId: String, tenantId: Long, communicationResource: CommunicationResource): CommunicationResource {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        
-        // Verify the contact belongs to this tenant
-        val contact = contactAccess.getContact(tenantId, communicationResource.contactId)
-        requireNotNull(contact.id)
-        
-        val communication = Communication(
-            id = communicationResource.id,
-            contactId = communicationResource.contactId,
-            type = communicationResource.type,
-            content = communicationResource.content,
-            timestamp = communicationResource.timestamp,
-            metadata = communicationResource.metadata
-        )
-        
-        val savedCommunication = contactAccess.saveCommunication(communication)
-        
-        return CommunicationResource(
-            id = savedCommunication.id,
-            contactId = savedCommunication.contactId,
-            type = savedCommunication.type,
-            content = savedCommunication.content,
-            timestamp = savedCommunication.timestamp,
-            metadata = savedCommunication.metadata
-        )
-    }
-
-    fun updateCommunication(
-        userId: String,
-        tenantId: Long,
-        communicationId: UUID,
-        communicationResource: CommunicationResource
-    ): CommunicationResource {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-
-        // Verify the contact belongs to this tenant
-        val contact = contactAccess.getContact(tenantId, communicationResource.contactId)
-        requireNotNull(contact.id)
-
-        val communication = Communication(
-            id = communicationId,
-            contactId = communicationResource.contactId,
-            type = communicationResource.type,
-            content = communicationResource.content,
-            timestamp = communicationResource.timestamp,
-            metadata = communicationResource.metadata
-        )
-
-        val savedCommunication = contactAccess.saveCommunication(communication)
-
-        return CommunicationResource(
-            id = savedCommunication.id,
-            contactId = savedCommunication.contactId,
-            type = savedCommunication.type,
-            content = savedCommunication.content,
-            timestamp = savedCommunication.timestamp,
-            metadata = savedCommunication.metadata
-        )
-    }
-
-    fun deleteCommunication(userId: String, tenantId: Long, contactId: UUID, communicationId: UUID) {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-
-        // Verify the contact belongs to this tenant
-        val contact = contactAccess.getContact(tenantId, contactId)
-        requireNotNull(contact.id)
-
-        // Verify the communication belongs to the contact
-        val communication = contactAccess.getCommunication(communicationId) ?: throw IllegalArgumentException("Communication not found")
-        require(communication.contactId == contactId) { "Communication does not belong to the specified contact" }
-
-        contactAccess.deleteCommunication(communicationId)
-    }
-
-
-    fun getCommunications(userId: String, tenantId: Long, contactId: UUID): List<CommunicationResource> {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        
-        // Verify the contact belongs to this tenant before fetching communications
-        val contact = contactAccess.getContact(tenantId, contactId)
-        requireNotNull(contact.id)
-
-        val communications = contactAccess.getCommunications(contactId)
-        
-        return communications.map { communication ->
-            CommunicationResource(
-                id = communication.id,
-                contactId = communication.contactId,
-                type = communication.type,
-                content = communication.content,
-                timestamp = communication.timestamp,
-                metadata = communication.metadata
-            )
-        }
     }
 }

@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotBlank
 import netman.businesslogic.helper.InitialsGenerator
 import java.util.*
 
-fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
-    return Contact2(
+fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact {
+    return Contact(
         id = UUID.randomUUID(),
         name = name,
         details = details
@@ -17,7 +17,7 @@ fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
 }
 
 @Introspected
-data class Contact2 (
+data class Contact (
     val id: UUID? = null,
     @param:NotBlank
     val name: String,

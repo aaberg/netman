@@ -1,13 +1,15 @@
 package netman.access
 
+import io.micronaut.data.model.Page
+import io.micronaut.data.model.Pageable
 import io.micronaut.serde.ObjectMapper
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Singleton
 import netman.access.repository.*
 import netman.models.CDetail
-import netman.models.Communication
-import netman.models.CommunicationType
-import netman.models.Contact2
+import netman.models.Interaction
+import netman.models.InteractionType
+import netman.models.Contact
 import netman.models.Email
 import netman.models.Phone
 import java.time.Instant
@@ -15,10 +17,10 @@ import java.util.*
 
 @Singleton
 open class ContactAccess(
-    private val contact2Repository: Contact2Repository,
+    private val contactRepository: ContactRepository,
     private val objectMapper: ObjectMapper,
     private val labelRepository: LabelRepository,
-    private val communicationRepository: CommunicationRepository
+    private val interactionRepository: InteractionRepository
 ) {
 
     @Serdeable
@@ -27,19 +29,19 @@ open class ContactAccess(
         val details: List<CDetail>
     )
 
-    fun saveContact(tenantId: Long, contact: Contact2) : Contact2 {
+    fun saveContact(tenantId: Long, contact: Contact) : Contact {
         val contactData = ContactData(contact.name, contact.details)
-        val isNewContact = contact.id == null || !contact2Repository.existsById(contact.id)
-        val contactDto = Contact2DTO(
+        val isNewContact = contact.id == null || !contactRepository.existsById(contact.id)
+        val contactDto = ContactDTO(
             id =contact.id ?: UUID.randomUUID(),
             tenantId = tenantId,
             data = objectMapper.writeValueAsString(contactData),
             lastUpdated = Instant.now())
-        val savedContactDto: Contact2DTO
+        val savedContactDto: ContactDTO
         if (isNewContact) {
-            savedContactDto = contact2Repository.save(contactDto)
+            savedContactDto = contactRepository.save(contactDto)
         } else {
-            savedContactDto = contact2Repository.update(contactDto)
+            savedContactDto = contactRepository.update(contactDto)
         }
         val savedContact = mapContact(savedContactDto)
         
@@ -48,24 +50,24 @@ open class ContactAccess(
         return savedContact
     }
 
-    fun getContact(tenantId: Long, contactId: UUID) : Contact2 {
-        val contactDto = contact2Repository.getById(contactId)
+    fun getContact(tenantId: Long, contactId: UUID) : Contact {
+        val contactDto = contactRepository.getById(contactId)
         requireNotNull(contactDto)
         check(contactDto.tenantId == tenantId)
 
         return mapContact(contactDto)
     }
 
-    fun listContacts(tenantId: Long) : List<Contact2> {
-        return contact2Repository.findByTenantId(tenantId).map { mapContact(it) }
+    fun listContacts(tenantId: Long) : List<Contact> {
+        return contactRepository.findByTenantId(tenantId).map { mapContact(it) }
     }
 
-    private fun mapContact(contactDto: Contact2DTO) : Contact2 {
+    private fun mapContact(contactDto: ContactDTO) : Contact {
         val contactData = objectMapper.readValue(contactDto.data, ContactData::class.java)
-        return Contact2(contactDto.id, contactData.name, contactData.details)
+        return Contact(contactDto.id, contactData.name, contactData.details)
     }
     
-    private fun extractAndSaveLabels(contact: Contact2, tenantId: Long) {
+    private fun extractAndSaveLabels(contact: Contact, tenantId: Long) {
         contact.details.forEach { detail ->
             when (detail) {
                 is Email -> {
@@ -83,41 +85,41 @@ open class ContactAccess(
         }
     }
     
-    fun saveCommunication(communication: Communication): Communication {
-        val id = communication.id ?: UUID.randomUUID()
-        val exists = communication.id != null && communicationRepository.existsById(communication.id)
+    fun saveInteraction(interaction: Interaction): Interaction {
+        val id = interaction.id ?: UUID.randomUUID()
+        val exists = interaction.id != null && interactionRepository.existsById(interaction.id)
         
-        val communicationDto = CommunicationDTO(
+        val interactionDto = InteractionDTO(
             id = id,
-            contactId = communication.contactId,
-            type = communication.type.name,
-            content = communication.content,
-            timestamp = communication.timestamp,
-            metadata = if (communication.metadata.isEmpty()) null else objectMapper.writeValueAsString(communication.metadata)
+            contactId = interaction.contactId,
+            type = interaction.type.name,
+            content = interaction.content,
+            timestamp = interaction.timestamp,
+            metadata = if (interaction.metadata.isEmpty()) null else objectMapper.writeValueAsString(interaction.metadata)
         )
 
         val savedDto = if (exists) {
-            communicationRepository.update(communicationDto)
+            interactionRepository.update(interactionDto)
         } else {
-            communicationRepository.save(communicationDto)
+            interactionRepository.save(interactionDto)
         }
-        return mapCommunication(savedDto)
+        return mapInteraction(savedDto)
     }
     
-    fun getCommunications(contactId: UUID): List<Communication> {
-        return communicationRepository.findByContactIdOrderByTimestampDesc(contactId).map { mapCommunication(it) }
+    fun getInteractions(contactId: UUID, pageable: Pageable): Page<Interaction> {
+        return interactionRepository.findByContactIdOrderByTimestampDesc(contactId, pageable).map { mapInteraction(it) }
     }
 
-    fun getCommunication(communicationId: UUID): Communication? {
-        val dto = communicationRepository.getById(communicationId) ?: return null
-        return mapCommunication(dto)
+    fun getInteraction(interactionId: UUID): Interaction? {
+        val dto = interactionRepository.getById(interactionId) ?: return null
+        return mapInteraction(dto)
     }
 
-    fun deleteCommunication(communicationId: UUID) {
-        communicationRepository.deleteById(communicationId)
+    fun deleteInteractions(interactionId: UUID) {
+        interactionRepository.deleteById(interactionId)
     }
 
-    private fun mapCommunication(dto: CommunicationDTO): Communication {
+    private fun mapInteraction(dto: InteractionDTO): Interaction {
         val metadata = if (dto.metadata != null) {
             try {
                 val parsedMap = objectMapper.readValue(dto.metadata, Map::class.java)
@@ -129,10 +131,10 @@ open class ContactAccess(
         } else {
             emptyMap()
         }
-        return Communication(
+        return Interaction(
             id = dto.id,
             contactId = dto.contactId,
-            type = CommunicationType.valueOf(dto.type),
+            type = InteractionType.valueOf(dto.type),
             content = dto.content,
             timestamp = dto.timestamp,
             metadata = metadata

@@ -13,9 +13,8 @@ data class FollowUpDTO(
     val tenantId: Long,
     @field:MappedProperty("contact_id")
     val contactId: UUID,
-    @field:MappedProperty("task_id")
-    val taskId: UUID,
     val status: String,
     val created: Instant,
+    val followUpTime: Instant,
     val note: String?
 )

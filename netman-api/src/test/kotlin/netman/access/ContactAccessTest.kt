@@ -1,6 +1,5 @@
 package netman.access
 
-import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import netman.access.repository.DefaultTestProperties
@@ -67,7 +66,7 @@ class ContactAccessTest : DefaultTestProperties() {
         assertThat(contactList).anySatisfy { c -> assertThat(c.name).isEqualTo("Kari Normann") }
     }
     
-    @Test fun `save communication and check that it gets assigned an ID`() {
+    @Test fun `save interaction and check that it gets assigned an ID`() {
         // Arrange
         val user1 = "user-id-1234"
         val tenant = tenantAccess.registerNewTenant("tenant1", TenantType.PERSONAL, user1)
@@ -83,17 +82,17 @@ class ContactAccessTest : DefaultTestProperties() {
         )
 
         // Act
-        val savedCommunication = contactAccess.saveInteraction(interaction)
+        val savedInteraction = contactAccess.saveInteraction(interaction)
 
         // Assert
-        assertThat(savedCommunication.id).isNotNull
-        assertThat(savedCommunication.contactId).isEqualTo(contact.id)
-        assertThat(savedCommunication.type).isEqualTo(InteractionType.EMAIL)
-        assertThat(savedCommunication.content).isEqualTo("Sent an email regarding the project")
-        assertThat(savedCommunication.metadata).containsEntry("subject", "Project Update")
+        assertThat(savedInteraction.id).isNotNull
+        assertThat(savedInteraction.contactId).isEqualTo(contact.id)
+        assertThat(savedInteraction.type).isEqualTo(InteractionType.EMAIL)
+        assertThat(savedInteraction.content).isEqualTo("Sent an email regarding the project")
+        assertThat(savedInteraction.metadata).containsEntry("subject", "Project Update")
     }
     
-    @Test fun `save and retrieve multiple communications for a contact`() {
+    @Test fun `save and retrieve multiple interactions for a contact`() {
         // Arrange
         val user = "abc-123"
         val tenant = tenantAccess.registerNewTenant("atenant", TenantType.PERSONAL, user)
@@ -120,21 +119,21 @@ class ContactAccessTest : DefaultTestProperties() {
         contactAccess.saveInteraction(interaction1)
         contactAccess.saveInteraction(interaction2)
         
-        val communications = contactAccess.getInteractions(contact.id, Pageable.from(0, 10))
+        val interactions = contactAccess.getInteractions(contact.id)
 
         // Assert
-        assertThat(communications).hasSize(2)
-        assertThat(communications).anySatisfy { c -> 
+        assertThat(interactions).hasSize(2)
+        assertThat(interactions).anySatisfy { c ->
             assertThat(c.type).isEqualTo(InteractionType.EMAIL)
             assertThat(c.content).isEqualTo("First email")
         }
-        assertThat(communications).anySatisfy { c -> 
+        assertThat(interactions).anySatisfy { c ->
             assertThat(c.type).isEqualTo(InteractionType.CALL)
             assertThat(c.content).isEqualTo("Discussed project details")
         }
     }
     
-    @Test fun `save communication with empty metadata`() {
+    @Test fun `save interaction with empty metadata`() {
         // Arrange
         val user = "user-id-999"
         val tenant = tenantAccess.registerNewTenant("tenant-999", TenantType.PERSONAL, user)
@@ -150,14 +149,14 @@ class ContactAccessTest : DefaultTestProperties() {
         )
 
         // Act
-        val savedCommunication = contactAccess.saveInteraction(interaction)
+        val savedInteractions = contactAccess.saveInteraction(interaction)
 
         // Assert
-        assertThat(savedCommunication.id).isNotNull
-        assertThat(savedCommunication.metadata).isEmpty()
+        assertThat(savedInteractions.id).isNotNull
+        assertThat(savedInteractions.metadata).isEmpty()
     }
 
-    @Test fun `saveCommunication should update existing communication`() {
+    @Test fun `saveInteraction should update existing interactions`() {
         // Arrange
         val user = "user-update-1"
         val tenant = tenantAccess.registerNewTenant("tenant-update", TenantType.PERSONAL, user)
@@ -172,17 +171,17 @@ class ContactAccessTest : DefaultTestProperties() {
             metadata = mapOf("key" to "value")
         )
 
-        val savedCommunication = contactAccess.saveInteraction(initialInteraction)
-        val originalId = savedCommunication.id
+        val savedInteraction = contactAccess.saveInteraction(initialInteraction)
+        val originalId = savedInteraction.id
         requireNotNull(originalId)
 
-        val updatedCommunication = savedCommunication.copy(
+        val updatedInteraction = savedInteraction.copy(
             content = "Updated content",
             metadata = mapOf("key" to "new value", "other" to "new item")
         )
 
         // Act
-        val result = contactAccess.saveInteraction(updatedCommunication)
+        val result = contactAccess.saveInteraction(updatedInteraction)
 
         // Assert
         assertThat(result.id).isEqualTo(originalId)
@@ -191,12 +190,12 @@ class ContactAccessTest : DefaultTestProperties() {
         assertThat(result.metadata).containsEntry("other", "new item")
 
         // Verify retrieval
-        val retrieved = contactAccess.getInteractions(contact.id, Pageable.from(0)).first { it.id == originalId }
+        val retrieved = contactAccess.getInteractions(contact.id).first { it.id == originalId }
         assertThat(retrieved.content).isEqualTo("Updated content")
         assertThat(retrieved.metadata).containsEntry("key", "new value")
     }
 
-    @Test fun `saveCommunication should save new communication with provided ID`() {
+    @Test fun `saveInteraction should save new interactions with provided ID`() {
         // Arrange
         val user = "user-provided-id"
         val tenant = tenantAccess.registerNewTenant("tenant-provided-id", TenantType.PERSONAL, user)
@@ -219,7 +218,7 @@ class ContactAccessTest : DefaultTestProperties() {
         assertThat(result.id).isEqualTo(providedId)
         
         // Verify retrieval
-        val retrieved = contactAccess.getInteractions(contact.id, Pageable.from(0)).first { it.id == providedId }
+        val retrieved = contactAccess.getInteractions(contact.id).first { it.id == providedId }
         assertThat(retrieved.content).isEqualTo("Provided ID content")
     }
 

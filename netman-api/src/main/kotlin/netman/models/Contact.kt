@@ -1,5 +1,7 @@
 package netman.models
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.micronaut.core.annotation.Introspected
@@ -63,8 +65,12 @@ data class Note(
 ) : CDetail()
 
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 data class WorkInfo (
-    val jobTitle: String,
-    val department: String,
-    val company: String
-) : CDetail()
+    val title: String,
+    val organization: String
+) : CDetail() {
+    companion object {
+        val empty = WorkInfo("", "")
+    }
+}

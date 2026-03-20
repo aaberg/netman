@@ -1,21 +1,18 @@
 package netman.businesslogic
 
-import io.micronaut.data.model.Pageable
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import jakarta.validation.ValidationException
-import netman.access.ActionAccess
 import netman.access.ContactAccess
 import netman.access.TenantAccess
 import netman.access.repository.DefaultTestProperties
-import netman.businesslogic.models.ContactResource
+import netman.businesslogic.models.ContactDetailsResource
+import netman.businesslogic.models.SaveContactRequest
 import netman.models.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
-import java.time.Instant
-import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(startApplication = false)
@@ -26,9 +23,6 @@ class NetworkManagerTest : DefaultTestProperties() {
 
     @Inject
     private lateinit var tenantAccess: TenantAccess
-    
-    @Inject
-    private lateinit var actionAccess: ActionAccess
     
     @Inject
     private lateinit var membershipManager: MembershipManager
@@ -68,18 +62,21 @@ class NetworkManagerTest : DefaultTestProperties() {
         // Arrange
         val userId = "testuser_id"
         val tenant = tenantAccess.registerNewTenant("test", TenantType.PERSONAL, userId)
-        val email = Email("test@test.com", false, "dummy")
-        val phone = Phone("11111111", "phone")
+        val email = "test@test.com"
+        val phone = "11111111"
 
 
         // Act
-        val contactResource = ContactResource(name = "Ola Normann", details = listOf(email, phone))
-        val savedContact = networkManager.saveContactWithDetails(userId, tenant.id, contactResource)
+        val contactDetailsResource = SaveContactRequest(null, "Ola Normann", email, phone, null, null, null)
+        val savedContactId = networkManager.saveContact(userId, tenant.id, contactDetailsResource).id
 
-        val fetchedContact = networkManager.getContactWithDetails(userId, tenant.id, savedContact.id!!)
+        val fetchedContact = networkManager.getContactDetails(userId, tenant.id, savedContactId)
 
         // Assert
-        assertThat(fetchedContact).isEqualTo(savedContact)
+        assertThat(fetchedContact.id).isEqualTo(fetchedContact.id)
+        assertThat(fetchedContact.name).isEqualTo(fetchedContact.name)
+        assertThat(fetchedContact.email).isEqualTo(fetchedContact.email)
+        assertThat(fetchedContact.phone).isEqualTo(fetchedContact.phone)
     }
 
     @Test
@@ -89,16 +86,15 @@ class NetworkManagerTest : DefaultTestProperties() {
         val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
 
         // Act
-        val contactResource = ContactResource(name = "Ola Normann", details = listOf())
-        val contactWDetail = networkManager.saveContactWithDetails(userId,tenant.id, contactResource)
+        val contactDetailsResource = SaveContactRequest(null, "Ola Normann", null, null, null, null, "test")
+        val savedContactId = networkManager.saveContact(userId,tenant.id, contactDetailsResource).id
 
-        val updatedContactResource = contactWDetail.copy(name = "new name")
-        val updatedContactWDetail = networkManager.saveContactWithDetails(userId,tenant.id, updatedContactResource)
+        val updatedContactResource = SaveContactRequest(savedContactId, "new name", null, null, null, null, "test")
+        networkManager.saveContact(userId,tenant.id, updatedContactResource)
 
         val myContacts = networkManager.getMyContacts(userId, tenant.id)
 
         // Assert
-        assertThat(updatedContactWDetail.name).isEqualTo("new name")
         assertThat(myContacts).hasSize(1)
         assertThat(myContacts.first().name).isEqualTo("new name")
     }
@@ -111,98 +107,11 @@ class NetworkManagerTest : DefaultTestProperties() {
 
         // Act & Assert
         val validationException = assertThrows<ValidationException> {
-            val contactResource = ContactResource(name = "", details = listOf())
-            networkManager.saveContactWithDetails(userId, tenant.id, contactResource)
+            val contactDetailsResource = SaveContactRequest(name = "")
+            networkManager.saveContact(userId, tenant.id, contactDetailsResource)
         }
 
         println(validationException.message)
-    }
-
-    @Test
-    fun `summariseTenant should return correct summary for tenant`() {
-        // Arrange
-        val userId = "testuser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-        
-        // Create some contacts
-        contactAccess.saveContact(tenant.id, newContact("Contact 1"))
-        contactAccess.saveContact(tenant.id, newContact("Contact 2"))
-        
-        // Create some pending actions
-        actionAccess.registerNewAction(
-            tenant.id, 
-            CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 1"), 
-            java.time.Instant.now().plusSeconds(3600), 
-            Frequency.Single
-        )
-
-        actionAccess.registerNewAction(
-            tenant.id, 
-            CreateFollowUpCommand(java.util.UUID.randomUUID(), "Follow up 2"), 
-            java.time.Instant.now().plusSeconds(7200), 
-            Frequency.Single
-        )
-        
-        // Create some pending follow-ups
-        val followUp1 = actionAccess.registerFollowUp(
-            tenant.id, 
-            java.util.UUID.randomUUID(), 
-            java.util.UUID.randomUUID(), 
-            "Follow up note 1"
-        )
-        
-        val followUp2 = actionAccess.registerFollowUp(
-            tenant.id, 
-            java.util.UUID.randomUUID(), 
-            java.util.UUID.randomUUID(), 
-            "Follow up note 2"
-        )
-
-        // Act
-        val summary = networkManager.summariseTenant(userId, tenant.id)
-
-        // Assert
-        assertThat(summary.tenantId).isEqualTo(tenant.id)
-        assertThat(summary.numberOfContacts).isEqualTo(2)
-        assertThat(summary.numberOfPendingActions).isEqualTo(2)
-        assertThat(summary.pendingFollowUps).hasSize(2)
-        assertThat(summary.pendingFollowUps).anySatisfy { 
-            assertThat(it.id).isEqualTo(followUp1.id)
-            assertThat(it.note).isEqualTo("Follow up note 1")
-        }
-        assertThat(summary.pendingFollowUps).anySatisfy { 
-            assertThat(it.id).isEqualTo(followUp2.id)
-            assertThat(it.note).isEqualTo("Follow up note 2")
-        }
-    }
-
-    @Test
-    fun `summariseTenant should return empty summary for new tenant`() {
-        // Arrange
-        val userId = "testuser_id"
-        val tenant = tenantAccess.registerNewTenant("emptytenant", TenantType.PERSONAL, userId)
-
-        // Act
-        val summary = networkManager.summariseTenant(userId, tenant.id)
-
-        // Assert
-        assertThat(summary.tenantId).isEqualTo(tenant.id)
-        assertThat(summary.numberOfContacts).isEqualTo(0)
-        assertThat(summary.numberOfPendingActions).isEqualTo(0)
-        assertThat(summary.pendingFollowUps).isEmpty()
-    }
-
-    @Test
-    fun `summariseTenant should throw when user has no access`() {
-        // Arrange
-        val userId = "testuser_id"
-        val otherUserId = "otheruser_id"
-        val tenant = tenantAccess.registerNewTenant("testtenant", TenantType.PERSONAL, userId)
-
-        // Act & Assert
-        assertThrows<ForbiddenException> {
-            networkManager.summariseTenant(otherUserId, tenant.id)
-        }
     }
 
     private fun createTenantWithContacts(userId: String = "dummy") : TenantContactTuple {

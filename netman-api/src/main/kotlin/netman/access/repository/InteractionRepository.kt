@@ -11,7 +11,7 @@ import java.util.*
 interface InteractionRepository : GenericRepository<InteractionDTO, UUID> {
     fun save(communication: InteractionDTO): InteractionDTO
     fun getById(id: UUID): InteractionDTO?
-    fun findByContactIdOrderByTimestampDesc(contactId: UUID, pageable: Pageable): Page<InteractionDTO>
+    fun findByContactIdOrderByTimestampDesc(contactId: UUID): List<InteractionDTO>
     fun deleteById(contactId: UUID)
     fun update(communication: InteractionDTO): InteractionDTO
     fun existsById(id: UUID): Boolean

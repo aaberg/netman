@@ -1,13 +1,16 @@
 package netman.businesslogic
 
-import io.micronaut.data.model.Pageable
 import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
-import netman.models.Interaction
+import netman.models.Contact
+import netman.models.Email
+import netman.models.Note
+import netman.models.Phone
+import netman.models.WorkInfo
 import java.util.*
 
 @Singleton
@@ -15,29 +18,58 @@ class NetworkManager(
     private val contactAccess: ContactAccess,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
-    private val contactResourceMapper: ContactResourceMapper,
     private val labelRepository: LabelRepository,
-    private val actionAccess: netman.access.ActionAccess
+    private val aggregationEngine: AggregationEngine
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-
         val contacts = contactAccess.listContacts(tenantId)
-
-        return contacts.map { contactResourceMapper.mapToListItem(it) }
+        val followUps = contactAccess.getFollowUpsForTenant(tenantId)
+        return aggregationEngine.aggregateAndSummarizeContacts(contacts, followUps);
     }
 
-    fun getContactWithDetails(userId: String, tenantId: Long, contactId: UUID): ContactResource {
+    fun getContactDetails(userId: String, tenantId: Long, contactId: UUID): ContactDetailsResource {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val contact = contactAccess.getContact(tenantId, contactId)
-        return contactResourceMapper.map(contact)
+        requireNotNull(contact.id)
+
+        val interactions = contactAccess.getInteractions(contactId)
+        val interactionResources = interactions.map { i ->
+            InteractionResource(i.id, i.contactId, i.type, i.content, i.timestamp, i.metadata)
+        }
+
+        val email = contact.details.filterIsInstance<Email>().firstOrNull()?.address ?: ""
+        val phone = contact.details.filterIsInstance<Phone>().firstOrNull()?.number ?: ""
+        val workInfo = contact.details.filterIsInstance<WorkInfo>().firstOrNull() ?: WorkInfo.empty
+        val note = contact.details.filterIsInstance<Note>().firstOrNull()?.note ?: ""
+
+        return ContactDetailsResource(
+            contact.id, contact.name, contact.initials, email, phone,
+            workInfo.title, workInfo.organization, note, interactionResources
+        )
     }
 
-    fun saveContactWithDetails(userId: String, tenantId: Long, contactResource: ContactResource): ContactResource {
+    fun saveContact(userId: String, tenantId: Long, saveContactRequest: SaveContactRequest)
+            : ContactSavedResponse {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        
-        val contact = contactResourceMapper.map(contactResource)
+
+        val email = if (saveContactRequest.email != null)
+            Email(saveContactRequest.email, false, "") else null
+        val phone = if (saveContactRequest.phone != null)
+            Phone(saveContactRequest.phone, "", false) else null
+        val note = if (saveContactRequest.notes != null)
+            Note(saveContactRequest.notes) else null
+        val workInfo = WorkInfo(saveContactRequest.title ?: "", saveContactRequest.organization ?: "")
+
+
+        val contact = Contact(
+            id = saveContactRequest.id,
+            name = saveContactRequest.name,
+            details = listOfNotNull(email, phone, note, workInfo)
+        )
+
+
         val violations = validator.validate(contact)
 
         if (violations.isNotEmpty()) {
@@ -46,8 +78,7 @@ class NetworkManager(
 
         val savedContact = contactAccess.saveContact(tenantId, contact)
         requireNotNull(savedContact.id)
-
-        return contactResourceMapper.map(savedContact)
+        return ContactSavedResponse(savedContact.id)
     }
     
     fun getLabels(userId: String, tenantId: Long): List<LabelResource> {
@@ -55,49 +86,5 @@ class NetworkManager(
         return labelRepository.getLabels(tenantId)
             .sortedBy { it.label }
             .map { LabelResource(id = it.id, label = it.label, tenantId = it.tenantId) }
-    }
-
-    fun summariseTenant(userId: String, tenantId: Long): TenantSummaryResource {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        
-        // Get number of contacts
-        val contacts = contactAccess.listContacts(tenantId)
-        val numberOfContacts = contacts.size
-        
-        // Get number of pending actions (use small page size and totalSize for count)
-        val pendingActions = actionAccess.getActions(
-            tenantId,
-            netman.models.ActionStatus.Pending,
-            null,
-            io.micronaut.data.model.Pageable.from(0, 1)
-        )
-        val numberOfPendingActions = pendingActions.totalSize.toInt()
-        
-        // Get pending follow-ups (limit to first N items for summary)
-        val pendingFollowUps = actionAccess.getFollowUps(
-            tenantId,
-            netman.models.FollowUpStatus.Pending,
-            io.micronaut.data.model.Pageable.from(0, 10)
-        )
-        
-        // Map follow-ups to FollowUpResource
-        val followUpResources = pendingFollowUps.content.map { followUp ->
-            FollowUpResource(
-                id = followUp.id,
-                contactId = followUp.contactId,
-                contactName = contacts.find { it.id == followUp.contactId }?.name ?: "Unknown",
-                taskId = followUp.taskId,
-                note = followUp.note,
-                status = followUp.status,
-                created = followUp.created
-            )
-        }
-        
-        return TenantSummaryResource(
-            tenantId = tenantId,
-            numberOfContacts = numberOfContacts,
-            numberOfPendingActions = numberOfPendingActions,
-            pendingFollowUps = followUpResources
-        )
     }
 }

@@ -6,11 +6,14 @@ import io.micronaut.serde.ObjectMapper
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.inject.Singleton
 import netman.access.repository.*
+import netman.businesslogic.TimeService
 import netman.models.CDetail
 import netman.models.Interaction
 import netman.models.InteractionType
 import netman.models.Contact
 import netman.models.Email
+import netman.models.FollowUp
+import netman.models.FollowUpStatus
 import netman.models.Phone
 import java.time.Instant
 import java.util.*
@@ -20,7 +23,9 @@ open class ContactAccess(
     private val contactRepository: ContactRepository,
     private val objectMapper: ObjectMapper,
     private val labelRepository: LabelRepository,
-    private val interactionRepository: InteractionRepository
+    private val interactionRepository: InteractionRepository,
+    private val followUpRepository: FollowUpRepository,
+    private val timeService: TimeService
 ) {
 
     @Serdeable
@@ -106,17 +111,36 @@ open class ContactAccess(
         return mapInteraction(savedDto)
     }
     
-    fun getInteractions(contactId: UUID, pageable: Pageable): Page<Interaction> {
-        return interactionRepository.findByContactIdOrderByTimestampDesc(contactId, pageable).map { mapInteraction(it) }
+    fun getInteractions(contactId: UUID): List<Interaction> {
+        return interactionRepository.findByContactIdOrderByTimestampDesc(contactId).map { mapInteraction(it) }
     }
 
-    fun getInteraction(interactionId: UUID): Interaction? {
-        val dto = interactionRepository.getById(interactionId) ?: return null
-        return mapInteraction(dto)
-    }
-
-    fun deleteInteractions(interactionId: UUID) {
+    fun deleteInteraction(interactionId: UUID) {
         interactionRepository.deleteById(interactionId)
+    }
+
+    fun getFollowUpsForTenant(tenantId: Long) : List<FollowUp> {
+        val tenantFollowUpDtos = followUpRepository.findByTenantIdAndStatus(
+            tenantId, FollowUpStatus.Scheduled.toString()
+        )
+        return tenantFollowUpDtos.map {mapFollowUp(it) }
+    }
+
+    fun getFollowUpsForContact(tenantId: Long, contactId: UUID) : List<FollowUp> {
+        val followUpDtos = followUpRepository.findByTenantIdAndContactId(tenantId, contactId)
+        return followUpDtos.map {mapFollowUp(it) }
+    }
+
+    fun getAllDueFollowUps(): List<FollowUp> {
+        val dueFollowUps = followUpRepository.findByStatusAndFollowUpTimeLessThan(FollowUpStatus.Scheduled.toString(), timeService.now())
+        return dueFollowUps.map { mapFollowUp(it) }
+    }
+
+    fun markFollowUpAsDue(followUp: FollowUp) {
+        val followUpDTO = followUpRepository.getById(followUp.id)
+        requireNotNull(followUpDTO) { "FollowUp with ID ${followUp.id} not found" }
+
+        followUpRepository.update(followUpDTO.copy(status = FollowUpStatus.Due.toString()))
     }
 
     private fun mapInteraction(dto: InteractionDTO): Interaction {
@@ -139,5 +163,16 @@ open class ContactAccess(
             timestamp = dto.timestamp,
             metadata = metadata
         )
+    }
+
+    private fun mapFollowUp(dto: FollowUpDTO): FollowUp {
+        return FollowUp(
+            dto.id,
+            dto.tenantId,
+            dto.contactId,
+            FollowUpStatus.valueOf(dto.status),
+            dto.created,
+            dto.followUpTime,
+            dto.note)
     }
 }

@@ -32,7 +32,7 @@ class TaskTriggerSubscriber(
     fun onTaskTriggerDue() {
         log.info("Received task.trigger.due message, processing due actions")
         try {
-            taskManager.runPendingActions()
+            taskManager.runPendingFollowUps()
             log.info("Successfully processed due actions")
         } catch (e: Exception) {
             log.error("Error processing due actions", e)

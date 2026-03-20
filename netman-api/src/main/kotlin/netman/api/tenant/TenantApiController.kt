@@ -15,7 +15,6 @@ import netman.businesslogic.models.TenantSummaryResource
 @Secured(SecurityRule.IS_AUTHENTICATED)
 class TenantApiController(
     private val membershipManager: MembershipManager,
-    private val networkManager: NetworkManager
 ) : TenantApi {
 
     override fun getTenants(authentication: Authentication) : List<MemberTenantResource> {
@@ -31,10 +30,5 @@ class TenantApiController(
     override fun getDefaultTenant(authentication: Authentication): MemberTenantResource {
         val user = getUserId(authentication)
         return membershipManager.getMemberDefaultTenant(user)
-    }
-
-    override fun getTenantSummary(authentication: Authentication, tenantId: Long): TenantSummaryResource {
-        val user = getUserId(authentication)
-        return networkManager.summariseTenant(user, tenantId)
     }
 }

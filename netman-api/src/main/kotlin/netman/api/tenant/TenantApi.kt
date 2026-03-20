@@ -31,14 +31,4 @@ interface TenantApi {
 
     @Get("/default")
     fun getDefaultTenant(authentication: Authentication) : MemberTenantResource
-
-    @Operation(
-        summary = "Get summary for a specific tenant",
-        responses = [ApiResponse(responseCode = "200", description = "Tenant summary")]
-    )
-    @Get("/{tenantId}/summary")
-    fun getTenantSummary(
-        authentication: Authentication,
-        @Parameter(description = "ID of the tenant to get summary for") tenantId: Long
-    ): TenantSummaryResource
 }

@@ -1,5 +1,7 @@
 package netman.models
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.micronaut.core.annotation.Introspected
@@ -8,8 +10,8 @@ import jakarta.validation.constraints.NotBlank
 import netman.businesslogic.helper.InitialsGenerator
 import java.util.*
 
-fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
-    return Contact2(
+fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact {
+    return Contact(
         id = UUID.randomUUID(),
         name = name,
         details = details
@@ -17,7 +19,7 @@ fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
 }
 
 @Introspected
-data class Contact2 (
+data class Contact (
     val id: UUID? = null,
     @param:NotBlank
     val name: String,
@@ -63,8 +65,12 @@ data class Note(
 ) : CDetail()
 
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 data class WorkInfo (
-    val jobTitle: String,
-    val department: String,
-    val company: String
-) : CDetail()
+    val title: String,
+    val organization: String
+) : CDetail() {
+    companion object {
+        val empty = WorkInfo("", "")
+    }
+}

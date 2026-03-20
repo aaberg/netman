@@ -6,15 +6,15 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="2026-03-04-1" author="Lars Aaberg">
-        <createTable tableName="communication">
+        <createTable tableName="interaction">
             <column name="id" type="uuid">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_communication"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_interaction"/>
             </column>
             <column name="contact_id" type="uuid">
                 <constraints nullable="false" 
-                             referencedTableName="contact2" 
+                             referencedTableName="contact"
                              referencedColumnNames="id"
-                             foreignKeyName="fk_communication_contact"/>
+                             foreignKeyName="fk_interaction_contact"/>
             </column>
             <column name="type" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -28,7 +28,7 @@
             <column name="metadata" type="jsonb"/>
         </createTable>
         
-        <createIndex tableName="communication" indexName="idx_communication_contact_id">
+        <createIndex tableName="interaction" indexName="idx_interaction_contact_id">
             <column name="contact_id"/>
             <column name="timestamp" descending="true"/>
         </createIndex>

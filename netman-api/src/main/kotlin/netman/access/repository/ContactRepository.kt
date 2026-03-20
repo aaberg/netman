@@ -6,10 +6,10 @@ import io.micronaut.data.repository.GenericRepository
 import java.util.UUID
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-interface Contact2Repository : GenericRepository<Contact2DTO, Long> {
-    fun save(contact: Contact2DTO) : Contact2DTO
-    fun update(contact: Contact2DTO) : Contact2DTO
-    fun getById(id: UUID): Contact2DTO?
+interface ContactRepository : GenericRepository<ContactDTO, Long> {
+    fun save(contact: ContactDTO) : ContactDTO
+    fun update(contact: ContactDTO) : ContactDTO
+    fun getById(id: UUID): ContactDTO?
     fun existsById(id: UUID): Boolean
-    fun findByTenantId(tenantId: Long): List<Contact2DTO>
+    fun findByTenantId(tenantId: Long): List<ContactDTO>
 }

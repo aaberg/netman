@@ -7,8 +7,8 @@ import io.micronaut.data.model.DataType
 import java.time.Instant
 import java.util.*
 
-@MappedEntity("contact2")
-data class Contact2DTO(
+@MappedEntity("contact")
+data class ContactDTO(
     @field:Id
     val id: UUID,
     val tenantId: Long,

@@ -40,7 +40,7 @@
     </changeSet>
 
     <changeSet id="2025-11-09-1" author="Lars Aaberg">
-        <createTable tableName="contact2">
+        <createTable tableName="contact">
             <column name="id" type="uuid"><constraints nullable="false" primaryKey="true" primaryKeyName="pk_contact2"/></column>
             <column name="tenant_id" type="int8">
                 <constraints referencedTableName="tenant" referencedColumnNames="id"

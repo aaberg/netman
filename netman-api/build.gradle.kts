@@ -1,15 +1,20 @@
 plugins {
+    id("application")
     id("org.jetbrains.kotlin.jvm") version "2.3.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.3.10"
     id("com.google.devtools.ksp") version "2.3.6"
     id("io.micronaut.application") version "4.6.1"
-    id("com.gradleup.shadow") version "9.3.2"
+    id("com.gradleup.shadow") version "9.4.0"
     id("io.micronaut.aot") version "4.6.1"
 }
 
 version = System.getenv("APP_VERSION") ?: "0.1-SNAPSHOT"
 group = "netman.api"
 val kotlinVersion= project.properties["kotlinVersion"]
+
+application {
+    mainClass.set("netman.ApplicationKt")
+}
 
 repositories {
     mavenCentral()

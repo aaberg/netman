@@ -39,6 +39,7 @@ data class SaveContactRequest(
     val notes: String? = null
 )
 
+@Serdeable
 data class ContactSavedResponse(
     val id: UUID
 )

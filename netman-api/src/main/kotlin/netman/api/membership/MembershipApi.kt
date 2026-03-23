@@ -4,7 +4,9 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Put
+import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
+import io.micronaut.security.rules.SecurityRule
 import io.micronaut.serde.annotation.Serdeable
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameters
@@ -17,6 +19,7 @@ import netman.businesslogic.models.ProfileResource
  * Provides endpoints for registering and retrieving user profiles.
  */
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Membership", description = "API for managing user membership profiles")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 interface MembershipApi {
 
     @Operation(

@@ -16,7 +16,7 @@
 		{ icon: "history", label: "Recent", active: false },
 		{ icon: "star", label: "High Priority", active: false }
 	];
-	
+
 	// Active filter
 	let activeFilter = "All Types";
 	
@@ -92,7 +92,7 @@
 	{#each filteredContacts as contact (contact.id)}
 
 		<!-- Regular Contact Card -->
-		<div class="card bg-base-100 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+		<div class="card bg-base-100 rounded-xl shadow-sm hover:shadow-lg hover:bg-base-200 transition-all duration-200">
 			<div class="card-body p-6">
 				<div class="flex justify-between items-start mb-6">
 					<div class="relative">
@@ -112,10 +112,10 @@
 				<div class="flex items-center justify-between pt-4">
 						<div class="flex items-center gap-2 text-sm text-base-content/60">
 							<span class="material-symbols-outlined text-sm">location_on</span>
-							<span>Location</span>
+							<span>Earth</span>
 						</div>
 
-					<button class={`btn btn-sm ${contact.action === 'Follow-up' ? 'btn-accent text-white' : 'btn-ghost bg-base-200 hover:bg-base-300'}`}>
+					<button class="btn btn-sm btn-primary text-white btn-ghost bg-base-200 hover:bg-base-300">
 						Details
 					</button>
 				</div>

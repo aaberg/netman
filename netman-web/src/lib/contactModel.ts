@@ -5,6 +5,16 @@ export interface ContactWithDetails {
   details?: Array<Email | Phone | Note> | null
 }
 
+export interface ContactListItem {
+  id: string
+  name: string
+  initials: string
+  title: string
+  organization: string
+  followUpStatus: string
+  followUpIn: string
+}
+
 export interface Contact {
   id: string | null
   name: string

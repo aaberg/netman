@@ -32,7 +32,7 @@ class AggregationEngine(
 
 
             val followUpIn = if (followUp?.followUpTime == null){
-                "Connected"
+                "Not scheduled"
             } else {
                 "${time.now().until(followUp.followUpTime, ChronoUnit.DAYS)} days"
             }

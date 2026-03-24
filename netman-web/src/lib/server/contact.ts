@@ -1,4 +1,4 @@
-import type { Contact, ContactWithDetails } from "$lib/contactModel"
+import type {Contact, ContactListItem, ContactWithDetails} from "$lib/contactModel"
 import { basePath } from "$lib/server/common"
 
 export const saveContact = async (
@@ -22,6 +22,25 @@ export const saveContact = async (
   const responseJson = await response.json()
 
   return responseJson as ContactWithDetails
+}
+
+export const getContactList = async (
+  accessToken: string,
+  tenantId: string
+): Promise<ContactListItem[]> => {
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Error fetching contact list for tenant ${tenantId}. API responded with ${response.status} ${response.statusText}`
+    )
+  }
+  return (await response.json()) as ContactListItem[]
 }
 
 export const getContactsForTenant = async (

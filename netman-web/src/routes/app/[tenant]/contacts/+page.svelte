@@ -1,71 +1,125 @@
 <script lang="ts">
-  import SearchInput from "../../../../components/SearchInput.svelte"
-  import type { PageProps } from "./$types"
-  import ContactInfoIcon from "../../../../components/ContactInfoIcon.svelte"
 
-  let { data }: PageProps = $props()
-  let { tenant } = data
+	import type {PageProps} from "../../../../../.svelte-kit/types/src/routes/app/[tenant]/contacts/$types";
 
-  let search = $state("")
+	let { data }: PageProps = $props()
+	let { tenant } = data
 
-  const filtered = $derived(
-    data.contacts.filter((c) => c?.name?.toLowerCase().includes(search.toLowerCase()))
-  )
+	let search = $state("")
+
+	const filteredContacts = $derived(
+			data.contacts.filter((c) => c?.name?.toLowerCase().includes(search.toLowerCase()))
+	)
+
+	let filterTypes = [
+		{ icon: "filter_list", label: "All Types", active: true },
+		{ icon: "history", label: "Recent", active: false },
+		{ icon: "star", label: "High Priority", active: false }
+	];
+	
+	// Active filter
+	let activeFilter = "All Types";
+	
+	function setFilter(filter: string) {
+		activeFilter = filter;
+		// Update filter types reactively by creating a new array
+		filterTypes = filterTypes.map(f => ({
+			...f,
+			active: f.label === filter
+		}));
+	}
+	
+	// Get status color class
+	function getStatusColor(status: string) {
+		const colors: Record<string, string> = {
+			Overdue: "bg-error",
+			Scheduled: "bg-secondary",
+			None: "bg-neutral"
+		};
+		return colors[status] || "bg-neutral";
+	}
+	
+	function getStatusTextColor(status: string) {
+		const colors: Record<string, string> = {
+			Overdue: "text-error-content",
+			Scheduled: "text-secondary-content",
+			None: "text-neutral-content"
+		};
+		return colors[status] || "text-neutral-content";
+	}
 </script>
 
-<div class="navbar shadow-sm">
-  <div class="flex-1">
-    <h1 class="text-2xl">Contact list</h1>
-  </div>
-
-  <div class="flex gap-2">
-    <SearchInput bind:value={search} />
-    <a class="btn btn-neutral btn-sm" href="contacts/new">
-      <span>+</span>
-      <span class="sr-only sm:not-sr-only">New contact</span>
-    </a>
-  </div>
+<!-- Hero Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+	<div class="space-y-2">
+		<span class="text-xs font-bold uppercase tracking-widest text-accent">Network Directory</span>
+		<h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">Your Inner Circle</h1>
+	</div>
+	<button class="btn btn-neutral px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform">
+		<span class="material-symbols-outlined">person_add</span>
+		Add Contact
+	</button>
 </div>
 
-<!-- Contacts list -->
-<div class="mt-4 w-full max-w-2xl">
-  {#if data.contacts.length === 0}
-    <h2 class="text-center text-xl">Welcome!</h2>
-    <div class="text-base-content/60 pt-8 text-center">
-      Register a contact or two to get started :)
-    </div>
-  {:else if filtered.length === 0}
-    <div class="text-base-content/60 pt-8 text-center">No contacts found</div>
-  {:else}
-    <table class="table w-full">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Contact Information</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each filtered as c}
-          <tr>
-            <td>
-              <a href="/app/{tenant}/contacts/{c.id}" class="link link-hover">
-                <div class="flex items-center gap-3">
-                  <div class="avatar avatar-placeholder">
-                    <div class="bg-neutral mask mask-squircle h-12 w-12">{c.initials}</div>
-                  </div>
-                  <div>{c.name}</div>
-                </div>
-              </a>
-            </td>
-            <td>
-              <div>
-                <span class="inline-block pr-2"><ContactInfoIcon icon={c.contactInfoIcon} /></span
-                >{c.contactInfo}
-              </div>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
+<!-- Search & Filters -->
+<div class="bg-base-200 p-2 rounded-2xl mb-12 flex flex-col md:flex-row gap-2">
+	<div class="flex-grow relative">
+		<span class="absolute left-4 top-1/2 -translate-y-1/2 text-base-content/60">
+			<span class="material-symbols-outlined">search</span>
+		</span>
+		<input
+			bind:value={search}
+			class="input w-full bg-base-300 border-none rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
+			placeholder="Search by name, role, or company..."
+			type="text" />
+	</div>
+	<div class="flex gap-2 overflow-hidden md:overflow-visible">
+		<div class="flex gap-2 min-w-full md:min-w-fit">
+			{#each filterTypes as filter (filter.label)}
+				<button
+					class="btn btn-ghost rounded-xl font-semibold whitespace-nowrap min-w-[120px] flex-shrink-0 {filter.active ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-base-100 hover:bg-base-200'}"
+					on:click={() => setFilter(filter.label)}>
+					<span class="material-symbols-outlined text-sm">{filter.icon}</span>
+					{filter.label}
+				</button>
+			{/each}
+		</div>
+	</div>
+</div>
+
+<!-- Contacts Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+	{#each filteredContacts as contact (contact.id)}
+
+		<!-- Regular Contact Card -->
+		<div class="card bg-base-100 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+			<div class="card-body p-6">
+				<div class="flex justify-between items-start mb-6">
+					<div class="relative">
+						<div class="w-16 h-16 rounded-full border-2 border-base-200 bg-base-300 flex items-center justify-center font-bold text-xl uppercase">
+							{contact.initials}
+						</div>
+					</div>
+					<span class={`badge badge-sm ${getStatusColor(contact.followUpStatus)} ${getStatusTextColor(contact.followUpStatus)} text-xs font-bold uppercase tracking-widest`}>
+						{contact.followUpIn}
+					</span>
+				</div>
+				<div class="space-y-1 mb-6">
+					<h3 class="text-xl font-bold">{contact.name}</h3>
+					<p class="text-base-content/70 font-medium">{contact.title} • {contact.organization}</p>
+				</div>
+				<div class="divider my-0"></div>
+				<div class="flex items-center justify-between pt-4">
+						<div class="flex items-center gap-2 text-sm text-base-content/60">
+							<span class="material-symbols-outlined text-sm">location_on</span>
+							<span>Location</span>
+						</div>
+
+					<button class={`btn btn-sm ${contact.action === 'Follow-up' ? 'btn-accent text-white' : 'btn-ghost bg-base-200 hover:bg-base-300'}`}>
+						Details
+					</button>
+				</div>
+			</div>
+		</div>
+	{/each}
 </div>

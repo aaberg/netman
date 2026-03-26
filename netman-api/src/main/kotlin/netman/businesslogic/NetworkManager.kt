@@ -8,6 +8,7 @@ import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
 import netman.models.Contact
 import netman.models.Email
+import netman.models.Location
 import netman.models.Note
 import netman.models.Phone
 import netman.models.WorkInfo
@@ -61,12 +62,14 @@ class NetworkManager(
         val note = if (saveContactRequest.notes != null)
             Note(saveContactRequest.notes) else null
         val workInfo = WorkInfo(saveContactRequest.title ?: "", saveContactRequest.organization ?: "")
+        val location = if (saveContactRequest.location != null)
+            Location(saveContactRequest.location) else null
 
 
         val contact = Contact(
             id = saveContactRequest.id,
             name = saveContactRequest.name,
-            details = listOfNotNull(email, phone, note, workInfo)
+            details = listOfNotNull(email, phone, note, workInfo, location)
         )
 
 

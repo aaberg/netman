@@ -11,14 +11,14 @@
 			data.contacts.filter((c) => c?.name?.toLowerCase().includes(search.toLowerCase()))
 	)
 
-	let filterTypes = [
+	let filterTypes = $state([
 		{ icon: "filter_list", label: "All Types", active: true },
 		{ icon: "history", label: "Recent", active: false },
 		{ icon: "star", label: "High Priority", active: false }
-	];
+	]);
 
 	// Active filter
-	let activeFilter = "All Types";
+	let activeFilter = $state("All Types");
 	
 	function setFilter(filter: string) {
 		activeFilter = filter;
@@ -78,7 +78,7 @@
 			{#each filterTypes as filter (filter.label)}
 				<button
 					class="btn btn-ghost rounded-xl font-semibold whitespace-nowrap min-w-[120px] flex-shrink-0 {filter.active ? 'bg-primary text-primary-content hover:bg-primary-focus' : 'bg-base-100 hover:bg-base-200'}"
-					on:click={() => setFilter(filter.label)}>
+					onclick={() => setFilter(filter.label)}>
 					<span class="material-symbols-outlined text-sm">{filter.icon}</span>
 					{filter.label}
 				</button>

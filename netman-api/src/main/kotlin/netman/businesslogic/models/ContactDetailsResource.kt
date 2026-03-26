@@ -36,6 +36,7 @@ data class SaveContactRequest(
     val phone: String? = null,
     val title: String? = null,
     val organization: String? = null,
+    val location: String? = null,
     val notes: String? = null
 )
 

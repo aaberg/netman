@@ -74,3 +74,6 @@ data class WorkInfo (
         val empty = WorkInfo("", "")
     }
 }
+
+@Serdeable
+data class Location(val location: String) : CDetail()

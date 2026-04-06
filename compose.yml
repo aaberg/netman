@@ -28,3 +28,23 @@ services:
       - "traefik.http.routers.web.rule=Host(`localhost`)"
       - "traefik.http.routers.web.entrypoints=webEntry"
       - "traefik.http.services.web.loadbalancer.server.port=3000"
+
+  traefik:
+    image: "traefik:v3.6.8"
+    container_name: "traefik"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=default"
+      - "--entryPoints.webEntry.address=:80"
+      - "--api.insecure=true"
+    ports:
+      - "3001:80"
+      - "8088:8080"
+  #    volumes:
+  #      - "/var/run/docker.sock:/var/run/docker.sock"

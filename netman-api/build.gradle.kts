@@ -18,6 +18,14 @@ application {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/aaberg/fileserver")
+        credentials {
+            username = (findProperty("gpr.user") as String?) ?: System.getenv("GITHUB_ACTOR")
+            password = (findProperty("gpr.key") as String?) ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
@@ -46,6 +54,8 @@ dependencies {
     implementation("org.slf4j:jul-to-slf4j")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.nats:micronaut-nats")
+    implementation("net.aabergs:private-api-client:1.0.0")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("org.postgresql:postgresql")

@@ -53,6 +53,7 @@ services:
       - hanko_data:/var/lib/postgresql/data
 
   hanko-migrate:
+    user: "1000:1000" # makes it compatible with podman
     image: ghcr.io/teamhanko/hanko:latest
     depends_on:
       postgres_hanko:
@@ -87,25 +88,17 @@ services:
       - 4222:4222
       - 8222:8222
 
-  traefik:
-    image: "traefik:v3.6.8"
-    container_name: "traefik"
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - default
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=default"
-      - "--entryPoints.webEntry.address=:80"
-      - "--api.insecure=true"
+  imageserver:
+    image: ghcr.io/aaberg/fileserver:latest
+    environment:
+      PRIVATE_API_TOKEN: test-secret
+      FILESERVER_PUBLIC_BASE_URL: http://localhost:9000
     ports:
-      - "80:80"
-      - "8088:8080"
+      - "9000:9000"
+      - "9001:9001"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - imageserver:/data/files
+    restart: unless-stopped
 
 networks:
   default:
@@ -114,3 +107,4 @@ networks:
 volumes:
   db_data:
   hanko_data:
+  imageserver:

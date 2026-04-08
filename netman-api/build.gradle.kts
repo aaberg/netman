@@ -22,8 +22,12 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/aaberg/fileserver")
         credentials {
-            username = (findProperty("gpr.user") as String?) ?: System.getenv("GITHUB_ACTOR")
-            password = (findProperty("gpr.key") as String?) ?: System.getenv("GITHUB_TOKEN")
+            username = System.getenv("GH_PACKAGES_USER")
+                ?: System.getenv("GITHUB_ACTOR")
+                ?: (findProperty("gpr.user") as String?)
+            password = System.getenv("GH_PACKAGES_TOKEN")
+                ?: System.getenv("GITHUB_TOKEN")
+                ?: (findProperty("gpr.key") as String?)
         }
     }
 }
@@ -125,6 +129,5 @@ micronaut {
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "25"
 }
-
 
 

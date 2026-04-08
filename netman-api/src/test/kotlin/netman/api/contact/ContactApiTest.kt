@@ -15,6 +15,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.*
 import jakarta.inject.Inject
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.put
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 
 @WireMockTest(httpPort = 8091)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -217,5 +222,91 @@ class ContactApiTest : DefaultTestProperties() {
                 .body("title", `is`("Senior Developer"))
                 .body("organization", `is`("Updated Corp"))
                 .body("notes", `is`("This contact has been updated"))
+    }
+
+    @Test
+    fun `test upload image and resolve imageUrl on contact details`(
+        wmRuntimeInfo: WireMockRuntimeInfo,
+        spec: RequestSpecification
+    ) {
+        val userId = UUID.randomUUID().toString()
+        val userName = "Image User"
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, userName)
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val contactId = spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/json")
+                .body(SaveContactRequest(name = "Image Contact"))
+                .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("id")
+
+        val key = "t${tenant.id}-file-$contactId.png"
+        val imagePublicUrl = "https://cdn.test/$key"
+
+        stubFor(put(urlEqualTo("/file/$key")).willReturn(aResponse().withStatus(200)))
+        stubFor(
+            post(urlEqualTo("/file/$key/public-url")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"publicUrl\":\"$imagePublicUrl\"}")
+            )
+        )
+
+        spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/octet-stream")
+                .body(byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A))
+                .put("/api/tenants/${tenant.id}/contacts/${contactId}/image")
+            .then()
+                .statusCode(200)
+
+        spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .get("/api/tenants/${tenant.id}/contacts/${contactId}")
+            .then()
+                .statusCode(200)
+                .body("name", `is`("Image Contact"))
+                .body("imageUrl", `is`(imagePublicUrl))
+    }
+
+    @Test
+    fun `test upload image rejects unsupported content type by bytes`(
+        wmRuntimeInfo: WireMockRuntimeInfo,
+        spec: RequestSpecification
+    ) {
+        val userId = UUID.randomUUID().toString()
+        val userName = "Invalid Image User"
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, userName)
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val contactId = spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/json")
+                .body(SaveContactRequest(name = "Invalid Image Contact"))
+                .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("id")
+
+        spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/octet-stream")
+                .body("this-is-not-an-image".toByteArray())
+                .put("/api/tenants/${tenant.id}/contacts/${contactId}/image")
+            .then()
+                .statusCode(400)
     }
 }

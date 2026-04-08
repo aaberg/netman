@@ -96,9 +96,19 @@
 			<div class="card-body p-6">
 				<div class="flex justify-between items-start mb-6">
 					<div class="relative">
-						<div class="w-16 h-16 rounded-full border-2 border-base-200 bg-base-300 flex items-center justify-center font-bold text-xl uppercase">
-							{contact.initials}
-						</div>
+						{#if (contact.imageUrl)}
+							<div class="avatar">
+								<div class="w-24 rounded-full">
+									<img src="{contact.imageUrl}" alt="avatar" />
+								</div>
+							</div>
+						{:else }
+							<div class="avatar avatar-placeholder">
+								<div class="bg-neutral text-neutral-content w-24 rounded-full">
+									<span class="text-3xl">{contact.initials}</span>
+								</div>
+							</div>
+						{/if}
 					</div>
 					<span class={`badge badge-sm ${getStatusColor(contact.followUpStatus)} ${getStatusTextColor(contact.followUpStatus)} text-xs font-bold uppercase tracking-widest`}>
 						{contact.followUpIn}

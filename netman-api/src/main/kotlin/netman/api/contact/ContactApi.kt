@@ -1,12 +1,15 @@
 package netman.api.contact
 
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
+import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Put
 import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
-import io.netty.handler.codec.http.HttpResponseStatus
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
@@ -17,7 +20,6 @@ import netman.businesslogic.models.ContactDetailsResource
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactSavedResponse
 import netman.businesslogic.models.SaveContactRequest
-import java.net.http.HttpResponse
 import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contacts")
@@ -61,4 +63,20 @@ interface ContactApi {
     @Post("/{tenantId}/contacts")
     fun saveContact(authentication: Authentication, tenantId: Long, @Body saveContactRequest: SaveContactRequest) :
             ContactSavedResponse
+
+    @Operation(summary = "Upload contact image", description = "Stores image bytes for a contact")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "Image stored successfully"),
+        ApiResponse(responseCode = "400", description = "Bad request"),
+        ApiResponse(responseCode = "401", description = "Unauthorized"),
+        ApiResponse(responseCode = "404", description = "Contact not found")
+    )
+    @Put("/{tenantId}/contacts/{contactId}/image")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    fun saveContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        @Body image: ByteArray
+    ): HttpStatus
 }

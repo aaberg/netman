@@ -13,6 +13,7 @@ export interface ContactListItem {
   organization: string
   followUpStatus: string
   followUpIn: string
+  imageUrl: string
 }
 
 export interface Contact {

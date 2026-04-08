@@ -14,7 +14,8 @@ data class ContactDetailsResource(
     val title: String?,
     val organization: String?,
     val notes: String?,
-    val interactions: List<InteractionResource>
+    val interactions: List<InteractionResource>,
+    val imageUrl: String? = null
 )
 
 @Serdeable
@@ -25,7 +26,8 @@ data class ContactListItemResource(
     val title: String = "",
     val organization: String = "",
     val followUpStatus: ContactFollowUpStatus,
-    val followUpIn: String = ""
+    val followUpIn: String = "",
+    val imageUrl: String? = null
 )
 
 @Serdeable
@@ -48,4 +50,3 @@ data class ContactSavedResponse(
 enum class ContactFollowUpStatus {
     Scheduled, Overdue, None
 }
-

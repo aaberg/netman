@@ -39,7 +39,8 @@ data class Contact (
     JsonSubTypes.Type(value = Email::class, name = "email"),
     JsonSubTypes.Type(value = Phone::class, name = "phone"),
     JsonSubTypes.Type(value = Note::class, name = "note"),
-    JsonSubTypes.Type(value = WorkInfo::class, name = "work")
+    JsonSubTypes.Type(value = WorkInfo::class, name = "work"),
+    JsonSubTypes.Type(value = ContactImage::class, name = "image")
 )
 @Serdeable(validate = false) @Introspected
 sealed class CDetail
@@ -77,3 +78,9 @@ data class WorkInfo (
 
 @Serdeable
 data class Location(val location: String) : CDetail()
+
+@Serdeable
+data class ContactImage(
+    val fileKey: String,
+    val mimeType: String
+) : CDetail()

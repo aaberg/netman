@@ -1,6 +1,7 @@
 package netman.api.contact
 
 import io.micronaut.http.MediaType
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Produces
@@ -46,5 +47,17 @@ class ContactApiController(
     ) : ContactSavedResponse {
         val userId = getUserId(authentication)
         return networkManager.saveContact(userId, tenantId, saveContactRequest)
+    }
+
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    override fun saveContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        image: ByteArray
+    ): HttpStatus {
+        val userId = getUserId(authentication)
+        networkManager.saveContactImage(userId, tenantId, contactId, image)
+        return HttpStatus.OK
     }
 }

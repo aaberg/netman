@@ -6,7 +6,7 @@ services:
   api:
     build:
       context: ./netman-api
-      dockerfile: Dockerfile
+      dockerfile: prebuild.Dockerfile
     depends_on:
       db:
         condition: service_healthy

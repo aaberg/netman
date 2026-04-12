@@ -11,14 +11,7 @@ import netman.access.FileAccess
 import netman.access.FileAccessException
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
-import netman.models.CDetail
-import netman.models.Contact
-import netman.models.ContactImage
-import netman.models.Email
-import netman.models.Location
-import netman.models.Note
-import netman.models.Phone
-import netman.models.WorkInfo
+import netman.models.*
 import java.util.*
 
 @Singleton

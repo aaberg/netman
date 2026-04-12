@@ -12,5 +12,5 @@ export const GET: RequestHandler = async ({ cookies }) => {
   }
 
   const defaultTenant = await getDefaultTenant(accessToken(cookies))
-  return redirect(303, `/app/${defaultTenant.tenant.id}/dashboard`)
+  return redirect(303, `/app/${defaultTenant.tenant.id}/contacts`)
 }

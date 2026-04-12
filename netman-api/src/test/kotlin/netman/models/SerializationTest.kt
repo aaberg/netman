@@ -86,4 +86,24 @@ class SerializationTest {
         }
         assertThat(result.note).isEqualTo("A note")
     }
+
+    @Test
+    fun `workInfo serialization and deserialization test`() {
+        val workInfo = WorkInfo("testtitle", "testorg")
+        val serialized  = objectMapper.writeValueAsString(workInfo)
+        val deserialized = objectMapper.readValue(serialized, CDetail::class.java)
+
+        assertThat(deserialized).isInstanceOf(WorkInfo::class.java)
+        assertThat(deserialized).isEqualTo(workInfo)
+    }
+
+    @Test
+    fun `empty workInfo serialization and deserialization test`() {
+        val workInfo = WorkInfo.empty
+        val serialized  = objectMapper.writeValueAsString(workInfo)
+        val deserialized = objectMapper.readValue(serialized, CDetail::class.java)
+
+        assertThat(deserialized).isInstanceOf(WorkInfo::class.java)
+        assertThat(deserialized).isEqualTo(workInfo)
+    }
 }

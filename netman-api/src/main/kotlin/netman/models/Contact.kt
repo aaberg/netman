@@ -1,5 +1,7 @@
 package netman.models
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.micronaut.core.annotation.Introspected
@@ -8,8 +10,8 @@ import jakarta.validation.constraints.NotBlank
 import netman.businesslogic.helper.InitialsGenerator
 import java.util.*
 
-fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
-    return Contact2(
+fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact {
+    return Contact(
         id = UUID.randomUUID(),
         name = name,
         details = details
@@ -17,7 +19,7 @@ fun newContact(name: String, details: List<CDetail> = emptyList()) : Contact2 {
 }
 
 @Introspected
-data class Contact2 (
+data class Contact (
     val id: UUID? = null,
     @param:NotBlank
     val name: String,
@@ -37,7 +39,8 @@ data class Contact2 (
     JsonSubTypes.Type(value = Email::class, name = "email"),
     JsonSubTypes.Type(value = Phone::class, name = "phone"),
     JsonSubTypes.Type(value = Note::class, name = "note"),
-    JsonSubTypes.Type(value = WorkInfo::class, name = "work")
+    JsonSubTypes.Type(value = WorkInfo::class, name = "work"),
+    JsonSubTypes.Type(value = ContactImage::class, name = "image")
 )
 @Serdeable(validate = false) @Introspected
 sealed class CDetail
@@ -63,8 +66,21 @@ data class Note(
 ) : CDetail()
 
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 data class WorkInfo (
-    val jobTitle: String,
-    val department: String,
-    val company: String
+    val title: String,
+    val organization: String
+) : CDetail() {
+    companion object {
+        val empty = WorkInfo("", "")
+    }
+}
+
+@Serdeable
+data class Location(val location: String) : CDetail()
+
+@Serdeable
+data class ContactImage(
+    val fileKey: String,
+    val mimeType: String
 ) : CDetail()

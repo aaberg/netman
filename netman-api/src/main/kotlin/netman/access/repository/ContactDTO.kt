@@ -7,14 +7,12 @@ import io.micronaut.data.model.DataType
 import java.time.Instant
 import java.util.*
 
-@MappedEntity("interaction")
-data class InteractionDTO(
+@MappedEntity("contact")
+data class ContactDTO(
     @field:Id
     val id: UUID,
-    val contactId: UUID,
-    val type: String,
-    val content: String,
-    val timestamp: Instant,
+    val tenantId: Long,
+    val lastUpdated: Instant,
     @field:TypeDef(type = DataType.JSON)
-    val metadata: String?
+    val data: String
 )

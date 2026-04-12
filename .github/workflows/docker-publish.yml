@@ -23,6 +23,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      GH_PACKAGES_USER: ${{ github.actor }}
+      GH_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout code

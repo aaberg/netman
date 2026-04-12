@@ -45,5 +45,5 @@ export async function registerAccount(page: Page, context: BrowserContext) {
   await expect(page.locator("h1")).toContainText("more information")
   await page.locator("input[name=name]").fill("Test User")
   await page.getByRole("button").getByText("Submit").click()
-  await expect(page.locator("h1")).toHaveText("Dashboard")
+  await expect(page.locator("h1")).toHaveText("Your Inner Circle")
 }

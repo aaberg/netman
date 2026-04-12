@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed": "#d3e4fe",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-high": "#e6e8ea",
+                        "outline-variant": "#c5c6cd",
+                        "on-tertiary-container": "#5f8aff",
+                        "primary-container": "#21283c",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#003ea8",
+                        "inverse-primary": "#bec6e0",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary-container": "#888fa7",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed": "#0b1c30",
+                        "inverse-surface": "#2d3133",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary": "#00113b",
+                        "on-secondary-container": "#54647a",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed": "#131b2e",
+                        "on-surface-variant": "#45474c",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary": "#0c1427",
+                        "surface-dim": "#d8dadc",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary-fixed-dim": "#b4c5ff",
+                        "surface-tint": "#565e74",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "outline": "#75777d",
+                        "background": "#f7f9fb",
+                        "on-tertiary-fixed": "#00174b",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary-container": "#002367",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f7f9fb",
+                        "secondary": "#505f76",
+                        "surface-container-low": "#f2f4f6",
+                        "tertiary-fixed": "#dbe1ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(247, 249, 251, 0.8);
+            backdrop-filter: blur(24px);
+        }
+        .ghost-border {
+            border: 1px solid rgba(197, 198, 205, 0.15);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- Top Navigation Bar (Shared Component Logic) -->
+<!-- Suppression Logic: Since this is a task-focused screen (Create), we use a focused header instead of Global Nav -->
+<header class="fixed top-0 left-0 right-0 z-50 glass-panel flex justify-between items-center px-6 py-4 w-full">
+    <div class="flex items-center gap-4">
+        <button class="flex items-center justify-center p-2 rounded-xl hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-on-surface">close</span>
+        </button>
+        <h1 class="font-headline text-xl font-bold tracking-tight text-primary">New Connection</h1>
+    </div>
+    <div class="flex items-center gap-3">
+        <button class="px-5 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-xl">
+            Cancel
+        </button>
+        <button class="px-6 py-2 text-sm font-bold text-on-primary bg-primary rounded-xl shadow-lg hover:opacity-90 transition-all active:scale-95">
+            Save
+        </button>
+    </div>
+</header>
+<main class="max-w-4xl mx-auto pt-24 pb-32 px-6">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+        <!-- Profile Photo Section (Asymmetric Editorial Placement) -->
+        <div class="md:col-span-4 lg:col-span-3">
+            <div class="sticky top-28">
+                <div class="relative group cursor-pointer">
+                    <div class="w-full aspect-square rounded-2xl bg-surface-container-highest flex flex-col items-center justify-center overflow-hidden transition-all duration-300 group-hover:bg-surface-container-high">
+                        <span class="material-symbols-outlined text-5xl text-on-surface-variant mb-2">add_a_photo</span>
+                        <span class="font-label text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Upload Photo</span>
+                    </div>
+                    <!-- Connection Pulse (Signature Component) -->
+                    <div class="absolute inset-0 rounded-2xl border-2 border-on-tertiary-container opacity-20 scale-105 blur-sm"></div>
+                </div>
+                <div class="mt-8 space-y-4">
+                    <div class="p-5 bg-surface-container-low rounded-xl">
+                        <h3 class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="flex items-center gap-3 w-full text-sm font-medium text-on-surface hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-lg">scan_delete</span> Scan Business Card
+                            </button>
+                            <button class="flex items-center gap-3 w-full text-sm font-medium text-on-surface hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined text-lg">link</span> Import LinkedIn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Form Section -->
+        <div class="md:col-span-8 lg:col-span-9 space-y-12">
+            <!-- Identity Section -->
+            <section>
+                <h2 class="font-headline text-2xl font-bold tracking-tight text-primary mb-6">Identity</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="group">
+                        <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Full Name</label>
+                        <input class="w-full px-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary focus:bg-primary-fixed transition-all text-on-surface placeholder:text-on-surface-variant/40" placeholder="e.g. Alexander Sterling" type="text"/>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Job Title</label>
+                            <input class="w-full px-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary focus:bg-primary-fixed transition-all text-on-surface placeholder:text-on-surface-variant/40" placeholder="e.g. Managing Director" type="text"/>
+                        </div>
+                        <div class="group">
+                            <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Company</label>
+                            <input class="w-full px-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary focus:bg-primary-fixed transition-all text-on-surface placeholder:text-on-surface-variant/40" placeholder="e.g. Paradigm Capital" type="text"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Contact Details Section (Tonal Layering instead of Dividers) -->
+            <section class="p-8 bg-surface-container-lowest rounded-2xl shadow-[0_32px_48px_rgba(25,28,30,0.04)]">
+                <h2 class="font-headline text-2xl font-bold tracking-tight text-primary mb-6">Contact Channels</h2>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Email Address</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-lg">mail</span>
+                                <input class="w-full pl-12 pr-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary transition-all" placeholder="name@company.com" type="email"/>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Phone Number</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-lg">call</span>
+                                <input class="w-full pl-12 pr-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary transition-all" placeholder="+1 (555) 000-0000" type="tel"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group">
+                        <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2 px-1">Office Location</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-lg">location_on</span>
+                            <input class="w-full pl-12 pr-5 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary transition-all" placeholder="e.g. London, Mayfair" type="text"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Strategic Segmentation -->
+            <section>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="font-headline text-2xl font-bold tracking-tight text-primary">Strategic Tags</h2>
+                    <span class="font-label text-[10px] font-semibold text-on-tertiary-container bg-tertiary-fixed px-3 py-1 rounded-full">AI Suggested</span>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button class="px-4 py-2 rounded-xl bg-primary text-on-primary text-sm font-semibold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+                        High Priority
+                    </button>
+                    <button class="px-4 py-2 rounded-xl bg-surface-container-high text-on-surface text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+                        Potential Partner
+                    </button>
+                    <button class="px-4 py-2 rounded-xl bg-surface-container-high text-on-surface text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+                        Investor
+                    </button>
+                    <button class="px-4 py-2 rounded-xl bg-surface-container-high text-on-surface text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+                        Industry Keynote
+                    </button>
+                    <button class="px-3 py-2 rounded-xl border border-outline-variant border-dashed text-on-surface-variant hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined text-lg">add</span>
+                    </button>
+                </div>
+            </section>
+            <!-- Intelligence & Notes -->
+            <section>
+                <label class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3 px-1">Contextual Notes &amp; Intelligence</label>
+                <textarea class="w-full p-6 bg-surface-container-low border-none rounded-2xl focus:ring-2 focus:ring-primary transition-all text-on-surface resize-none placeholder:text-on-surface-variant/30" placeholder="Document meeting context, shared interests, or follow-up triggers..." rows="6"></textarea>
+                <p class="mt-3 text-[11px] text-on-surface-variant/60 flex items-center gap-1.5 px-1">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    This information is encrypted and visible only to your executive profile.
+                </p>
+            </section>
+        </div>
+    </div>
+</main>
+<!-- Bottom Action Anchor (Mobile Only Successor) -->
+<div class="fixed bottom-0 left-0 right-0 p-6 md:hidden z-50">
+    <button class="w-full bg-primary text-on-primary py-4 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform">
+        <span class="material-symbols-outlined">person_add</span>
+        Create Connection
+    </button>
+</div>
+</body></html>

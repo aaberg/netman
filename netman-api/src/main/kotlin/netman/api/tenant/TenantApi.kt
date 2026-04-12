@@ -1,7 +1,9 @@
 package netman.api.tenant
 
 import io.micronaut.http.annotation.Get
+import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
+import io.micronaut.security.rules.SecurityRule
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -10,6 +12,7 @@ import netman.businesslogic.models.MemberTenantResource
 import netman.businesslogic.models.TenantSummaryResource
 
 @Tag(name = "Tenant", description = "API for managing tenant resources")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 interface TenantApi {
 
     @Operation(
@@ -31,14 +34,4 @@ interface TenantApi {
 
     @Get("/default")
     fun getDefaultTenant(authentication: Authentication) : MemberTenantResource
-
-    @Operation(
-        summary = "Get summary for a specific tenant",
-        responses = [ApiResponse(responseCode = "200", description = "Tenant summary")]
-    )
-    @Get("/{tenantId}/summary")
-    fun getTenantSummary(
-        authentication: Authentication,
-        @Parameter(description = "ID of the tenant to get summary for") tenantId: Long
-    ): TenantSummaryResource
 }

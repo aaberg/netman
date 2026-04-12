@@ -1,9 +1,10 @@
 plugins {
+    id("application")
     id("org.jetbrains.kotlin.jvm") version "2.3.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.3.10"
     id("com.google.devtools.ksp") version "2.3.6"
     id("io.micronaut.application") version "4.6.1"
-    id("com.gradleup.shadow") version "9.3.2"
+    id("com.gradleup.shadow") version "9.4.0"
     id("io.micronaut.aot") version "4.6.1"
 }
 
@@ -11,8 +12,24 @@ version = System.getenv("APP_VERSION") ?: "0.1-SNAPSHOT"
 group = "netman.api"
 val kotlinVersion= project.properties["kotlinVersion"]
 
+application {
+    mainClass.set("netman.ApplicationKt")
+}
+
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/aaberg/fileserver")
+        credentials {
+            username = System.getenv("GH_PACKAGES_USER")
+                ?: System.getenv("GITHUB_ACTOR")
+                ?: (findProperty("gpr.user") as String?)
+            password = System.getenv("GH_PACKAGES_TOKEN")
+                ?: System.getenv("GITHUB_TOKEN")
+                ?: (findProperty("gpr.key") as String?)
+        }
+    }
 }
 
 dependencies {
@@ -41,6 +58,9 @@ dependencies {
     implementation("org.slf4j:jul-to-slf4j")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.nats:micronaut-nats")
+    implementation("net.aabergs:private-api-client:1.2.0")
+    implementation("org.apache.tika:tika-core:3.3.0")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("org.postgresql:postgresql")
@@ -109,7 +129,4 @@ micronaut {
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "25"
 }
-
-
-
 

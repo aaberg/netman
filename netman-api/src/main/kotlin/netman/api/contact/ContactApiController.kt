@@ -1,50 +1,74 @@
 package netman.api.contact
 
+import io.micronaut.http.MediaType
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Produces
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.authentication.Authentication
 import io.micronaut.security.rules.SecurityRule
 import netman.api.getUserId
 import netman.businesslogic.NetworkManager
-import netman.businesslogic.models.*
+import netman.businesslogic.models.ContactDetailsResource
+import netman.businesslogic.models.ContactListItemResource
+import netman.businesslogic.models.ContactSavedResponse
+import netman.businesslogic.models.SaveContactRequest
+import netman.businesslogic.models.TemporaryImageUploadResponse
 import java.util.*
 
-@Controller("/api/tenants")
 @Secured(SecurityRule.IS_AUTHENTICATED)
+@Controller("/api/tenants/")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 class ContactApiController(
     private val networkManager: NetworkManager
 ) : ContactApi {
-    override fun getContactList(
+    override fun getContacts(
         authentication: Authentication,
         tenantId: Long
     ): List<ContactListItemResource> {
-        val user = getUserId(authentication)
-        return networkManager.getMyContacts(user, tenantId)
-    }
-
-    override fun saveContactWithDetails(
-        authentication: Authentication,
-        tenantId: Long,
-        contactWithDetailsRequest: ContactResource
-    ) : ContactResource {
         val userId = getUserId(authentication)
-        return networkManager.saveContactWithDetails(userId, tenantId, contactWithDetailsRequest)
+        return networkManager.getMyContacts(userId, tenantId)
     }
 
     override fun getContactDetails(
         authentication: Authentication,
         tenantId: Long,
         contactId: UUID
-    ): ContactResource {
-        val user = getUserId(authentication)
-        return networkManager.getContactWithDetails(user, tenantId, contactId)
+    ): ContactDetailsResource {
+        val userId = getUserId(authentication)
+        return networkManager.getContactDetails(userId, tenantId, contactId)
     }
-    
-    override fun getLabels(
+
+    override fun saveContact(
         authentication: Authentication,
-        tenantId: Long
-    ): List<LabelResource> {
-        val user = getUserId(authentication)
-        return networkManager.getLabels(user, tenantId)
+        tenantId: Long,
+        saveContactRequest: SaveContactRequest
+    ) : ContactSavedResponse {
+        val userId = getUserId(authentication)
+        return networkManager.saveContact(userId, tenantId, saveContactRequest)
+    }
+
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    override fun saveContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        contactId: UUID,
+        image: ByteArray
+    ): HttpStatus {
+        val userId = getUserId(authentication)
+        networkManager.saveContactImage(userId, tenantId, contactId, image)
+        return HttpStatus.OK
+    }
+
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    override fun uploadTemporaryContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        image: ByteArray
+    ): TemporaryImageUploadResponse {
+        val userId = getUserId(authentication)
+        return networkManager.uploadTemporaryContactImage(userId, tenantId, image)
     }
 }

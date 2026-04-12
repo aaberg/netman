@@ -15,7 +15,8 @@ data class ContactDetailsResource(
     val organization: String?,
     val notes: String?,
     val interactions: List<InteractionResource>,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val location: String? = null,
 )
 
 @Serdeable
@@ -27,7 +28,8 @@ data class ContactListItemResource(
     val organization: String = "",
     val followUpStatus: ContactFollowUpStatus,
     val followUpIn: String = "",
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val location: String? = null,
 )
 
 @Serdeable

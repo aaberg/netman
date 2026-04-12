@@ -1,16 +1,20 @@
 package netman.businesslogic
 
 import jakarta.inject.Singleton
+import netman.access.FileAccess
 import netman.businesslogic.models.ContactFollowUpStatus
 import netman.businesslogic.models.ContactListItemResource
 import netman.models.Contact
+import netman.models.ContactImage
 import netman.models.FollowUp
+import netman.models.Location
 import netman.models.WorkInfo
 import java.time.temporal.ChronoUnit
 
 @Singleton
 class AggregationEngine(
-    private val time: TimeService
+    private val time: TimeService,
+    private val fileAccess: FileAccess
 ) {
     fun aggregateAndSummarizeContacts(
         contacts: List<Contact>,
@@ -30,6 +34,13 @@ class AggregationEngine(
                 ContactFollowUpStatus.None
             }
 
+            val location = contact.details.filterIsInstance<Location>().firstOrNull()
+            val imageRef = contact.details.filterIsInstance<ContactImage>().firstOrNull()
+
+            val imagePublicUrl =
+                if (imageRef != null)
+                    fileAccess.getFilePublicUrl(imageRef.fileKey)
+                else null
 
             val followUpIn = if (followUp?.followUpTime == null){
                 "Not scheduled"
@@ -44,7 +55,9 @@ class AggregationEngine(
                 workInfo?.title ?: "",
                 workInfo?.organization ?: "",
                 contactFollowUpStatus,
-                followUpIn
+                followUpIn,
+                imagePublicUrl,
+                location?.location
             )
         }
 

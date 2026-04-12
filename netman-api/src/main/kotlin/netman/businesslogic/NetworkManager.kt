@@ -11,14 +11,7 @@ import netman.access.FileAccess
 import netman.access.FileAccessException
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
-import netman.models.CDetail
-import netman.models.Contact
-import netman.models.ContactImage
-import netman.models.Email
-import netman.models.Location
-import netman.models.Note
-import netman.models.Phone
-import netman.models.WorkInfo
+import netman.models.*
 import java.util.*
 
 @Singleton
@@ -39,18 +32,8 @@ class NetworkManager(
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val contacts = contactAccess.listContacts(tenantId)
         val followUps = contactAccess.getFollowUpsForTenant(tenantId)
-        val imageKeyByContactId = contacts
-            .mapNotNull { contact ->
-                contact.id?.let { id -> id to getContactImageFileKey(contact.details) }
-            }
-            .toMap()
 
-        return aggregationEngine
-            .aggregateAndSummarizeContacts(contacts, followUps)
-            .map { contact ->
-                val imageUrl = imageKeyByContactId[contact.id]?.let(fileAccess::getFilePublicUrl)
-                contact.copy(imageUrl = imageUrl)
-            }
+        return aggregationEngine.aggregateAndSummarizeContacts(contacts, followUps)
     }
 
     fun getContactDetails(userId: String, tenantId: Long, contactId: UUID): ContactDetailsResource {
@@ -67,11 +50,25 @@ class NetworkManager(
         val phone = contact.details.filterIsInstance<Phone>().firstOrNull()?.number ?: ""
         val workInfo = contact.details.filterIsInstance<WorkInfo>().firstOrNull() ?: WorkInfo.empty
         val note = contact.details.filterIsInstance<Note>().firstOrNull()?.note ?: ""
+        val imageRef = contact.details.filterIsInstance<ContactImage>().firstOrNull()
+        val publicImageUrl =
+            if (imageRef != null)
+                fileAccess.getFilePublicUrl(imageRef.fileKey)
+            else null
+        val location = contact.details.filterIsInstance<Location>().firstOrNull()?.location
 
         return ContactDetailsResource(
-            contact.id, contact.name, contact.initials, email, phone,
-            workInfo.title, workInfo.organization, note, interactionResources,
-            getContactImageFileKey(contact.details)?.let(fileAccess::getFilePublicUrl)
+            contact.id,
+            contact.name,
+            contact.initials,
+            email,
+            phone,
+            workInfo.title,
+            workInfo.organization,
+            note,
+            interactionResources,
+            publicImageUrl,
+            location
         )
     }
 
@@ -220,10 +217,6 @@ class NetworkManager(
         return labelRepository.getLabels(tenantId)
             .sortedBy { it.label }
             .map { LabelResource(id = it.id, label = it.label, tenantId = it.tenantId) }
-    }
-
-    private fun getContactImageFileKey(details: List<CDetail>): String? {
-        return details.filterIsInstance<ContactImage>().firstOrNull()?.fileKey
     }
 
     private data class TemporaryFileReference(

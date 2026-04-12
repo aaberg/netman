@@ -20,6 +20,7 @@ import netman.businesslogic.models.ContactDetailsResource
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactSavedResponse
 import netman.businesslogic.models.SaveContactRequest
+import netman.businesslogic.models.TemporaryImageUploadResponse
 import java.util.UUID
 
 @Tag(name = "Contact", description = "API for managing contacts")
@@ -79,4 +80,18 @@ interface ContactApi {
         contactId: UUID,
         @Body image: ByteArray
     ): HttpStatus
+
+    @Operation(summary = "Upload temporary contact image", description = "Uploads image before contact is saved")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "Temporary image uploaded"),
+        ApiResponse(responseCode = "400", description = "Bad request"),
+        ApiResponse(responseCode = "401", description = "Unauthorized")
+    )
+    @Put("/{tenantId}/contacts/images/temp")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    fun uploadTemporaryContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        @Body image: ByteArray
+    ): TemporaryImageUploadResponse
 }

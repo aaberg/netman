@@ -20,6 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.put
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 
 @WireMockTest(httpPort = 8091)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -306,6 +307,140 @@ class ContactApiTest : DefaultTestProperties() {
                 .contentType("application/octet-stream")
                 .body("this-is-not-an-image".toByteArray())
                 .put("/api/tenants/${tenant.id}/contacts/${contactId}/image")
+            .then()
+                .statusCode(400)
+    }
+
+    @Test
+    fun `test upload temporary image and use tempFileId when saving contact`(
+        wmRuntimeInfo: WireMockRuntimeInfo,
+        spec: RequestSpecification
+    ) {
+        val userId = UUID.randomUUID().toString()
+        val userName = "Temp Image User"
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, userName)
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val tempFileId = "temp-123"
+        val previewUrl = "https://cdn.test/temp-preview"
+        stubFor(
+            post(urlEqualTo("/temp-file")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"tempFileId\":\"$tempFileId\",\"expiresAt\":2000000000}")
+            )
+        )
+        stubFor(
+            post(urlEqualTo("/temp-file/$tempFileId/public-url")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"publicUrl\":\"$previewUrl\"}")
+            )
+        )
+
+        val uploadedTempFileId = spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/octet-stream")
+                .body(byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A))
+                .put("/api/tenants/${tenant.id}/contacts/images/temp")
+            .then()
+                .statusCode(200)
+                .body("previewUrl", `is`(previewUrl))
+                .body("tempFileId", `is`(tempFileId))
+                .body("mimeType", `is`("image/png"))
+                .body("extension", `is`("png"))
+                .extract()
+                .jsonPath()
+                .getString("tempFileId")
+
+        stubFor(
+            post(urlPathMatching("/temp-file/$tempFileId/promote/t${tenant.id}-file-.*\\.png"))
+                .willReturn(aResponse().withStatus(200))
+        )
+
+        val contactId = spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/json")
+                .body(
+                    SaveContactRequest(
+                        name = "Temp Contact",
+                        tempFileId = uploadedTempFileId,
+                        tempFileMimeType = "image/png",
+                        tempFileExtension = "png"
+                    )
+                )
+                .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("id")
+
+        val expectedFinalKey = "t${tenant.id}-file-$contactId.png"
+        val imagePublicUrl = "https://cdn.test/$expectedFinalKey"
+        stubFor(
+            post(urlEqualTo("/file/$expectedFinalKey/public-url")).willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"publicUrl\":\"$imagePublicUrl\"}")
+            )
+        )
+
+        spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .get("/api/tenants/${tenant.id}/contacts/$contactId")
+            .then()
+                .statusCode(200)
+                .body("imageUrl", `is`(imagePublicUrl))
+    }
+
+    @Test
+    fun `test save contact rejects missing temporary file`(
+        wmRuntimeInfo: WireMockRuntimeInfo,
+        spec: RequestSpecification
+    ) {
+        val userId = UUID.randomUUID().toString()
+        val userName = "Expired Temp Image User"
+        val tenant = membershipManager.registerUserWithPrivateTenant(userId, userName)
+        setupAuthenticationClientForSuccessfullAuthentication(wmRuntimeInfo, userId)
+
+        val contactId = spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/json")
+                .body(SaveContactRequest(name = "Existing Contact"))
+                .post("/api/tenants/${tenant.id}/contacts")
+            .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getString("id")
+
+        stubFor(
+            post(urlEqualTo("/temp-file/temp-missing/promote/t${tenant.id}-file-$contactId.png"))
+                .willReturn(aResponse().withStatus(404))
+        )
+
+        spec
+            .`when`()
+                .auth().oauth2("dummy")
+                .contentType("application/json")
+                .body(
+                    SaveContactRequest(
+                        id = UUID.fromString(contactId),
+                        name = "Temp Contact",
+                        tempFileId = "temp-missing",
+                        tempFileMimeType = "image/png",
+                        tempFileExtension = "png"
+                    )
+                )
+                .post("/api/tenants/${tenant.id}/contacts")
             .then()
                 .statusCode(400)
     }

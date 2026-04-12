@@ -19,6 +19,7 @@ abstract class DefaultTestProperties : TestPropertyProvider {
             "fileserver.public-url-duration-seconds" to "120",
             "fileserver.public-url-refresh-skew-seconds" to "10",
             "fileserver.missing-cache-seconds" to "10",
+            "fileserver.temp-image.preview-url-duration-seconds" to "1800",
 
             "micronaut.security.enabled" to "true",
             "micronaut.security.authentication" to "bearer",

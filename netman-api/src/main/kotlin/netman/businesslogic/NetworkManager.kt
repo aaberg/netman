@@ -1,10 +1,14 @@
 package netman.businesslogic
 
+import io.micronaut.context.annotation.Value
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.exceptions.HttpStatusException
 import io.micronaut.validation.validator.Validator
 import jakarta.inject.Singleton
 import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.FileAccess
+import netman.access.FileAccessException
 import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
 import netman.models.CDetail
@@ -25,7 +29,10 @@ class NetworkManager(
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
     private val labelRepository: LabelRepository,
-    private val aggregationEngine: AggregationEngine
+    private val aggregationEngine: AggregationEngine,
+    @param:Value("\${fileserver.temp-image.preview-url-duration-seconds:1800}")
+    private val tempImagePreviewUrlDurationSeconds: Long,
+    private val timeService: TimeService
 ) {
 
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
@@ -91,9 +98,58 @@ class NetworkManager(
         }
     }
 
+    fun uploadTemporaryContactImage(userId: String, tenantId: Long, image: ByteArray): TemporaryImageUploadResponse {
+        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+        val imageFormat = imageMimeTypeDetector.detectSupportedImageFormat(image)
+        val temporaryFile = fileAccess.storeTemporaryFile(image)
+
+        val previewUrl = try {
+            fileAccess.createTemporaryFilePublicUrl(temporaryFile.tempFileId, tempImagePreviewUrlDurationSeconds)
+        } catch (_: FileAccessException) {
+            runCatching { fileAccess.deleteTemporaryFile(temporaryFile.tempFileId) }
+            throw HttpStatusException(HttpStatus.BAD_GATEWAY, "Failed to generate preview URL")
+        }
+
+        return TemporaryImageUploadResponse(
+            tempFileId = temporaryFile.tempFileId,
+            mimeType = imageFormat.mimeType,
+            extension = imageFormat.extension,
+            previewUrl = previewUrl,
+            previewUrlExpiresAt = timeService.now().plusSeconds(tempImagePreviewUrlDurationSeconds.coerceAtLeast(1))
+        )
+    }
+
     fun saveContact(userId: String, tenantId: Long, saveContactRequest: SaveContactRequest)
             : ContactSavedResponse {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
+
+        val hasIncompleteTempFileMetadata = listOf(
+            saveContactRequest.tempFileId,
+            saveContactRequest.tempFileMimeType,
+            saveContactRequest.tempFileExtension
+        ).any { it != null } && listOf(
+            saveContactRequest.tempFileId,
+            saveContactRequest.tempFileMimeType,
+            saveContactRequest.tempFileExtension
+        ).any { it == null }
+        if (hasIncompleteTempFileMetadata) {
+            throw HttpStatusException(HttpStatus.BAD_REQUEST, "Temporary file metadata is incomplete")
+        }
+
+        val temporaryFile = saveContactRequest.tempFileId?.let {
+            TemporaryFileReference(
+                tempFileId = it,
+                mimeType = requireNotNull(saveContactRequest.tempFileMimeType),
+                extension = requireNotNull(saveContactRequest.tempFileExtension)
+            )
+        }
+
+        val contactId = saveContactRequest.id ?: UUID.randomUUID()
+        val existingContact = saveContactRequest.id?.let { contactAccess.getContact(tenantId, it) }
+        val existingImage = existingContact
+            ?.details
+            ?.filterIsInstance<ContactImage>()
+            ?.firstOrNull()
 
         val email = if (saveContactRequest.email != null)
             Email(saveContactRequest.email, false, "") else null
@@ -105,17 +161,20 @@ class NetworkManager(
         val location = if (saveContactRequest.location != null)
             Location(saveContactRequest.location) else null
 
-        val existingImageDetail = saveContactRequest.id
-            ?.let { contactAccess.getContact(tenantId, it) }
-            ?.details
-            ?.filterIsInstance<ContactImage>()
-            ?.firstOrNull()
+        val imageDetail = if (temporaryFile != null) {
+            ContactImage(
+                fileKey = "t${tenantId}-file-$contactId.${temporaryFile.extension}",
+                mimeType = temporaryFile.mimeType
+            )
+        } else {
+            existingImage
+        }
 
 
         val contact = Contact(
-            id = saveContactRequest.id,
+            id = contactId,
             name = saveContactRequest.name,
-            details = listOfNotNull(email, phone, note, workInfo, location, existingImageDetail)
+            details = listOfNotNull(email, phone, note, workInfo, location, imageDetail)
         )
 
 
@@ -125,8 +184,34 @@ class NetworkManager(
             throw ValidationException(violations.toString())
         }
 
-        val savedContact = contactAccess.saveContact(tenantId, contact)
+        if (temporaryFile != null) {
+            try {
+                fileAccess.promoteTemporaryFile(temporaryFile.tempFileId, imageDetail!!.fileKey)
+            } catch (e: FileAccessException) {
+                throw when (e.cause) {
+                    is net.aabergs.client.privateapi.NotFoundException ->
+                        HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired temporary file")
+                    else -> HttpStatusException(HttpStatus.BAD_GATEWAY, "Failed to promote temporary file")
+                }
+            }
+        }
+
+        val savedContact = try {
+            contactAccess.saveContact(tenantId, contact)
+        } catch (e: Exception) {
+            if (temporaryFile != null) {
+                runCatching { fileAccess.deleteFile(imageDetail!!.fileKey) }
+            }
+            throw e
+        }
         requireNotNull(savedContact.id)
+
+        if (temporaryFile != null) {
+            if (existingImage != null && existingImage.fileKey != imageDetail!!.fileKey) {
+                fileAccess.deleteFile(existingImage.fileKey)
+            }
+        }
+
         return ContactSavedResponse(savedContact.id)
     }
     
@@ -140,4 +225,10 @@ class NetworkManager(
     private fun getContactImageFileKey(details: List<CDetail>): String? {
         return details.filterIsInstance<ContactImage>().firstOrNull()?.fileKey
     }
+
+    private data class TemporaryFileReference(
+        val tempFileId: String,
+        val mimeType: String,
+        val extension: String
+    )
 }

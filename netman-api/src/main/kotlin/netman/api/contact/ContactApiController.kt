@@ -14,6 +14,7 @@ import netman.businesslogic.models.ContactDetailsResource
 import netman.businesslogic.models.ContactListItemResource
 import netman.businesslogic.models.ContactSavedResponse
 import netman.businesslogic.models.SaveContactRequest
+import netman.businesslogic.models.TemporaryImageUploadResponse
 import java.util.*
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -59,5 +60,15 @@ class ContactApiController(
         val userId = getUserId(authentication)
         networkManager.saveContactImage(userId, tenantId, contactId, image)
         return HttpStatus.OK
+    }
+
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    override fun uploadTemporaryContactImage(
+        authentication: Authentication,
+        tenantId: Long,
+        image: ByteArray
+    ): TemporaryImageUploadResponse {
+        val userId = getUserId(authentication)
+        return networkManager.uploadTemporaryContactImage(userId, tenantId, image)
     }
 }

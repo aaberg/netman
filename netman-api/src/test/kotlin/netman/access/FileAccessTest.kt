@@ -18,6 +18,7 @@ import netman.access.repository.DefaultTestProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.time.Instant
 
 @WireMockTest(httpPort = 8091)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -156,6 +157,58 @@ class FileAccessTest : DefaultTestProperties() {
         assertThat(afterDelete).isEqualTo("https://cdn.test/second-delete/$key")
         verify(1, deleteRequestedFor(urlEqualTo(filePath)))
         verify(2, postRequestedFor(urlEqualTo(publicUrlPath)))
+    }
+
+    @Test
+    fun `storeTemporaryFile returns fileserver temp file metadata`() {
+        stubFor(
+            post(urlEqualTo("/temp-file"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"tempFileId\":\"temp-123\",\"expiresAt\":${Instant.now().epochSecond}}")
+                )
+        )
+
+        val response = fileAccess.storeTemporaryFile("image-content".toByteArray())
+
+        assertThat(response.tempFileId).isEqualTo("temp-123")
+    }
+
+    @Test
+    fun `createTemporaryFilePublicUrl calls temp-file public-url endpoint`() {
+        stubFor(
+            post(urlEqualTo("/temp-file/temp-123/public-url"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"publicUrl\":\"https://cdn.test/temp-123\"}")
+                )
+        )
+
+        val publicUrl = fileAccess.createTemporaryFilePublicUrl("temp-123", 60)
+
+        assertThat(publicUrl).isEqualTo("https://cdn.test/temp-123")
+    }
+
+    @Test
+    fun `promoteTemporaryFile calls temp-file promote endpoint`() {
+        stubFor(post(urlEqualTo("/temp-file/temp-123/promote/t1-file-final.png")).willReturn(aResponse().withStatus(200)))
+
+        fileAccess.promoteTemporaryFile("temp-123", "t1-file-final.png")
+
+        verify(1, postRequestedFor(urlEqualTo("/temp-file/temp-123/promote/t1-file-final.png")))
+    }
+
+    @Test
+    fun `deleteTemporaryFile is idempotent`() {
+        stubFor(delete(urlEqualTo("/temp-file/temp-123")).willReturn(aResponse().withStatus(404)))
+
+        fileAccess.deleteTemporaryFile("temp-123")
+
+        verify(1, deleteRequestedFor(urlEqualTo("/temp-file/temp-123")))
     }
 
 }

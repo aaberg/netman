@@ -58,7 +58,7 @@ dependencies {
     implementation("org.slf4j:jul-to-slf4j")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut.nats:micronaut-nats")
-    implementation("net.aabergs:private-api-client:1.0.1")
+    implementation("net.aabergs:private-api-client:1.2.0")
     implementation("org.apache.tika:tika-core:3.3.0")
 
     runtimeOnly("ch.qos.logback:logback-classic")
@@ -129,5 +129,4 @@ micronaut {
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "25"
 }
-
 

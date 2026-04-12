@@ -39,12 +39,24 @@ data class SaveContactRequest(
     val title: String? = null,
     val organization: String? = null,
     val location: String? = null,
-    val notes: String? = null
+    val notes: String? = null,
+    val tempFileId: String? = null,
+    val tempFileMimeType: String? = null,
+    val tempFileExtension: String? = null
 )
 
 @Serdeable
 data class ContactSavedResponse(
     val id: UUID
+)
+
+@Serdeable
+data class TemporaryImageUploadResponse(
+    val tempFileId: String,
+    val mimeType: String,
+    val extension: String,
+    val previewUrl: String,
+    val previewUrlExpiresAt: java.time.Instant
 )
 
 enum class ContactFollowUpStatus {

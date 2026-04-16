@@ -27,8 +27,8 @@ class FileAccess(
 ) {
     private val fileserverClient: FileserverClient = FileserverClient(fileserverBaseUrl, fileserverToken)
 
-    fun storeFile(fileKey: String, content: ByteArray) {
-        fileserverClient.uploadFile(fileKey, content)
+    fun storeFile(fileKey: String, content: ByteArray, contentType: String) {
+        fileserverClient.uploadFile(fileKey, content, contentType)
         publicUrlCache.evict(fileKey)
     }
 
@@ -65,9 +65,9 @@ class FileAccess(
         }
     }
 
-    fun storeTemporaryFile(content: ByteArray): TemporaryFileUploadResponse {
+    fun storeTemporaryFile(content: ByteArray, contentType: String): TemporaryFileUploadResponse {
         try {
-            return fileserverClient.uploadTemporaryFile(content)
+            return fileserverClient.uploadTemporaryFile(content, contentType)
         } catch (e: FileserverClientException) {
             throw FileAccessException("Failed to upload temporary file", e)
         } catch (e: Exception) {

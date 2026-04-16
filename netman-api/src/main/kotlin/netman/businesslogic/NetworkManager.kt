@@ -82,7 +82,7 @@ class NetworkManager(
         val updatedDetails = existingContact.details.filterNot { it is ContactImage } + newImageDetail
         val updatedContact = existingContact.copy(details = updatedDetails)
 
-        fileAccess.storeFile(newFileKey, image)
+        fileAccess.storeFile(newFileKey, image, imageFormat.mimeType)
         try {
             contactAccess.saveContact(tenantId, updatedContact)
         } catch (e: Exception) {
@@ -98,7 +98,7 @@ class NetworkManager(
     fun uploadTemporaryContactImage(userId: String, tenantId: Long, image: ByteArray): TemporaryImageUploadResponse {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val imageFormat = imageMimeTypeDetector.detectSupportedImageFormat(image)
-        val temporaryFile = fileAccess.storeTemporaryFile(image)
+        val temporaryFile = fileAccess.storeTemporaryFile(image, imageFormat.mimeType)
 
         val previewUrl = try {
             fileAccess.createTemporaryFilePublicUrl(temporaryFile.tempFileId, tempImagePreviewUrlDurationSeconds)

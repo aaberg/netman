@@ -22,7 +22,9 @@
       <nav class="hidden md:flex gap-4">
         <a class="btn btn-ghost btn-sm rounded-lg font-bold" href="/app/{data.tenant}/contacts">Contacts</a>
         <a class="btn btn-ghost btn-sm rounded-lg opacity-60" href="/app/{data.tenant}/tasks">Follow-ups</a>
-        <a class="btn btn-ghost btn-sm rounded-lg opacity-60" href="#">AI Insights</a>
+        <button class="btn btn-ghost btn-sm rounded-lg opacity-60" type="button" disabled>
+          AI Insights
+        </button>
       </nav>
     </div>
   </header>
@@ -35,19 +37,19 @@
   <!-- Bottom Navigation (Mobile) -->
   <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50">
     <div class="bg-base-100/80 backdrop-blur-xl mx-6 mb-6 rounded-2xl shadow-lg flex justify-around items-center p-2">
-      <a class="btn btn-primary btn-sm flex-col h-auto min-h-0 py-2 px-4 scale-110" href="#">
+      <a class="btn btn-primary btn-sm flex-col h-auto min-h-0 py-2 px-4 scale-110" href="/app/{data.tenant}/contacts">
         <span class="material-symbols-outlined text-lg">contacts</span>
         <span class="text-[10px] font-semibold uppercase tracking-widest mt-1">Contacts</span>
       </a>
-      <a class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" href="#">
+      <button class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" type="button" disabled>
         <span class="material-symbols-outlined text-lg">event_repeat</span>
         <span class="text-[10px] font-semibold uppercase tracking-widest mt-1">Follow-ups</span>
-      </a>
-      <a class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" href="#">
+      </button>
+      <button class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" type="button" disabled>
         <span class="material-symbols-outlined text-lg">auto_awesome</span>
         <span class="text-[10px] font-semibold uppercase tracking-widest mt-1">AI Insights</span>
-      </a>
-      <a class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" href="#">
+      </button>
+      <a class="btn btn-ghost btn-sm flex-col h-auto min-h-0 py-2 px-4 opacity-70" href="/app/{data.tenant}/settings">
         <span class="material-symbols-outlined text-lg">settings</span>
         <span class="text-[10px] font-semibold uppercase tracking-widest mt-1">Settings</span>
       </a>

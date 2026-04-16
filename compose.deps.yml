@@ -89,7 +89,7 @@ services:
       - 8222:8222
 
   imageserver:
-    image: ghcr.io/aaberg/fileserver:latest
+    image: ghcr.io/aaberg/fileserver:v1.2.2
     environment:
       PRIVATE_API_TOKEN: test-secret
       FILESERVER_PUBLIC_BASE_URL: http://localhost:9000

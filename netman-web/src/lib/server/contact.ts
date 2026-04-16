@@ -1,11 +1,17 @@
-import type {Contact, ContactListItem, ContactWithDetails} from "$lib/contactModel"
+import type {
+  ContactListItem,
+  ContactSavedResponse,
+  ContactWithDetails,
+  SaveContactRequest,
+  TemporaryImageUploadResponse
+} from "$lib/contactModel"
 import { basePath } from "$lib/server/common"
 
 export const saveContact = async (
   accessToken: string,
   tenantId: string,
-  contact: ContactWithDetails
-): Promise<ContactWithDetails> => {
+  contact: SaveContactRequest
+): Promise<ContactSavedResponse> => {
   const body = JSON.stringify(contact)
   const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts`, {
     method: "POST",
@@ -21,7 +27,7 @@ export const saveContact = async (
 
   const responseJson = await response.json()
 
-  return responseJson as ContactWithDetails
+  return responseJson as ContactSavedResponse
 }
 
 export const getContactList = async (
@@ -43,26 +49,6 @@ export const getContactList = async (
   return (await response.json()) as ContactListItem[]
 }
 
-export const getContactsForTenant = async (
-  accessToken: string,
-  tenantId: string
-): Promise<Contact[]> => {
-  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-
-  if (!response.ok) {
-    throw new Error(
-      `Error fetching contacts for tenant ${tenantId}. API responded with ${response.status} ${response.statusText}`
-    )
-  }
-
-  return (await response.json()) as Contact[]
-}
-
 export async function getContactsById(
   accessToken: string,
   tenantId: string,
@@ -81,22 +67,25 @@ export async function getContactsById(
   return (await response.json()) as ContactWithDetails
 }
 
-export async function getLabelsForTenant(
+export async function uploadTemporaryContactImage(
   accessToken: string,
-  tenantId: string
-): Promise<{ id: string; label: string; tenantId: number }[]> {
-  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/labels`, {
-    method: "GET",
+  tenantId: string,
+  image: ArrayBuffer
+): Promise<TemporaryImageUploadResponse> {
+  const response = await fetch(`${basePath()}/api/tenants/${tenantId}/contacts/images/temp`, {
+    method: "PUT",
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/octet-stream"
+    },
+    body: image
   })
 
   if (!response.ok) {
     throw new Error(
-      `Error fetching labels for tenant ${tenantId}. API responded with ${response.status} ${response.statusText}`
+      `Error uploading temporary contact image for tenant ${tenantId}. API responded with ${response.status} ${response.statusText}`
     )
   }
 
-  return (await response.json()) as { id: string; label: string; tenantId: number }[]
+  return (await response.json()) as TemporaryImageUploadResponse
 }

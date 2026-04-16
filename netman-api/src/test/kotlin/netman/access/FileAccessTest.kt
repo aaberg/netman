@@ -85,7 +85,7 @@ class FileAccessTest : DefaultTestProperties() {
 
         val first = fileAccess.getFilePublicUrl(key)
         val cached = fileAccess.getFilePublicUrl(key)
-        fileAccess.storeFile(key, "image-content".toByteArray())
+        fileAccess.storeFile(key, "image-content".toByteArray(), "application/octet-stream")
         val refreshed = fileAccess.getFilePublicUrl(key)
 
         assertThat(first).isEqualTo("https://cdn.test/first/$key")
@@ -171,7 +171,7 @@ class FileAccessTest : DefaultTestProperties() {
                 )
         )
 
-        val response = fileAccess.storeTemporaryFile("image-content".toByteArray())
+        val response = fileAccess.storeTemporaryFile("image-content".toByteArray(), "application/octet-stream")
 
         assertThat(response.tempFileId).isEqualTo("temp-123")
     }

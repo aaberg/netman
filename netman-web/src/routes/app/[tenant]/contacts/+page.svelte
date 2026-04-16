@@ -55,10 +55,10 @@
 		<span class="text-xs font-bold uppercase tracking-widest text-accent">Network Directory</span>
 		<h1 class="text-5xl md:text-6xl font-extrabold tracking-tight">Your Inner Circle</h1>
 	</div>
-	<button class="btn btn-neutral px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform">
+	<a href={`/app/${tenant}/contacts/new`} class="btn btn-neutral px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform">
 		<span class="material-symbols-outlined">person_add</span>
 		Add Contact
-	</button>
+	</a>
 </div>
 
 <!-- Search & Filters -->
@@ -116,18 +116,20 @@
 				</div>
 				<div class="space-y-1 mb-6">
 					<h3 class="text-xl font-bold">{contact.name}</h3>
-					<p class="text-base-content/70 font-medium">{contact.title} • {contact.organization}</p>
+					<p class="text-base-content/70 font-medium">
+						{[contact.title, contact.organization].filter(Boolean).join(' • ') || 'No title or company'}
+					</p>
 				</div>
 				<div class="divider my-0"></div>
 				<div class="flex items-center justify-between pt-4">
 						<div class="flex items-center gap-2 text-sm text-base-content/60">
 							<span class="material-symbols-outlined text-sm">location_on</span>
-							<span>Earth</span>
+							<span>{contact.location || 'No location'}</span>
 						</div>
 
-					<button class="btn btn-sm btn-primary text-white btn-ghost bg-base-200 hover:bg-base-300">
-						Details
-					</button>
+					<a href={`/app/${tenant}/contacts/${contact.id}/edit`} class="btn btn-sm btn-primary text-white btn-ghost bg-base-200 hover:bg-base-300">
+						Edit
+					</a>
 				</div>
 			</div>
 		</div>

@@ -1,8 +1,24 @@
-export interface ContactWithDetails {
+export interface InteractionResource {
   id: string | null
+  contactId: string
+  type: "EMAIL" | "CALL" | "TEXT_MESSAGE"
+  content: string
+  timestamp: string
+  metadata: Record<string, string>
+}
+
+export interface ContactWithDetails {
+  id: string
   name: string
-  initials: string
-  details?: Array<Email | Phone | Note> | null
+  initials: string | null
+  email: string | null
+  phone: string | null
+  title: string | null
+  organization: string | null
+  notes: string | null
+  interactions: InteractionResource[]
+  imageUrl: string | null
+  location: string | null
 }
 
 export interface ContactListItem {
@@ -11,46 +27,34 @@ export interface ContactListItem {
   initials: string
   title: string
   organization: string
-  followUpStatus: string
+  followUpStatus: "Scheduled" | "Overdue" | "None"
   followUpIn: string
-  imageUrl: string
+  imageUrl: string | null
+  location: string | null
 }
 
-export interface Contact {
+export interface SaveContactRequest {
   id: string | null
   name: string
-  initials: string
-  contactInfo: string
-  contactInfoIcon: string
-  hasUpdates: boolean
+  email: string | null
+  phone: string | null
+  title: string | null
+  organization: string | null
+  location: string | null
+  notes: string | null
+  tempFileId: string | null
+  tempFileMimeType: string | null
+  tempFileExtension: string | null
 }
 
-export interface Email {
-  type: string
-  address: string
-  label: string
-  isPrimary: boolean
+export interface ContactSavedResponse {
+  id: string
 }
 
-export interface Phone {
-  type: string
-  number: string
-  label: string
-}
-
-export interface Note {
-  type: string
-  note: string
-}
-
-export function compareDetails(a: Email | Phone | Note, b: Email | Phone | Note) {
-  const val = (d: Email | Phone | Note) => {
-    if (d.type === "email") return 1
-    else if (d.type === "phone") return 2
-    else if (d.type === "note") return 3
-    else return 4
-  }
-  if (val(a) == val(b)) return 0
-  if (val(a) > val(b)) return 1
-  else return -1
+export interface TemporaryImageUploadResponse {
+  tempFileId: string
+  mimeType: string
+  extension: string
+  previewUrl: string
+  previewUrlExpiresAt: string
 }

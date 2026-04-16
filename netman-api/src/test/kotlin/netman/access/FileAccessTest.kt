@@ -3,6 +3,7 @@ package netman.access
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.delete
 import com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.put
@@ -91,7 +92,7 @@ class FileAccessTest : DefaultTestProperties() {
         assertThat(first).isEqualTo("https://cdn.test/first/$key")
         assertThat(cached).isEqualTo("https://cdn.test/first/$key")
         assertThat(refreshed).isEqualTo("https://cdn.test/second/$key")
-        verify(1, putRequestedFor(urlEqualTo(filePath)))
+        verify(1, putRequestedFor(urlEqualTo(filePath)).withHeader("Content-Type", equalTo("application/octet-stream")))
         verify(2, postRequestedFor(urlEqualTo(publicUrlPath)))
     }
 
@@ -174,6 +175,7 @@ class FileAccessTest : DefaultTestProperties() {
         val response = fileAccess.storeTemporaryFile("image-content".toByteArray(), "application/octet-stream")
 
         assertThat(response.tempFileId).isEqualTo("temp-123")
+        verify(1, postRequestedFor(urlEqualTo("/temp-file")).withHeader("Content-Type", equalTo("application/octet-stream")))
     }
 
     @Test

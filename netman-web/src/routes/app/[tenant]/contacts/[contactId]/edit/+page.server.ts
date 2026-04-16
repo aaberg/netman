@@ -1,7 +1,12 @@
 import { contactToFormValues } from "$lib/contactForm"
 import { getContactsById } from "$lib/server/contact"
 import { accessToken } from "$lib/server/common"
-import { defaultContactFormState, parseContactFormData, submitContactForm } from "$lib/server/contactForm"
+import {
+  CONTACT_SAVE_ERROR_MESSAGE,
+  defaultContactFormState,
+  parseContactFormData,
+  submitContactForm
+} from "$lib/server/contactForm"
 import { fail, redirect } from "@sveltejs/kit"
 import type { Actions, PageServerLoad } from "./$types"
 
@@ -26,9 +31,10 @@ export const actions = {
         return fail(400, result)
       }
     } catch (error) {
+      console.error("Failed to save contact", error)
       return fail(500, {
         values: parseContactFormData(data, params.contactId),
-        error: error instanceof Error ? error.message : "Unable to save contact."
+        error: CONTACT_SAVE_ERROR_MESSAGE
       })
     }
 

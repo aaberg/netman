@@ -4,6 +4,9 @@ import { emptyContactForm, normalizeContactFormValue } from "$lib/contactForm"
 import type { SaveContactRequest } from "$lib/contactModel"
 import type { Cookies } from "@sveltejs/kit"
 
+export const MAX_CONTACT_IMAGE_SIZE_BYTES = 1024 * 1024
+export const CONTACT_SAVE_ERROR_MESSAGE = "Unable to save contact."
+
 export interface ContactFormState {
   values: SaveContactRequest
   error: string | null
@@ -43,6 +46,13 @@ export async function submitContactForm(
     return {
       values,
       error: "Name is required."
+    }
+  }
+
+  if (image instanceof File && image.size > MAX_CONTACT_IMAGE_SIZE_BYTES) {
+    return {
+      values,
+      error: "Image must be 1 MB or smaller."
     }
   }
 

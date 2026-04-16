@@ -152,7 +152,7 @@ describe("contactForm", () => {
       notes: null,
       tempFileId: "temp-file-id",
       tempFileMimeType: "image/png",
-      tempFileExtension: ".png"
+      tempFileExtension: "png"
     })
   })
 

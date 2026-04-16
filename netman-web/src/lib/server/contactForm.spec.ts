@@ -34,7 +34,7 @@ describe("contactForm", () => {
     mockedUploadTemporaryContactImage.mockResolvedValue({
       tempFileId: "temp-file-id",
       mimeType: "image/png",
-      extension: ".png",
+      extension: "png",
       previewUrl: "https://cdn.test/temp-file-id",
       previewUrlExpiresAt: "2026-01-01T00:00:00Z"
     })

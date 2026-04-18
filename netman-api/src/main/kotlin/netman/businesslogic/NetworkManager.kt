@@ -9,7 +9,6 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.FileAccess
 import netman.access.FileAccessException
-
 import netman.businesslogic.models.*
 import netman.models.*
 import java.util.*
@@ -26,7 +25,6 @@ class NetworkManager(
     private val tempImagePreviewUrlDurationSeconds: Long,
     private val timeService: TimeService
 ) {
-
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val contacts = contactAccess.listContacts(tenantId)
@@ -166,13 +164,11 @@ class NetworkManager(
             existingImage
         }
 
-
         val contact = Contact(
             id = contactId,
             name = saveContactRequest.name,
             details = listOfNotNull(email, phone, note, workInfo, location, imageDetail)
         )
-
 
         val violations = validator.validate(contact)
 
@@ -210,8 +206,6 @@ class NetworkManager(
 
         return ContactSavedResponse(savedContact.id)
     }
-    
-
 
     private data class TemporaryFileReference(
         val tempFileId: String,

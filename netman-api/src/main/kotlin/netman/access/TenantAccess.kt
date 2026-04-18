@@ -2,7 +2,6 @@ package netman.access
 
 import io.micronaut.transaction.annotation.Transactional
 import jakarta.inject.Singleton
-
 import netman.access.repository.TenantDTO
 import netman.access.repository.TenantRepository
 import netman.models.MemberTenant
@@ -14,7 +13,6 @@ import netman.models.TenantType
 open class TenantAccess(
     private val tenantRepository: TenantRepository
 ) {
-
     @Transactional
     open fun registerNewTenant(name: String, type: TenantType, ownerUserId: String) : Tenant {
         val tenantDto = tenantRepository.save(TenantDTO(name = name, type = type.toString()))

@@ -26,7 +26,6 @@ open class ContactAccess(
     private val followUpRepository: FollowUpRepository,
     private val timeService: TimeService
 ) {
-
     @Serdeable
     data class ContactData(
         val name: String,
@@ -68,8 +67,6 @@ open class ContactAccess(
         val contactData = objectMapper.readValue(contactDto.data, ContactData::class.java)
         return Contact(contactDto.id, contactData.name, contactData.details)
     }
-    
-
     
     fun saveInteraction(interaction: Interaction): Interaction {
         val id = interaction.id ?: UUID.randomUUID()

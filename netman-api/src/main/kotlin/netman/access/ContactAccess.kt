@@ -22,7 +22,6 @@ import java.util.*
 open class ContactAccess(
     private val contactRepository: ContactRepository,
     private val objectMapper: ObjectMapper,
-
     private val interactionRepository: InteractionRepository,
     private val followUpRepository: FollowUpRepository,
     private val timeService: TimeService

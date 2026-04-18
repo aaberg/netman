@@ -12,8 +12,7 @@ import netman.models.TenantType
 
 @Singleton
 open class TenantAccess(
-    private val tenantRepository: TenantRepository,
-
+    private val tenantRepository: TenantRepository
 ) {
 
     @Transactional

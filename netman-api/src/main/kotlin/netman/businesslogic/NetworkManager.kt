@@ -21,7 +21,6 @@ class NetworkManager(
     private val imageMimeTypeDetector: ImageMimeTypeDetector,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
-
     private val aggregationEngine: AggregationEngine,
     @param:Value("\${fileserver.temp-image.preview-url-duration-seconds:1800}")
     private val tempImagePreviewUrlDurationSeconds: Long,

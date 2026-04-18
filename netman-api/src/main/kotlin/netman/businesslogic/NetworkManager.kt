@@ -9,7 +9,6 @@ import jakarta.validation.ValidationException
 import netman.access.ContactAccess
 import netman.access.FileAccess
 import netman.access.FileAccessException
-import netman.access.repository.LabelRepository
 import netman.businesslogic.models.*
 import netman.models.*
 import java.util.*
@@ -21,13 +20,11 @@ class NetworkManager(
     private val imageMimeTypeDetector: ImageMimeTypeDetector,
     private val authorizationEngine: AuthorizationEngine,
     private val validator: Validator,
-    private val labelRepository: LabelRepository,
     private val aggregationEngine: AggregationEngine,
     @param:Value("\${fileserver.temp-image.preview-url-duration-seconds:1800}")
     private val tempImagePreviewUrlDurationSeconds: Long,
     private val timeService: TimeService
 ) {
-
     fun getMyContacts(userId: String, tenantId: Long): List<ContactListItemResource> {
         authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
         val contacts = contactAccess.listContacts(tenantId)
@@ -167,13 +164,11 @@ class NetworkManager(
             existingImage
         }
 
-
         val contact = Contact(
             id = contactId,
             name = saveContactRequest.name,
             details = listOfNotNull(email, phone, note, workInfo, location, imageDetail)
         )
-
 
         val violations = validator.validate(contact)
 
@@ -210,13 +205,6 @@ class NetworkManager(
         }
 
         return ContactSavedResponse(savedContact.id)
-    }
-    
-    fun getLabels(userId: String, tenantId: Long): List<LabelResource> {
-        authorizationEngine.validateAccessToTenantOrThrow(userId, tenantId)
-        return labelRepository.getLabels(tenantId)
-            .sortedBy { it.label }
-            .map { LabelResource(id = it.id, label = it.label, tenantId = it.tenantId) }
     }
 
     private data class TemporaryFileReference(

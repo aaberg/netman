@@ -2,7 +2,7 @@ package netman.access
 
 import io.micronaut.transaction.annotation.Transactional
 import jakarta.inject.Singleton
-import netman.access.repository.LabelRepository
+
 import netman.access.repository.TenantDTO
 import netman.access.repository.TenantRepository
 import netman.models.MemberTenant
@@ -13,7 +13,7 @@ import netman.models.TenantType
 @Singleton
 open class TenantAccess(
     private val tenantRepository: TenantRepository,
-    private val labelRepository: LabelRepository
+
 ) {
 
     @Transactional
@@ -26,8 +26,6 @@ open class TenantAccess(
 
         tenantRepository.addMemberToTenant(ownerUserId, tenantDto.id, TenantRole.Owner.toString())
         
-        labelRepository.saveCommonLabels(tenantDto.id)
-
         return Tenant(tenantDto.id, tenantDto.name, TenantType.valueOf(tenantDto.type))
     }
 

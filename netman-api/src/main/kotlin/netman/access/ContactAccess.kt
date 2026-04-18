@@ -22,7 +22,7 @@ import java.util.*
 open class ContactAccess(
     private val contactRepository: ContactRepository,
     private val objectMapper: ObjectMapper,
-    private val labelRepository: LabelRepository,
+
     private val interactionRepository: InteractionRepository,
     private val followUpRepository: FollowUpRepository,
     private val timeService: TimeService
@@ -50,8 +50,6 @@ open class ContactAccess(
         }
         val savedContact = mapContact(savedContactDto)
         
-        extractAndSaveLabels(contact, tenantId)
-        
         return savedContact
     }
 
@@ -72,23 +70,7 @@ open class ContactAccess(
         return Contact(contactDto.id, contactData.name, contactData.details)
     }
     
-    private fun extractAndSaveLabels(contact: Contact, tenantId: Long) {
-        contact.details.forEach { detail ->
-            when (detail) {
-                is Email -> {
-                    if (detail.label.isNotBlank()) {
-                        labelRepository.saveLabel(tenantId, detail.label)
-                    }
-                }
-                is Phone -> {
-                    if (detail.label.isNotBlank()) {
-                        labelRepository.saveLabel(tenantId, detail.label)
-                    }
-                }
-                else -> { /* Other detail types don't have labels */ }
-            }
-        }
-    }
+
     
     fun saveInteraction(interaction: Interaction): Interaction {
         val id = interaction.id ?: UUID.randomUUID()

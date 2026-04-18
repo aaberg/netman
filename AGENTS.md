@@ -1,10 +1,17 @@
 # NetMan Agent System
 
-This document describes the agent system used in the NetMan project, including available agent profiles, their responsibilities, and how they integrate with the development workflow.
+This document describes the agent system used in the NetMan project, including available agent profiles, their responsibilities, and how they integrate with the development workflow across the monorepo.
 
 ## Overview
 
 The NetMan project uses a specialized agent system to streamline development across different domains. Agents are specialized AI assistants that focus on specific areas of the codebase, ensuring expertise and consistency in their respective domains.
+
+The repository currently contains these main areas:
+
+- `netman-api/`: Kotlin/Micronaut backend API
+- `netman-web/`: Svelte/SvelteKit frontend
+- `netman-ticker/`: Kotlin/Micronaut CLI for sending NATS task trigger messages
+- `liquibase/`: database migration image and migration assets
 
 ## Agent Profiles
 
@@ -38,20 +45,20 @@ The NetMan project uses a specialized agent system to streamline development acr
 
 **Responsibilities**:
 - Managing CI/CD pipelines using GitHub Actions
-- Writing infrastructure as code using Pulumi
-- Ensuring infrastructure reliability and scalability
-- Providing feedback on infrastructure usage and best practices
+- Managing Docker and Docker Compose based workflows
+- Maintaining image build and release automation
+- Providing feedback on deployment and infrastructure usage best practices
 
 **Technologies**:
 - GitHub Actions
-- Pulumi
-- Azure
 - Docker
+- Docker Compose
+- GitHub Container Registry
 
 **Key Characteristics**:
 - Does not modify application code (backend or frontend)
 - Focuses exclusively on infrastructure and deployment automation
-- Expert in cloud platforms and containerization
+- Expert in containerization and CI/CD workflows
 - Ensures CI/CD pipelines are efficient and reliable
 
 ### 3. Frontend Developer Agent
@@ -67,11 +74,11 @@ The NetMan project uses a specialized agent system to streamline development acr
 
 **Technologies**:
 - Svelte 5.0 with Runes
-- SvelteKit 2.16
+- SvelteKit 2.x
 - TypeScript 5.x
-- Tailwind CSS 4.0 with DaisyUI 5.1
+- Tailwind CSS 4.x with DaisyUI 5.x
 - Vitest 3.0 (unit tests)
-- Playwright 1.49 (E2E tests)
+- Playwright 1.x (E2E tests)
 - Hanko Elements 2.1 (authentication)
 
 **Key Characteristics**:
@@ -94,12 +101,14 @@ The NetMan project uses a specialized agent system to streamline development acr
 ### Collaboration Patterns
 
 - **Backend-Frontend Integration**: Agents collaborate on API contracts and data models
-- **DevOps Integration**: DevOps agent ensures infrastructure supports application requirements
+- **Backend-DevOps Integration**: Backend and DevOps work together on container builds, migrations, and runtime configuration
+- **Ticker Ownership**: `netman-ticker` work is typically handled by the backend agent, while Docker/release automation for it belongs to DevOps
+- **DevOps Integration**: DevOps agent ensures build, release, and deployment workflows support application requirements
 - **Cross-domain Reviews**: Agents provide feedback on related areas (e.g., backend agent reviews API usage in frontend)
 
 ## Agent-Specific Instructions
 
-Each agent has detailed instructions that guide their work:
+Some agents have detailed instructions that guide their work:
 
 ### Backend Instructions
 
@@ -135,6 +144,8 @@ Covers:
 - Type safety and interface definitions
 - Performance and accessibility best practices
 
+At present, backend and frontend have dedicated instruction files in `.github/instructions/`. The DevOps agent is defined in `.github/agents/` but does not currently have a matching instruction file.
+
 ## Agent Selection Criteria
 
 ### When to Use Each Agent
@@ -143,6 +154,7 @@ Covers:
 - API endpoint implementation
 - Business logic development
 - Database schema changes
+- `netman-ticker` CLI and NATS task trigger work
 - Backend service integration
 - Unit and integration testing
 
@@ -156,10 +168,10 @@ Covers:
 
 **DevOps Developer Agent**:
 - CI/CD pipeline configuration
-- Infrastructure provisioning
+- Docker image publishing
 - Deployment automation
-- Containerization and orchestration
-- Environment configuration
+- Containerization and Compose workflows
+- Environment and release configuration
 
 ## Best Practices for Working with Agents
 

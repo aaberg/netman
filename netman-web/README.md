@@ -18,6 +18,30 @@ npm run test       # unit/component tests (Vitest)
 npm run test:e2e   # end-to-end tests (Playwright)
 ```
 
+## E2E test requirements
+
+Playwright E2E tests require the backend stack to be running from the repository root with `compose.backend.yml`.
+
+Start it before running E2E tests:
+
+```bash
+podman compose -f compose.backend.yml up -d --build
+```
+
+If you use Docker instead of Podman, run:
+
+```bash
+docker compose -f compose.backend.yml up -d --build
+```
+
+Then run the frontend E2E tests from `netman-web/`:
+
+```bash
+npm run test:e2e
+```
+
+Note: the Playwright config starts the frontend preview server automatically, but it does not start the backend stack.
+
 ## OpenTelemetry Integration
 
 The web application includes OpenTelemetry support for Azure Application Insights, which is **disabled by default**.

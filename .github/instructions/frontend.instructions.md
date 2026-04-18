@@ -266,6 +266,17 @@ describe('Button', () => {
 ### E2E Tests (Playwright)
 - Test files in `e2e/` directory
 - Ensure application is running before tests
+- E2E tests require the backend stack to be running from the repository root using `compose.backend.yml`
+- Start the backend stack before running Playwright tests:
+  ```bash
+  podman compose -f compose.backend.yml up -d --build
+  ```
+- Docker Compose can be used instead if preferred:
+  ```bash
+  docker compose -f compose.backend.yml up -d --build
+  ```
+- The Playwright config starts the frontend preview server automatically, but it does not start the backend stack
+- If the backend stack is not running, authentication and API-dependent E2E flows will fail
 - Test critical user flows
 
 **Example:**
